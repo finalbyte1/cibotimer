@@ -29,8 +29,12 @@
     <string name="timer_countdown_label_fasting">Mancano al pasto</string>
     <string name="timer_countdown_label_eating">Mancano al digiuno</string>
     <string name="timer_label_start">Inizio</string>
+    <string name="timer_label_start_eating">Inizio pasto</string>
     <string name="timer_label_end_fasting">Fine</string>
     <string name="timer_label_end_eating">Pross. digiuno</string>
+    <string name="timer_label_next_short">Pross.</string>
+    <string name="elapsed_time_hours_mins">%1$dh %2$dm passate</string>
+    <string name="elapsed_time_mins">%1$dm passate</string>
     <string name="button_stop">Stop</string>
     <string name="button_start">Inizia</string>
     <string name="button_change_plan">Piano</string>

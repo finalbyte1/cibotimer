@@ -29,8 +29,12 @@
     <string name="timer_countdown_label_fasting">Until eating window</string>
     <string name="timer_countdown_label_eating">Until fasting</string>
     <string name="timer_label_start">Start</string>
+    <string name="timer_label_start_eating">Meal start</string>
     <string name="timer_label_end_fasting">End</string>
     <string name="timer_label_end_eating">Next fast</string>
+    <string name="timer_label_next_short">Next</string>
+    <string name="elapsed_time_hours_mins">%1$dh %2$dm elapsed</string>
+    <string name="elapsed_time_mins">%1$dm elapsed</string>
     <string name="button_stop">Stop</string>
     <string name="button_start">Start</string>
     <string name="button_change_plan">Plan</string>

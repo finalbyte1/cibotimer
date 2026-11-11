@@ -135,7 +135,11 @@ fun FastingStagesCard(
     }
 
     // Titolo e descrizione fase corrente tenendo conto rigorosamente delle ORE PASSATE
-    val elapsedHoursFormatted = if (elapHours > 0) "${elapHours}h ${elapMinsRemainder}m passate" else "${elapMinsRemainder}m passate"
+    val elapsedHoursFormatted = if (elapHours > 0) {
+        stringResource(R.string.elapsed_time_hours_mins, elapHours, elapMinsRemainder)
+    } else {
+        stringResource(R.string.elapsed_time_mins, elapMinsRemainder)
+    }
 
     val phasePrefix = stringResource(R.string.stage_phase_prefix)
     val eatingWindowLabel = stringResource(R.string.header_subtitle_eating)
@@ -172,7 +176,7 @@ fun FastingStagesCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = if (state == FastingState.EATING) "Inizio pasto" else "Inizio", // "Inizio" fallback for R.string.timer_label_start
+                        text = if (state == FastingState.EATING) stringResource(R.string.timer_label_start_eating) else stringResource(R.string.timer_label_start),
                         fontSize = 11.sp,
                         lineHeight = 12.sp,
                         color = CiboTextSecondary,
@@ -182,7 +186,7 @@ fun FastingStagesCard(
                     Spacer(modifier = Modifier.width(3.dp))
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Modifica orario inizio",
+                        contentDescription = stringResource(R.string.content_desc_edit_start_time),
                         tint = CiboAccent,
                         modifier = Modifier.size(12.dp)
                     )
@@ -215,7 +219,13 @@ fun FastingStagesCard(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = if (state == FastingState.FASTING) stringResource(R.string.timer_label_end_fasting) else if (state == FastingState.EATING) "Pross. digiuno" else "Pross.",
+                        text = if (state == FastingState.FASTING) {
+                            stringResource(R.string.timer_label_end_fasting)
+                        } else if (state == FastingState.EATING) {
+                            stringResource(R.string.timer_label_end_eating)
+                        } else {
+                            stringResource(R.string.timer_label_next_short)
+                        },
                         fontSize = 11.sp,
                         lineHeight = 12.sp,
                         color = CiboTextSecondary,
@@ -226,7 +236,7 @@ fun FastingStagesCard(
                     Spacer(modifier = Modifier.width(3.dp))
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Modifica orario fine",
+                        contentDescription = stringResource(R.string.content_desc_edit_end_time),
                         tint = CiboAccent,
                         modifier = Modifier.size(12.dp)
                     )
