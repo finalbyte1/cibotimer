@@ -204,20 +204,6 @@ Puoi configurare la firma in locale in due modi:
 
 ---
 
-## 🏪 Pubblicazione su Google Play Store
-
-Per istruzioni passo-passo dettagliate su:
-- Come creare e configurare la scheda in **Google Play Console**
-- I testi pronti da incollare per le dichiarazioni **Foreground Service** e **Allarmi Esatti**
-- Le risposte al questionario **Sicurezza dei Dati (Data Safety)**
-- Il modello di **Informativa sulla Privacy (Privacy Policy)**
-- La gestione del requisito dei **20 tester per 14 giorni** (per account 2023+)
-
-Consulta la guida dedicata nella cartella locale:
-📄 [PLAYSTORE_PUBLISHING_GUIDE.md](git_exclude/PLAYSTORE_PUBLISHING_GUIDE.md) oppure apri nel browser il dashboard visivo `git_exclude/playstore_guide.html`.
-
----
-
 ## 🛡️ Privacy & Sicurezza dei Dati
 
 - **Nessun tracciamento**: L'app non include SDK pubblicitari (Google AdMob, Unity, AppLovin) né librerie di analisi invasiva.
