@@ -53,7 +53,7 @@ fun MeasurementEntryDialog(
     var notesText by remember { mutableStateOf(initialEntry?.notes ?: "") }
 
     val epochMillis = remember { initialEntry?.epochMillis ?: System.currentTimeMillis() }
-    val dateFmt = remember { SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.ITALIAN) }
+    val dateFmt = remember { SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.getDefault()) }
 
     // Live WHR calculation
     val waistVal = waistText.toDoubleOrNull()

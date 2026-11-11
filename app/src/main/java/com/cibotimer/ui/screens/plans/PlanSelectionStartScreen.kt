@@ -81,12 +81,12 @@ fun PlanSelectionStartScreen(
     )
 
     val singlePlans = listOf(
-        Pair(FastingPlanTemplates.PLAN_16_8, "Saltare la colazione"),
-        Pair(FastingPlanTemplates.PLAN_AUTOPHAGY_BOOSTER, "Settimana di potenza • Perdi peso"),
-        Pair(FastingPlanTemplates.PLAN_23_1_OMAD, "Un pasto al giorno (cena)"),
-        Pair(FastingPlanTemplates.PLAN_14_10, "Principianti • Dolce"),
-        Pair(FastingPlanTemplates.PLAN_18_6, "Intermedio avanzato • Chetosi"),
-        Pair(FastingPlanTemplates.PLAN_5_2, "Due giorni completi (24h)")
+        Pair(FastingPlanTemplates.PLAN_16_8, stringResource(R.string.plan_subtitle_skip_breakfast)),
+        Pair(FastingPlanTemplates.PLAN_AUTOPHAGY_BOOSTER, stringResource(R.string.plan_subtitle_power_week)),
+        Pair(FastingPlanTemplates.PLAN_23_1_OMAD, stringResource(R.string.plan_subtitle_omad_dinner)),
+        Pair(FastingPlanTemplates.PLAN_14_10, stringResource(R.string.plan_subtitle_beginner_gentle)),
+        Pair(FastingPlanTemplates.PLAN_18_6, stringResource(R.string.plan_subtitle_intermediate_ketosis)),
+        Pair(FastingPlanTemplates.PLAN_5_2, stringResource(R.string.plan_subtitle_two_full_days))
     )
 
     fun selectAndProceed(plan: FastingPlan) {
@@ -104,7 +104,7 @@ fun PlanSelectionStartScreen(
                         IconButton(onClick = { onBack?.invoke() ?: onPlanChosen() }) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Indietro",
+                                contentDescription = stringResource(R.string.content_desc_back),
                                 tint = TextPrimary
                             )
                         }
@@ -177,7 +177,7 @@ fun PlanSelectionStartScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            text = item.plan.name,
+                                            text = item.plan.localizedName,
                                             fontSize = 22.sp,
                                             fontWeight = FontWeight.ExtraBold,
                                             color = Color.White
@@ -367,7 +367,7 @@ fun PlanCardButton(
         ) {
             Column {
                 Text(
-                    text = plan.name,
+                    text = plan.localizedName,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = CiboTimerAzure

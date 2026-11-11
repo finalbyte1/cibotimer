@@ -41,18 +41,18 @@ fun ShareProgressModal(
     val context = LocalContext.current
 
     val shareText = buildString {
-        append("🎉 I miei progressi con CiboTimer!\n\n")
+        append(context.getString(R.string.share_text_header))
         if (progressInfo.lostKg > 0) {
-            append("⚖️ Peso perso: -%.1f kg (da %.1f kg a %.1f kg)\n".format(Locale.US, progressInfo.lostKg, progressInfo.startingWeightKg, progressInfo.currentWeightKg))
+            append(context.getString(R.string.share_text_weight_lost, progressInfo.lostKg, progressInfo.startingWeightKg, progressInfo.currentWeightKg))
         } else {
-            append("⚖️ Peso attuale: %.1f kg (partenza: %.1f kg)\n".format(Locale.US, progressInfo.currentWeightKg, progressInfo.startingWeightKg))
+            append(context.getString(R.string.share_text_current_weight, progressInfo.currentWeightKg, progressInfo.startingWeightKg))
         }
-        append("🎯 Obiettivo: %.1f kg (%d%% raggiunto, mancano %.1f kg)\n".format(Locale.US, progressInfo.targetWeightKg, progressInfo.progressPercent, progressInfo.remainingKg))
-        append("⏱️ Ore totali di digiuno: %d ore (%d sessioni concluse)\n".format(totalFastingHours, completedSessionsCount))
+        append(context.getString(R.string.share_text_goal, progressInfo.targetWeightKg, progressInfo.progressPercent, progressInfo.remainingKg))
+        append(context.getString(R.string.share_text_fasting_hours, totalFastingHours, completedSessionsCount))
         if (circumferenceInfo?.totalDiffCm != null) {
-            append("📏 Circonferenza corporea: %+.1f cm\n".format(Locale.US, circumferenceInfo.totalDiffCm))
+            append(context.getString(R.string.share_text_circumference, circumferenceInfo.totalDiffCm))
         }
-        append("\n🚀 Traccia i tuoi digiuni e la tua salute con CiboTimer!")
+        append(context.getString(R.string.share_text_footer))
     }
 
     ModalBottomSheet(
@@ -91,7 +91,7 @@ fun ShareProgressModal(
                 IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Chiudi",
+                        contentDescription = stringResource(R.string.content_desc_close),
                         tint = CiboTextSecondary
                     )
                 }
@@ -196,8 +196,8 @@ fun ShareProgressModal(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Text(
-                            text = if (progressInfo.isGoalReached) "🎉 Obiettivo Raggiunto!"
-                            else "%d%% verso l'obiettivo • Mancano %.1f kg".format(progressInfo.progressPercent, progressInfo.remainingKg),
+                            text = if (progressInfo.isGoalReached) stringResource(R.string.share_goal_reached)
+                            else stringResource(R.string.share_goal_progress, progressInfo.progressPercent, progressInfo.remainingKg),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (progressInfo.isGoalReached) CiboTimerAzureGlow else CiboTextSecondary,

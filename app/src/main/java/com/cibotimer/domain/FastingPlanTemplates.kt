@@ -32,6 +32,8 @@ object FastingPlanTemplates {
         name = "16-8 (Classico)",
         category = PlanCategory.STANDARD,
         description = "Il metodo più amato e collaudato: 16 ore di digiuno e una finestra alimentare di 8 ore (dalle 12:00 alle 20:00). Ideale sia per principianti che per esperti.",
+        nameEn = "16-8 (Classic)",
+        descriptionEn = "The most popular and proven method: 16 hours of fasting and an 8-hour eating window (12:00 to 20:00). Ideal for beginners and experienced fasters alike.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 12, endMinute = 0, fastingMinutes = 960)
     )
 
@@ -40,6 +42,8 @@ object FastingPlanTemplates {
         name = "16-8 (Serale / Tardi)",
         category = PlanCategory.STANDARD,
         description = "Pensato per chi va a letto tardi o cena tardi: digiuno dalle 22:00 alle 14:00 del giorno dopo.",
+        nameEn = "16-8 (Evening / Late)",
+        descriptionEn = "Designed for night owls or late diners: fasting from 22:00 to 14:00 the next day.",
         days = createStandardDays(startHour = 22, startMinute = 0, endHour = 14, endMinute = 0, fastingMinutes = 960)
     )
 
@@ -48,6 +52,8 @@ object FastingPlanTemplates {
         name = "14-10 (Dolce)",
         category = PlanCategory.STANDARD,
         description = "Perfetto per chi si avvicina per la prima volta al digiuno intermittente. 14 ore di digiuno (20:00 - 10:00) facili da sostenere.",
+        nameEn = "14-10 (Gentle)",
+        descriptionEn = "Perfect for those new to intermittent fasting. 14 hours of fasting (20:00 - 10:00), easy to sustain.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 10, endMinute = 0, fastingMinutes = 840)
     )
 
@@ -56,6 +62,8 @@ object FastingPlanTemplates {
         name = "15-9 (Intermedio)",
         category = PlanCategory.STANDARD,
         description = "Il gradino perfetto tra il 14-10 e il 16-8 per abituare il corpo in modo progressivo e senza stress.",
+        nameEn = "15-9 (Intermediate)",
+        descriptionEn = "The perfect stepping stone between 14-10 and 16-8 to progressively adapt your body without stress.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 11, endMinute = 0, fastingMinutes = 900)
     )
 
@@ -64,6 +72,8 @@ object FastingPlanTemplates {
         name = "18-6 (Avanzato)",
         category = PlanCategory.AUTOPHAGY,
         description = "18 ore di digiuno al giorno. Attiva pienamente la chetosi e l'inizio dell'autofagia cellulare per una perdita di grasso accelerata.",
+        nameEn = "18-6 (Advanced)",
+        descriptionEn = "18 hours of daily fasting. Fully triggers ketosis and kicks off cellular autophagy for accelerated fat loss.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 14, endMinute = 0, fastingMinutes = 1080)
     )
 
@@ -72,6 +82,8 @@ object FastingPlanTemplates {
         name = "20-4 (La Dieta del Guerriero)",
         category = PlanCategory.AUTOPHAGY,
         description = "Ispirato agli antichi guerrieri: 20 ore di digiuno con una finestra di alimentazione concentrata in 4 ore serali.",
+        nameEn = "20-4 (The Warrior Diet)",
+        descriptionEn = "Inspired by ancient warriors: 20 hours of fasting with a condensed 4-hour eating window in the evening.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 16, endMinute = 0, fastingMinutes = 1200)
     )
 
@@ -80,6 +92,8 @@ object FastingPlanTemplates {
         name = "23-1 (OMAD - One Meal A Day)",
         category = PlanCategory.SPECIAL,
         description = "Un unico pasto nutriente al giorno con 23 ore di digiuno. Massima pulizia cellulare, massima concentrazione ed energia.",
+        nameEn = "23-1 (OMAD - One Meal A Day)",
+        descriptionEn = "A single nutrient-dense meal per day with 23 hours of fasting. Maximum cellular cleanup, deep focus, and steady energy.",
         days = createStandardDays(startHour = 20, startMinute = 0, endHour = 19, endMinute = 0, fastingMinutes = 1380)
     )
 
@@ -88,6 +102,8 @@ object FastingPlanTemplates {
         name = "5-2 (Due giorni completi)",
         category = PlanCategory.SPECIAL,
         description = "5 giorni di alimentazione normale e 2 giorni (Martedì e Giovedì) con digiuno prolungato di 24 ore.",
+        nameEn = "5-2 (Two Full Days)",
+        descriptionEn = "5 days of normal eating and 2 days (Tuesday and Thursday) with an extended 24-hour fast.",
         days = listOf(
             DayPlan(1, false, 0, 0, 0, 0, 0),
             DayPlan(2, true, 20, 0, 20, 0, 1440), // 24h
@@ -104,6 +120,8 @@ object FastingPlanTemplates {
         name = "Booster di Autofagia",
         category = PlanCategory.AUTOPHAGY,
         description = "Un piano a giorni alterni alternando 16-8, 18-6 e un picco di 22h per stimolare al massimo il riciclo cellulare e la longevità.",
+        nameEn = "Autophagy Booster",
+        descriptionEn = "An alternating day plan cycling between 16-8, 18-6 and a 22h peak to maximally stimulate cellular renewal and longevity.",
         days = listOf(
             DayPlan(1, true, 20, 0, 12, 0, 960),  // 16h
             DayPlan(2, true, 20, 0, 14, 0, 1080), // 18h
@@ -120,6 +138,8 @@ object FastingPlanTemplates {
         name = "Luigi 1",
         category = PlanCategory.SPECIAL,
         description = "Piano Coach CiboTimer con 9 periodi ad alta intensità, finestre pasto calibrate e recupero fisiologico nel weekend.",
+        nameEn = "Luigi 1",
+        descriptionEn = "CiboTimer Coach Plan featuring 9 high-intensity periods, calibrated eating windows, and physiological recovery over the weekend.",
         days = listOf(
             DayPlan(dayOfWeek = 1, isFastingDay = true, startHour = 14, startMinute = 0, endHour = 10, endMinute = 0, fastingDurationMinutes = 1200), // Lun: 14:00 -> Mar 10:00 (20h)
             DayPlan(dayOfWeek = 2, isFastingDay = true, startHour = 11, startMinute = 0, endHour = 7, endMinute = 0, fastingDurationMinutes = 1200),  // Mar: 11:00 -> Mer 07:00 (20h)

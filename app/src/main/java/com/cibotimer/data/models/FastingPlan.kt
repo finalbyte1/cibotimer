@@ -124,8 +124,22 @@ data class FastingPlan(
     val description: String = "",
     val days: List<DayPlan>,
     val isCustom: Boolean = false,
-    val periods: List<FastingPeriod>? = null
+    val periods: List<FastingPeriod>? = null,
+    val nameEn: String? = null,
+    val descriptionEn: String? = null
 ) {
+    val localizedName: String
+        get() {
+            if (Locale.getDefault().language == "it") return name
+            return nameEn ?: name
+        }
+
+    val localizedDescription: String
+        get() {
+            if (Locale.getDefault().language == "it") return description
+            return descriptionEn ?: description
+        }
+
     val descriptionItalian: String
         get() = description
 

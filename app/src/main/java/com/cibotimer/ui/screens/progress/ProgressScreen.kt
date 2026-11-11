@@ -163,7 +163,7 @@ fun ProgressScreen(
                     onClick = { selectedTab = 0 },
                     text = {
                         Text(
-                            "Peso & Misure",
+                            stringResource(R.string.progress_tab_weight),
                             fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
                             color = if (selectedTab == 0) CiboTextPrimary else CiboTextSecondary
                         )
@@ -174,7 +174,7 @@ fun ProgressScreen(
                     onClick = { selectedTab = 1 },
                     text = {
                         Text(
-                            "Statistiche",
+                            stringResource(R.string.progress_tab_stats),
                             fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
                             color = if (selectedTab == 1) CiboTextPrimary else CiboTextSecondary
                         )
@@ -185,7 +185,7 @@ fun ProgressScreen(
                     onClick = { selectedTab = 2 },
                     text = {
                         Text(
-                            "Trofei (${trophies.count { it.isUnlocked }}/${trophies.size})",
+                            stringResource(R.string.progress_tab_trophies_format, trophies.count { it.isUnlocked }, trophies.size),
                             fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal,
                             color = if (selectedTab == 2) CiboTextPrimary else CiboTextSecondary
                         )
@@ -334,7 +334,7 @@ fun WeightAndMeasurementsTab(
     onEditWeight: (WeightEntry) -> Unit,
     onDeleteWeight: (WeightEntry) -> Unit
 ) {
-    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.ITALIAN) }
+    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()) }
 
     LazyColumn(
         modifier = Modifier
@@ -529,8 +529,8 @@ fun WeightAndMeasurementsTab(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = if (weightProgress.isGoalReached) "🎉 Obiettivo Raggiunto!"
-                            else "${weightProgress.progressPercent}% verso l'obiettivo",
+                            text = if (weightProgress.isGoalReached) stringResource(R.string.share_goal_reached)
+                            else stringResource(R.string.progress_percent_to_goal, weightProgress.progressPercent),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (weightProgress.isGoalReached) CiboTimerAzureGlow else CiboTextSecondary
@@ -631,7 +631,11 @@ fun WeightAndMeasurementsTab(
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Column {
-                                                    Text(metric.label, fontSize = 11.sp, color = CiboTextSecondary)
+                                                    Text(
+                                                        text = if (metric.labelResId != 0) stringResource(metric.labelResId) else metric.label,
+                                                        fontSize = 11.sp,
+                                                        color = CiboTextSecondary
+                                                    )
                                                     Text(
                                                         text = "%.0f cm".format(Locale.US, metric.currentCm),
                                                         fontWeight = FontWeight.Bold,
@@ -690,7 +694,7 @@ fun WeightAndMeasurementsTab(
                                         )
                                     }
                                     Text(
-                                        text = whrResult.category,
+                                        text = if (whrResult.categoryResId != 0) stringResource(whrResult.categoryResId) else whrResult.category,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 11.sp,
                                         color = Color(whrResult.colorHex)
@@ -698,7 +702,7 @@ fun WeightAndMeasurementsTab(
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = whrResult.description,
+                                    text = if (whrResult.descriptionResId != 0) stringResource(whrResult.descriptionResId) else whrResult.description,
                                     fontSize = 11.sp,
                                     color = CiboTextSecondary,
                                     lineHeight = 15.sp
@@ -746,7 +750,7 @@ fun WeightAndMeasurementsTab(
                             color = CiboTextSecondary
                         )
                         Text(
-                            text = bmiResult.category,
+                            text = if (bmiResult.categoryResId != 0) stringResource(bmiResult.categoryResId) else bmiResult.category,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = Color(bmiResult.colorHex)
@@ -850,12 +854,18 @@ fun WeightAndMeasurementsTab(
                             )
 
                             // Dettaglio Misure registrate (Vita, Fianchi, Torace, Cosce, Braccia)
+                            val waistLabel = stringResource(R.string.circumference_waist)
+                            val hipsLabel = stringResource(R.string.circumference_hips)
+                            val chestLabel = stringResource(R.string.circumference_chest)
+                            val thighsLabel = stringResource(R.string.circumference_thighs)
+                            val armsLabel = stringResource(R.string.circumference_arms)
+
                             val measurementsText = buildString {
-                                entry.waistCm?.let { append("Vita: %.0f cm  ".format(Locale.US, it)) }
-                                entry.hipsCm?.let { append("Fianchi: %.0f cm  ".format(Locale.US, it)) }
-                                entry.chestCm?.let { append("Torace: %.0f cm  ".format(Locale.US, it)) }
-                                entry.thighsCm?.let { append("Cosce: %.0f cm  ".format(Locale.US, it)) }
-                                entry.armsCm?.let { append("Braccia: %.0f cm".format(Locale.US, it)) }
+                                entry.waistCm?.let { append("$waistLabel: %.0f cm  ".format(Locale.US, it)) }
+                                entry.hipsCm?.let { append("$hipsLabel: %.0f cm  ".format(Locale.US, it)) }
+                                entry.chestCm?.let { append("$chestLabel: %.0f cm  ".format(Locale.US, it)) }
+                                entry.thighsCm?.let { append("$thighsLabel: %.0f cm  ".format(Locale.US, it)) }
+                                entry.armsCm?.let { append("$armsLabel: %.0f cm".format(Locale.US, it)) }
                             }.trim()
 
                             if (measurementsText.isNotBlank()) {
@@ -886,7 +896,7 @@ fun WeightAndMeasurementsTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Modifica",
+                                    contentDescription = stringResource(R.string.content_desc_edit),
                                     tint = CiboTimerAzure,
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -897,7 +907,7 @@ fun WeightAndMeasurementsTab(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DeleteOutline,
-                                    contentDescription = "Elimina",
+                                    contentDescription = stringResource(R.string.content_desc_delete),
                                     tint = Color(0xFFEF4444),
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -1087,7 +1097,7 @@ fun TrophiesTab(trophies: List<Trophy>) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = trophy.title,
+                                text = trophy.localizedTitle,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp,
                                 color = if (trophy.isUnlocked) CiboTextPrimary else CiboTextSecondary
@@ -1110,7 +1120,7 @@ fun TrophiesTab(trophies: List<Trophy>) {
 
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = trophy.description,
+                            text = trophy.localizedDescription,
                             fontSize = 12.sp,
                             color = CiboTextSecondary
                         )

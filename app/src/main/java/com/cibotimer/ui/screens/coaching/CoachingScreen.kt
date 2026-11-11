@@ -171,7 +171,7 @@ fun CoachingScreen(
                                     color = CiboTimerAzureContainer
                                 ) {
                                     Text(
-                                        text = tip.category,
+                                        text = tip.localizedCategory,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = CiboTimerAzure,
@@ -198,7 +198,7 @@ fun CoachingScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = tip.title,
+                                text = tip.localizedTitle,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 17.sp,
                                 color = TextPrimary
@@ -207,7 +207,7 @@ fun CoachingScreen(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = tip.subtitle,
+                                text = tip.localizedSubtitle,
                                 fontSize = 13.sp,
                                 color = TextSecondary,
                                 lineHeight = 18.sp
@@ -268,7 +268,7 @@ fun CoachingScreen(
                         color = CiboTimerAzureContainer
                     ) {
                         Text(
-                            text = tip.category,
+                            text = tip.localizedCategory,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTimerAzure,
@@ -277,14 +277,14 @@ fun CoachingScreen(
                     }
 
                     IconButton(onClick = { activeTipForReading = null }) {
-                        Icon(Icons.Default.Close, contentDescription = "Chiudi")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.content_desc_close))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = tip.title,
+                    text = tip.localizedTitle,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 22.sp,
                     color = TextPrimary
@@ -293,7 +293,7 @@ fun CoachingScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = tip.subtitle,
+                    text = tip.localizedSubtitle,
                     fontWeight = FontWeight.Medium,
                     fontSize = 15.sp,
                     color = TextSecondary
@@ -304,7 +304,7 @@ fun CoachingScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = tip.contentMarkdown,
+                    text = tip.localizedContentMarkdown,
                     fontSize = 15.sp,
                     color = TextPrimary,
                     lineHeight = 22.sp

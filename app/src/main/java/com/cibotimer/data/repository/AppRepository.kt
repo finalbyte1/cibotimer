@@ -1354,16 +1354,16 @@ class AppRepository(
 
     private fun initializeDefaultTrophies(): List<Trophy> {
         return listOf(
-            Trophy("first_fast", "Primo Passo", "Completa il tuo primo periodo di digiuno.", "star", 0, 1),
-            Trophy("seven_fasts", "Una Settimana", "Completa 7 digiuni con successo.", "calendar_month", 0, 7),
-            Trophy("hours_100", "Centurione", "Raggiungi 100 ore complessive a digiuno.", "timer", 0, 100),
-            Trophy("hours_500", "Costanza d'Acciaio", "Raggiungi 500 ore complessive a digiuno.", "shield", 0, 500),
-            Trophy("hours_1000", "Maestro del Digiuno", "Raggiungi 1000 ore complessive a digiuno.", "workspace_premium", 0, 1000),
-            Trophy("autophagy_master", "Autofagia Attiva", "Completa un digiuno di almeno 16 ore.", "biotech", 0, 1),
-            Trophy("warrior", "Vero Guerriero", "Porta a termine un digiuno di 20 ore o più.", "military_tech", 0, 1),
-            Trophy("track_weight", "Monitoraggio Attivo", "Registra il tuo peso per almeno 3 volte.", "monitor_weight", 0, 3),
-            Trophy("weight_loss_1kg", "Traguardo Peso", "Riduci il tuo peso di almeno 1 kg dal punto di partenza.", "trending_down", 0, 1),
-            Trophy("water_goal", "Idratazione Perfetta", "Bevi almeno 2 litri d'acqua in una giornata.", "water_drop", 0, 1)
+            Trophy("first_fast", "Primo Passo", "Completa il tuo primo periodo di digiuno.", "star", 0, 1, titleEn = "First Step", descriptionEn = "Complete your first fasting period."),
+            Trophy("seven_fasts", "Una Settimana", "Completa 7 digiuni con successo.", "calendar_month", 0, 7, titleEn = "One Week", descriptionEn = "Successfully complete 7 fasts."),
+            Trophy("hours_100", "Centurione", "Raggiungi 100 ore complessive a digiuno.", "timer", 0, 100, titleEn = "Centurion", descriptionEn = "Reach 100 total fasting hours."),
+            Trophy("hours_500", "Costanza d'Acciaio", "Raggiungi 500 ore complessive a digiuno.", "shield", 0, 500, titleEn = "Steel Consistency", descriptionEn = "Reach 500 total fasting hours."),
+            Trophy("hours_1000", "Maestro del Digiuno", "Raggiungi 1000 ore complessive a digiuno.", "workspace_premium", 0, 1000, titleEn = "Master of Fasting", descriptionEn = "Reach 1000 total fasting hours."),
+            Trophy("autophagy_master", "Autofagia Attiva", "Completa un digiuno di almeno 16 ore.", "biotech", 0, 1, titleEn = "Active Autophagy", descriptionEn = "Complete a fast of at least 16 hours."),
+            Trophy("warrior", "Vero Guerriero", "Porta a termine un digiuno di 20 ore o più.", "military_tech", 0, 1, titleEn = "True Warrior", descriptionEn = "Complete a fast of 20 hours or more."),
+            Trophy("track_weight", "Monitoraggio Attivo", "Registra il tuo peso per almeno 3 volte.", "monitor_weight", 0, 3, titleEn = "Active Tracking", descriptionEn = "Record your weight at least 3 times."),
+            Trophy("weight_loss_1kg", "Traguardo Peso", "Riduci il tuo peso di almeno 1 kg dal punto di partenza.", "trending_down", 0, 1, titleEn = "Weight Milestone", descriptionEn = "Reduce your weight by at least 1 kg from your starting point."),
+            Trophy("water_goal", "Idratazione Perfetta", "Bevi almeno 2 litri d'acqua in una giornata.", "water_drop", 0, 1, titleEn = "Perfect Hydration", descriptionEn = "Drink at least 2 liters of water in a day.")
         )
     }
 
@@ -1381,6 +1381,17 @@ class AppRepository(
                     - I livelli di insulina scendono drasticamente, facilitando la combustione del grasso corporeo.
                     - I livelli di ormone della crescita (HGH) aumentano, preservando la massa muscolare magra.
                     - Il corpo attiva l'autofagia, un processo cellulare di pulizia e riciclo dei componenti danneggiati.
+                """.trimIndent(),
+                titleEn = "What is Intermittent Fasting?",
+                subtitleEn = "Basic principles to get started right",
+                categoryEn = "Scientific Basics",
+                contentMarkdownEn = """
+                    Intermittent fasting is not a restrictive diet, but an **eating pattern** cycling between periods of eating and fasting.
+                    
+                    During fasting:
+                    - Insulin levels drop drastically, facilitating body fat burning.
+                    - Human growth hormone (HGH) levels increase, preserving lean muscle mass.
+                    - The body activates autophagy, a cellular cleanup and recycling process for damaged components.
                 """.trimIndent()
             ),
             CoachingTip(
@@ -1396,6 +1407,18 @@ class AppRepository(
                     - **Caffè amaro**: senza zucchero, latte o dolcificanti artificiali.
                     - **Tè e tisane**: tè verde, tè nero, camomilla, menta (rigorosamente non zuccherati).
                     - **Brodo di ossa o acqua con sale minerale**: per reintegrare sodio e magnesio nei digiuni lunghi.
+                """.trimIndent(),
+                titleEn = "What to Drink While Fasting?",
+                subtitleEn = "Allowed beverages without breaking ketosis",
+                categoryEn = "Nutrition",
+                contentMarkdownEn = """
+                    Staying hydrated is crucial to avoid headaches, fatigue, and muscle cramps.
+                    
+                    **What you can drink freely:**
+                    - **Water**: still or sparkling (you can add a slice of lemon or cucumber).
+                    - **Black coffee**: no sugar, milk, or artificial sweeteners.
+                    - **Tea and herbal teas**: green tea, black tea, chamomile, peppermint (strictly unsweetened).
+                    - **Bone broth or mineral-salted water**: to replenish sodium and magnesium during long fasts.
                 """.trimIndent()
             ),
             CoachingTip(
@@ -1410,6 +1433,17 @@ class AppRepository(
                     1. **Bevi un grande bicchiere d'acqua calda o tisana**: distende le pareti dello stomaco.
                     2. **Muoviti o cambia stanza**: fai una passeggiata di 10 minuti per distrarre la mente.
                     3. **Ricordati che la fame dura 15-20 minuti**: passata l'ondata di grelina, la sensazione svanisce completamente.
+                """.trimIndent(),
+                titleEn = "How to Overcome Hunger Cravings",
+                subtitleEn = "Mental and physical strategies to persevere",
+                categoryEn = "Practical Tips",
+                contentMarkdownEn = """
+                    Hunger during a fast doesn't build up forever: it comes in **waves** triggered by the hormone ghrelin, usually around your usual meal times.
+                    
+                    **Effective strategies:**
+                    1. **Drink a large cup of warm water or herbal tea**: gently expands the stomach lining.
+                    2. **Move or change rooms**: take a 10-minute walk to distract your brain.
+                    3. **Remember that hunger lasts 15-20 minutes**: once the ghrelin wave passes, the sensation disappears completely.
                 """.trimIndent()
             ),
             CoachingTip(
@@ -1424,6 +1458,17 @@ class AppRepository(
                     - Vengono eliminate proteine mal ripiegate e organelli disfunzionali.
                     - Vengono distrutti batteri e virus intracellulari.
                     - Si riducono l'infiammazione sistemica e lo stress ossidativo.
+                """.trimIndent(),
+                titleEn = "Autophagy: The Secret of Longevity",
+                subtitleEn = "What happens after 16 hours of fasting",
+                categoryEn = "Science & Health",
+                contentMarkdownEn = """
+                    The discovery of autophagy mechanisms earned Yoshinori Ohsumi the Nobel Prize in Medicine in 2016.
+                    
+                    When the body receives no nutrients for over 16 hours, it activates cellular **"cleanup crews"**:
+                    - Misfolded proteins and dysfunctional organelles are dismantled.
+                    - Intracellular bacteria and viruses are degraded.
+                    - Systemic inflammation and oxidative stress are significantly reduced.
                 """.trimIndent()
             ),
             CoachingTip(
@@ -1439,6 +1484,18 @@ class AppRepository(
                     - Un uovo sodo o uova strapazzate con avocado.
                     - Una zuppa di verdure leggera o yogurt greco.
                     - Evita cibi fritti, zuccheri semplici e bibite gassate subito dopo il digiuno.
+                """.trimIndent(),
+                titleEn = "How to Break Your Fast (Refeeding)",
+                subtitleEn = "The ideal meal to ease your digestion",
+                categoryEn = "Nutrition",
+                contentMarkdownEn = """
+                    After hours of digestive rest, it is important not to overwhelm your stomach with refined carbs or heavy meals.
+                    
+                    **Ideal foods to break your fast:**
+                    - A small handful of walnuts or almonds.
+                    - A boiled or scrambled egg with avocado.
+                    - A light vegetable soup or plain Greek yogurt.
+                    - Avoid fried foods, simple sugars, and sodas right after your fast.
                 """.trimIndent()
             )
         )

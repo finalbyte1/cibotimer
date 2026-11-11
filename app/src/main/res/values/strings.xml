@@ -490,4 +490,72 @@
     <string name="content_desc_selected">Selected</string>
     <string name="content_desc_not_selected">Not selected</string>
     <string name="content_desc_delete_plan">Delete plan</string>
+
+    <!-- BMI Categories -->
+    <string name="bmi_category_underweight">Underweight</string>
+    <string name="bmi_category_normal">Normal weight</string>
+    <string name="bmi_category_overweight">Overweight</string>
+    <string name="bmi_category_obese_1">Class I Obesity</string>
+    <string name="bmi_category_obese_severe">Severe Obesity</string>
+    <string name="bmi_category_unavailable">Unavailable</string>
+
+    <!-- WHR Categories & Descriptions -->
+    <string name="whr_category_low">Optimal (Low Risk)</string>
+    <string name="whr_desc_low">Balanced body fat distribution according to WHO parameters.</string>
+    <string name="whr_category_moderate">Moderate Risk</string>
+    <string name="whr_desc_moderate">Slight abdominal concentration. Intermittent fasting stimulates visceral lipolysis.</string>
+    <string name="whr_category_high">High Risk</string>
+    <string name="whr_desc_high">High concentration of visceral fat. Keep a steady routine to lower metabolic risk.</string>
+
+    <!-- Circumferences -->
+    <string name="circumference_waist">Waist</string>
+    <string name="circumference_hips">Hips</string>
+    <string name="circumference_chest">Chest</string>
+    <string name="circumference_thighs">Thighs</string>
+    <string name="circumference_arms">Arms</string>
+
+    <!-- Share Progress Text -->
+    <string name="share_text_header">🎉 My progress with CiboTimer!\n\n</string>
+    <string name="share_text_weight_lost">⚖️ Weight lost: -%1$.1f kg (from %2$.1f kg to %3$.1f kg)\n</string>
+    <string name="share_text_current_weight">⚖️ Current weight: %1$.1f kg (starting: %2$.1f kg)\n</string>
+    <string name="share_text_goal">🎯 Goal: %1$.1f kg (%2$d%% reached, %3$.1f kg to go)\n</string>
+    <string name="share_text_fasting_hours">⏱️ Total fasting time: %1$d hours (%2$d sessions completed)\n</string>
+    <string name="share_text_circumference">📏 Body measurements: %1$+.1f cm\n</string>
+    <string name="share_text_footer">\n🚀 Track your fasts and health with CiboTimer!</string>
+
+    <!-- Plan Subtitles for Selection Start -->
+    <string name="plan_subtitle_skip_breakfast">Skip breakfast</string>
+    <string name="plan_subtitle_power_week">Power week • Lose weight</string>
+    <string name="plan_subtitle_omad_dinner">One meal a day (dinner)</string>
+    <string name="plan_subtitle_beginner_gentle">Beginner • Gentle</string>
+    <string name="plan_subtitle_intermediate_ketosis">Advanced intermediate • Ketosis</string>
+    <string name="plan_subtitle_two_full_days">Two full days (24h)</string>
+
+    <!-- Trophies -->
+    <string name="trophy_first_step_title">First Step</string>
+    <string name="trophy_first_step_desc">Successfully complete your very first intermittent fast.</string>
+    <string name="trophy_consistency_3_title">3 Days Consistency</string>
+    <string name="trophy_consistency_3_desc">Complete 3 fasts.</string>
+    <string name="trophy_week_together_title">A Week Together</string>
+    <string name="trophy_week_together_desc">Reach 7 completed fasts.</string>
+    <string name="trophy_warrior_20_title">20-Hour Warrior</string>
+    <string name="trophy_warrior_20_desc">Complete a fast of at least 20 consecutive hours.</string>
+    <string name="trophy_weight_loss_1kg_title">Weight Goal</string>
+    <string name="trophy_weight_loss_1kg_desc">Reduce your weight by at least 1 kg from your starting point.</string>
+    <string name="trophy_water_goal_title">Perfect Hydration</string>
+    <string name="trophy_water_goal_desc">Drink at least 2 liters of water in a day.</string>
+
+    <!-- Generic Content Descriptions & Actions -->
+    <string name="content_desc_close">Close</string>
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_edit">Edit</string>
+    <string name="content_desc_delete">Delete</string>
+
+    <!-- Progress Screen Tabs & Indicators -->
+    <string name="progress_tab_weight">Weight &amp; Body</string>
+    <string name="progress_tab_stats">Statistics</string>
+    <string name="progress_tab_trophies_format">Trophies (%1$d/%2$d)</string>
+    <string name="progress_percent_to_goal">%1$d%% towards goal</string>
+    <string name="share_goal_reached">🎉 Goal Reached!</string>
+    <string name="share_goal_progress">%1$d%% towards goal • %2$.1f kg to go</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.cibotimer.domain
 
+import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -21,7 +22,9 @@ data class WhrResult(
     val ratio: Double,
     val category: String,
     val colorHex: Long,
-    val description: String
+    val description: String,
+    val categoryResId: Int = 0,
+    val descriptionResId: Int = 0
 )
 
 data class CircumferenceMetric(
@@ -30,7 +33,8 @@ data class CircumferenceMetric(
     val currentCm: Double?,
     val initialCm: Double?,
     val diffCm: Double?,
-    val lastUpdatedMillis: Long?
+    val lastUpdatedMillis: Long?,
+    val labelResId: Int = 0
 )
 
 data class TotalCircumferenceInfo(
@@ -105,30 +109,46 @@ object BodyStatsCalculator {
             return null
         }
         val ratio = (waistCm / hipsCm * 100.0).roundToInt() / 100.0
-        val (category, colorHex, description) = when {
-            ratio < 0.85 -> Triple(
+        val (category, colorHex, description, categoryResId, descResId) = when {
+            ratio < 0.85 -> WhrTuple(
                 "Basso Rischio (Ottimale)",
                 0xFF00E5FF,
-                "Distribuzione equilibrata del grasso corporeo secondo i parametri OMS."
+                "Distribuzione equilibrata del grasso corporeo secondo i parametri OMS.",
+                R.string.whr_category_low,
+                R.string.whr_desc_low
             )
-            ratio < 0.90 -> Triple(
+            ratio < 0.90 -> WhrTuple(
                 "Rischio Moderato",
                 0xFFFF9F1C,
-                "Leggera concentrazione addominale. Il digiuno intermittente stimola la lipolisi viscerale."
+                "Leggera concentrazione addominale. Il digiuno intermittente stimola la lipolisi viscerale.",
+                R.string.whr_category_moderate,
+                R.string.whr_desc_moderate
             )
-            else -> Triple(
+            else -> WhrTuple(
                 "Rischio Elevato",
                 0xFFEF4444,
-                "Elevata concentrazione di grasso viscerale. Continua con regolarità per ridurre il rischio metabolico."
+                "Elevata concentrazione di grasso viscerale. Continua con regolarità per ridurre il rischio metabolico.",
+                R.string.whr_category_high,
+                R.string.whr_desc_high
             )
         }
         return WhrResult(
             ratio = ratio,
             category = category,
             colorHex = colorHex,
-            description = description
+            description = description,
+            categoryResId = categoryResId,
+            descriptionResId = descResId
         )
     }
+
+    private data class WhrTuple(
+        val category: String,
+        val colorHex: Long,
+        val description: String,
+        val categoryResId: Int,
+        val descResId: Int
+    )
 
     /**
      * Estrae le metriche delle 5 circonferenze principali confrontando la misurazione
@@ -138,7 +158,7 @@ object BodyStatsCalculator {
         val sortedAsc = entries.sortedBy { it.epochMillis }
         val sortedDesc = entries.sortedByDescending { it.epochMillis }
 
-        fun resolveMetric(id: String, label: String, extractor: (WeightEntry) -> Double?): CircumferenceMetric {
+        fun resolveMetric(id: String, label: String, labelResId: Int, extractor: (WeightEntry) -> Double?): CircumferenceMetric {
             val latestEntry = sortedDesc.firstOrNull { extractor(it) != null }
             val firstEntry = sortedAsc.firstOrNull { extractor(it) != null }
 
@@ -154,16 +174,17 @@ object BodyStatsCalculator {
                 currentCm = currentVal,
                 initialCm = initialVal,
                 diffCm = diff,
-                lastUpdatedMillis = latestEntry?.epochMillis
+                lastUpdatedMillis = latestEntry?.epochMillis,
+                labelResId = labelResId
             )
         }
 
         return listOf(
-            resolveMetric("waist", "Vita") { it.waistCm },
-            resolveMetric("hips", "Fianchi") { it.hipsCm },
-            resolveMetric("chest", "Torace") { it.chestCm },
-            resolveMetric("thighs", "Cosce") { it.thighsCm },
-            resolveMetric("arms", "Braccia") { it.armsCm }
+            resolveMetric("waist", "Vita", R.string.circumference_waist) { it.waistCm },
+            resolveMetric("hips", "Fianchi", R.string.circumference_hips) { it.hipsCm },
+            resolveMetric("chest", "Torace", R.string.circumference_chest) { it.chestCm },
+            resolveMetric("thighs", "Cosce", R.string.circumference_thighs) { it.thighsCm },
+            resolveMetric("arms", "Braccia", R.string.circumference_arms) { it.armsCm }
         )
     }
 

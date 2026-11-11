@@ -1413,7 +1413,7 @@ fun PlanItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = plan.name,
+                        text = plan.localizedName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isActive) CiboAccent else CiboTextPrimary,

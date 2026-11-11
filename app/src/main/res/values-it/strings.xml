@@ -490,4 +490,72 @@
     <string name="content_desc_selected">Selezionato</string>
     <string name="content_desc_not_selected">Non selezionato</string>
     <string name="content_desc_delete_plan">Elimina piano</string>
+
+    <!-- BMI Categories -->
+    <string name="bmi_category_underweight">Sottopeso</string>
+    <string name="bmi_category_normal">Normopeso</string>
+    <string name="bmi_category_overweight">Sovrappeso</string>
+    <string name="bmi_category_obese_1">Obesità Grado I</string>
+    <string name="bmi_category_obese_severe">Obesità Severa</string>
+    <string name="bmi_category_unavailable">Non disponibile</string>
+
+    <!-- WHR Categories & Descriptions -->
+    <string name="whr_category_low">Basso Rischio (Ottimale)</string>
+    <string name="whr_desc_low">Distribuzione equilibrata del grasso corporeo secondo i parametri OMS.</string>
+    <string name="whr_category_moderate">Rischio Moderato</string>
+    <string name="whr_desc_moderate">Leggera concentrazione addominale. Il digiuno intermittente stimola la lipolisi viscerale.</string>
+    <string name="whr_category_high">Rischio Elevato</string>
+    <string name="whr_desc_high">Elevata concentrazione di grasso viscerale. Continua con regolarità per ridurre il rischio metabolico.</string>
+
+    <!-- Circumferences -->
+    <string name="circumference_waist">Vita</string>
+    <string name="circumference_hips">Fianchi</string>
+    <string name="circumference_chest">Torace</string>
+    <string name="circumference_thighs">Cosce</string>
+    <string name="circumference_arms">Braccia</string>
+
+    <!-- Share Progress Text -->
+    <string name="share_text_header">🎉 I miei progressi con CiboTimer!\n\n</string>
+    <string name="share_text_weight_lost">⚖️ Peso perso: -%1$.1f kg (da %2$.1f kg a %3$.1f kg)\n</string>
+    <string name="share_text_current_weight">⚖️ Peso attuale: %1$.1f kg (partenza: %2$.1f kg)\n</string>
+    <string name="share_text_goal">🎯 Obiettivo: %1$.1f kg (%2$d%% raggiunto, mancano %3$.1f kg)\n</string>
+    <string name="share_text_fasting_hours">⏱️ Ore totali di digiuno: %1$d ore (%2$d sessioni concluse)\n</string>
+    <string name="share_text_circumference">📏 Circonferenza corporea: %1$+.1f cm\n</string>
+    <string name="share_text_footer">\n🚀 Traccia i tuoi digiuni e la tua salute con CiboTimer!</string>
+
+    <!-- Plan Subtitles for Selection Start -->
+    <string name="plan_subtitle_skip_breakfast">Saltare la colazione</string>
+    <string name="plan_subtitle_power_week">Settimana di potenza • Perdi peso</string>
+    <string name="plan_subtitle_omad_dinner">Un pasto al giorno (cena)</string>
+    <string name="plan_subtitle_beginner_gentle">Principianti • Dolce</string>
+    <string name="plan_subtitle_intermediate_ketosis">Intermedio avanzato • Chetosi</string>
+    <string name="plan_subtitle_two_full_days">Due giorni completi (24h)</string>
+
+    <!-- Trophies -->
+    <string name="trophy_first_step_title">Primo Passo</string>
+    <string name="trophy_first_step_desc">Completa il tuo primissimo digiuno intermittente con successo.</string>
+    <string name="trophy_consistency_3_title">Costanza 3 Giorni</string>
+    <string name="trophy_consistency_3_desc">Concludi 3 digiuni.</string>
+    <string name="trophy_week_together_title">Una Settimana Insieme</string>
+    <string name="trophy_week_together_desc">Raggiungi 7 digiuni completati.</string>
+    <string name="trophy_warrior_20_title">Guerriero 20 Ore</string>
+    <string name="trophy_warrior_20_desc">Porta a termine un digiuno di almeno 20 ore consecutive.</string>
+    <string name="trophy_weight_loss_1kg_title">Traguardo Peso</string>
+    <string name="trophy_weight_loss_1kg_desc">Riduci il tuo peso di almeno 1 kg dal punto di partenza.</string>
+    <string name="trophy_water_goal_title">Idratazione Perfetta</string>
+    <string name="trophy_water_goal_desc">Bevi almeno 2 litri d\'acqua in una giornata.</string>
+
+    <!-- Generic Content Descriptions & Actions -->
+    <string name="content_desc_close">Chiudi</string>
+    <string name="content_desc_back">Indietro</string>
+    <string name="content_desc_edit">Modifica</string>
+    <string name="content_desc_delete">Elimina</string>
+
+    <!-- Progress Screen Tabs & Indicators -->
+    <string name="progress_tab_weight">Peso &amp; Misure</string>
+    <string name="progress_tab_stats">Statistiche</string>
+    <string name="progress_tab_trophies_format">Trofei (%1$d/%2$d)</string>
+    <string name="progress_percent_to_goal">%1$d%% verso l\'obiettivo</string>
+    <string name="share_goal_reached">🎉 Obiettivo Raggiunto!</string>
+    <string name="share_goal_progress">%1$d%% verso l\'obiettivo • Mancano %2$.1f kg</string>
 </resources>

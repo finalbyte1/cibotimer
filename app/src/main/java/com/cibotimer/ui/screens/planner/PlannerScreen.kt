@@ -75,7 +75,7 @@ fun PlannerScreen(
                             color = TextPrimary
                         )
                         Text(
-                            text = activePlan.name,
+                            text = activePlan.localizedName,
                             style = MaterialTheme.typography.bodySmall,
                             color = CiboTimerAzure
                         )
@@ -122,14 +122,14 @@ fun PlannerScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = activePlan.name,
+                                text = activePlan.localizedName,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 17.sp,
                                 color = TextPrimary
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = activePlan.descriptionItalian,
+                                text = activePlan.localizedDescription,
                                 fontSize = 12.sp,
                                 color = TextSecondary,
                                 maxLines = 2
