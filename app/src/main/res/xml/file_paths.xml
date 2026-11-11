@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <cache-path name="shared_backups" path="backups/" />
+    <files-path name="internal_backups" path="backups/" />
+    <cache-path name="apk_updates" path="updates/" />
+    <external-cache-path name="ext_apk_updates" path="updates/" />
+</paths>

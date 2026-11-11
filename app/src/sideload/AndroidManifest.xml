@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permesso installazione pacchetti riservato alla distribuzione diretta APK (Sideload / GitHub / OTA DuckDNS).
+         Questo file viene unito automaticamente solo nella build "sideload", mentre viene escluso al 100%
+         dalla build "play" destinata al Google Play Store, garantendo la conformità alle Google Play Policy. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+</manifest>

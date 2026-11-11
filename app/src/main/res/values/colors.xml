@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cibotimer_primary">#0284C7</color>
+    <color name="cibotimer_primary_dark">#0369A1</color>
+    <color name="cibotimer_accent">#00E5FF</color>
+    <color name="cibotimer_background">#060B12</color>
+    <color name="cibotimer_card_bg">#131821</color>
+    <color name="cibotimer_orange">#FF9F1C</color>
+</resources>

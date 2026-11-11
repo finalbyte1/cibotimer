@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Include database Room e SQLite -->
+    <include domain="database" path="." />
+    <!-- Include file di stato e salvataggi locali -->
+    <include domain="file" path="." />
+    <!-- Include preferenze dell'applicazione -->
+    <include domain="sharedpref" path="." />
+    <!-- Escludi directory di cache temporanea -->
+    <exclude domain="root" path="cache" />
+</full-backup-content>

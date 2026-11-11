@@ -1,0 +1,75 @@
+# Built application files
+*.apk
+*.aar
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+app/build/
+
+# Gradle caches
+.gradle/
+buildOutput.txt
+
+# Local configuration file (SDK path, private properties)
+local.properties
+keystore.properties
+
+# Log Files
+*.log
+logcat*.txt
+
+# Android Studio / IntelliJ IDEA
+*.iml
+.idea/
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# Keystore files (NEVER commit release signing keys to public Git!)
+*.jks
+*.keystore
+keystore/
+
+# Kotlin cache
+.kotlin/
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# OpenDesign / Temporary artifacts
+.od-frames/
+.od-skills/
+*.artifact.json
+__pycache__/
+*.pyc
+
+# Cartella riservata locale (esclusa da git: guide private, chiavi, note)
+git_exclude/
+
+# Local AI directives & rules
+AGENTS.md
+GEMINI.md
+
+# User backups and personal data exports
+*backup*.txt
+*backup*.json
+*.bak

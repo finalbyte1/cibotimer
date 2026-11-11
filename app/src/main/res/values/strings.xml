@@ -1,0 +1,143 @@
+<resources>
+    <string name="app_name">CiboTimer</string>
+    <string name="fasting_channel_name">Fasting Reminders</string>
+    <string name="fasting_channel_desc">Notifications for start and end of fasting windows</string>
+    <string name="stages_channel_name">Fasting Stages</string>
+    <string name="stages_channel_desc">Notifications when reaching a new metabolic stage</string>
+    <string name="water_channel_name">Hydration Reminders</string>
+    <string name="water_channel_desc">Reminders to drink water throughout the day</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_timer">Fasting</string>
+    <string name="nav_progress">Me</string>
+    <string name="nav_coach">Coach</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_planner">Plans</string>
+    <string name="nav_settings">More</string>
+    <string name="nav_plan_selection">Programs</string>
+    <string name="nav_chat">AI Coach</string>
+    <string name="nav_water">Water</string>
+
+    <!-- Header & Dashboard -->
+    <string name="header_title_fasting">Fasting</string>
+    <string name="header_subtitle_fasting">Fat burning</string>
+    <string name="header_subtitle_eating">Eating window</string>
+
+    <!-- Timer Ring & Actions -->
+    <string name="timer_badge_fasting">FASTING</string>
+    <string name="timer_badge_eating">EATING</string>
+    <string name="timer_countdown_label_fasting">Until eating window</string>
+    <string name="timer_countdown_label_eating">Until fasting</string>
+    <string name="timer_label_start">Start</string>
+    <string name="timer_label_end_fasting">End</string>
+    <string name="timer_label_end_eating">Next fast</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_start">Start</string>
+    <string name="button_change_plan">Plan</string>
+    <string name="content_desc_change_plan">Change fasting plan</string>
+
+    <!-- Stop Confirmation Dialog -->
+    <string name="dialog_stop_title">End fasting session?</string>
+    <string name="dialog_stop_message">Are you sure you want to end your ongoing fasting session?</string>
+    <string name="dialog_stop_confirm">End fast</string>
+    <string name="dialog_stop_cancel">Cancel</string>
+
+    <!-- Weekly Plan -->
+    <string name="weekly_plan_title">Weekly plan</string>
+    <string name="legend_fasting">Fasting</string>
+    <string name="legend_eating">Eating</string>
+
+    <!-- Metabolic Stages -->
+    <string name="stage_phase_prefix">Stage</string>
+    <string name="stage_1_title">Stage 1 · Digestion &amp; blood sugar.</string>
+    <string name="stage_1_desc">Body is absorbing nutrients from the last meal.</string>
+    <string name="stage_2_title">Stage 2 · Insulin drop.</string>
+    <string name="stage_2_desc">Stomach empties and liver glycogen usage begins.</string>
+    <string name="stage_3_title">Stage 3 · Fat burning.</string>
+    <string name="stage_3_desc">The body switches to burning fat stores for energy.</string>
+    <string name="stage_4_title">Stage 4 · Ketosis &amp; autophagy.</string>
+    <string name="stage_4_desc">Peak mental clarity and cellular renewal.</string>
+    <string name="stage_eating_title">Active eating window.</string>
+    <string name="stage_eating_desc">Healthy nutrition and balanced hydration.</string>
+
+    <!-- Accessibility (contentDescription) -->
+    <string name="content_desc_notifications">Notification settings</string>
+    <string name="content_desc_settings">Settings</string>
+    <string name="content_desc_stop">Stop fasting</string>
+    <string name="content_desc_start">Start fasting</string>
+    <string name="content_desc_timer_ring">Fasting at %1$d%%, %2$d hours and %3$d minutes remaining</string>
+    <string name="content_desc_timer_ring_eating">Eating window at %1$d%%, %2$d hours and %3$d minutes remaining</string>
+
+    <!-- Plan Editor Bottom Sheet -->
+    <string name="plan_editor_title">Edit plan</string>
+    <string name="plan_editor_save">Save</string>
+    <string name="plan_editor_close">Close</string>
+    <string name="plan_editor_apply_to">APPLY TO</string>
+    <string name="plan_editor_scope_all">All</string>
+    <string name="plan_editor_start_fasting">Fasting start</string>
+    <string name="plan_editor_end_fasting">Fasting end</string>
+    <string name="plan_editor_next_day_badge">+1 d</string>
+    <string name="plan_editor_summary_fasting">fasting</string>
+    <string name="plan_editor_summary_eating">eating</string>
+    <string name="plan_editor_shift_title">Shift schedule</string>
+    <string name="plan_editor_shift_periods_title">Shift periods</string>
+    <string name="plan_editor_duration_title">Duration</string>
+    <string name="plan_editor_stepper_1_hour">1 hour</string>
+    <string name="plan_editor_stepper_15_min">15 min</string>
+    <string name="plan_editor_shift_minus_1h">1 hour earlier</string>
+    <string name="plan_editor_shift_plus_1h">1 hour later</string>
+    <string name="plan_editor_shift_minus_15m">15 min earlier</string>
+    <string name="plan_editor_shift_plus_15m">15 min later</string>
+    <string name="plan_editor_duration_minus_1h">Reduce by 1h</string>
+    <string name="plan_editor_duration_plus_1h">Increase by 1h</string>
+    <string name="plan_editor_duration_minus_15m">Reduce by 15m</string>
+    <string name="plan_editor_duration_plus_15m">Increase by 15m</string>
+    <string name="plan_editor_unsaved_title">Unsaved changes</string>
+    <string name="plan_editor_unsaved_message">You have unsaved changes. Do you want to leave without saving?</string>
+    <string name="plan_editor_unsaved_discard">Discard</string>
+    <string name="plan_editor_unsaved_stay">Cancel</string>
+    <string name="plan_editor_periods_title">Periods</string>
+    <string name="plan_editor_free_day_item">%1$s: Free day (Rest)</string>
+    <string name="plan_editor_add_period">+ Add a period</string>
+    <string name="plan_editor_reactivate_all">+ Activate all days</string>
+    <string name="plan_editor_scope_all_days">All days</string>
+
+    <!-- Quick Plan Picker -->
+    <string name="plan_picker_title">Fasting plans</string>
+    <string name="plan_picker_active_badge">ACTIVE</string>
+    <string name="plan_picker_create_custom">+ Create custom plan</string>
+    <string name="plan_picker_create_custom_desc">Set custom schedule and duration</string>
+    <string name="plan_picker_preview_title">Plan preview</string>
+    <string name="plan_picker_confirm_button">Confirm and adopt plan</string>
+    <string name="plan_picker_custom_title">New custom plan</string>
+    <string name="plan_picker_custom_name_label">Plan name</string>
+    <string name="plan_picker_custom_name_placeholder">e.g. My Fasting 16-8</string>
+    <string name="plan_picker_custom_save">Save and adopt plan</string>
+    <string name="plan_picker_back">Back</string>
+    <string name="plan_picker_adjust_times">Adjust start and end times</string>
+    <string name="plan_picker_section_custom">Custom plans</string>
+    <string name="plan_picker_section_predefined">Recommended plans</string>
+
+    <!-- Live Notifications -->
+    <string name="notif_fasting_end_title">🍽️ Eating Window Open!</string>
+    <string name="notif_fasting_end_msg">Congratulations! You completed your fast (%1$s). You can eat now!</string>
+    <string name="notif_eating_end_title">🔥 Intermittent Fasting Starts!</string>
+    <string name="notif_eating_end_msg">Your eating window has ended. Your planned fast (%1$s) begins now. Remember to drink water!</string>
+    <string name="notif_eating_pre_title">⏰ Eating Window Closing Soon</string>
+    <string name="notif_eating_pre_msg">15 minutes remaining before fasting begins (%1$s). Last chance to finish your meal!</string>
+    <string name="notif_stage_title">✨ New Metabolic Stage: %1$s</string>
+
+    <!-- Home Screen Widget -->
+    <string name="widget_name">CiboTimer</string>
+    <string name="widget_description">Displays the next fasting or eating window</string>
+    <string name="widget_2x1_name">Fasting</string>
+    <string name="widget_2x1_description">Horizontal widget with status, next fasting time and quick action</string>
+
+    <!-- Updates & Disclaimer -->
+    <string name="update_available_title">Update available!</string>
+    <string name="update_button_play">Update on Google Play</string>
+    <string name="update_button_direct">Update Now</string>
+    <string name="update_button_later">Later</string>
+    <string name="health_disclaimer_title">Medical &amp; Wellness Disclaimer</string>
+    <string name="health_disclaimer_text">CiboTimer is designed for educational and personal wellness tracking purposes and does not provide medical diagnosis or treatment. Always consult your physician before starting any fasting regimen.</string>
+</resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:orientation="horizontal"
+    android:paddingStart="11dp"
+    android:paddingEnd="11dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Left: Timer Icon (22dp) -->
+    <ImageView
+        android:id="@+id/widget_2x1_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/ic_widget_timer"
+        android:contentDescription="@string/app_name" />
+
+    <!-- Center Column: Next Period ("Digiuno alle 12 Mer") + Status ("Pasto in corso • 3h 0m") -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/widget_2x1_next_period"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Digiuno alle 12 Mer"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/widget_2x1_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Pasto in corso • 3h 0m"
+            android:textColor="#8FA3BF"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+    <!-- Right: Circular Action Button (38dp, touch area 44dp, icon 19dp) -->
+    <FrameLayout
+        android:id="@+id/widget_2x1_action_container"
+        android:layout_width="44dp"
+        android:layout_height="44dp">
+
+        <ImageView
+            android:id="@+id/widget_2x1_action_button"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:background="@drawable/widget_button_circle_bg"
+            android:padding="9.5dp"
+            android:src="@drawable/ic_widget_cutlery"
+            android:contentDescription="Mangiare" />
+    </FrameLayout>
+
+</LinearLayout>

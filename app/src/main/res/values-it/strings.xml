@@ -1,0 +1,143 @@
+<resources>
+    <string name="app_name">CiboTimer</string>
+    <string name="fasting_channel_name">Promemoria Digiuno</string>
+    <string name="fasting_channel_desc">Notifiche per inizio e fine della finestra di digiuno</string>
+    <string name="stages_channel_name">Fasi del Digiuno</string>
+    <string name="stages_channel_desc">Notifiche quando raggiungi una nuova fase metabolica</string>
+    <string name="water_channel_name">Promemoria Idratazione</string>
+    <string name="water_channel_desc">Promemoria per bere acqua durante la giornata</string>
+
+    <!-- Navigazione Inferiore -->
+    <string name="nav_timer">Digiuno</string>
+    <string name="nav_progress">Io</string>
+    <string name="nav_coach">Coach</string>
+    <string name="nav_notifications">Notifiche</string>
+    <string name="nav_planner">Piani</string>
+    <string name="nav_settings">Altro</string>
+    <string name="nav_plan_selection">Programmi</string>
+    <string name="nav_chat">Chat AI</string>
+    <string name="nav_water">Acqua</string>
+
+    <!-- Header & Dashboard -->
+    <string name="header_title_fasting">Digiuno</string>
+    <string name="header_subtitle_fasting">Brucia grassi</string>
+    <string name="header_subtitle_eating">Finestra pasto</string>
+
+    <!-- Timer Ring & Actions -->
+    <string name="timer_badge_fasting">IN DIGIUNO</string>
+    <string name="timer_badge_eating">MANGIARE</string>
+    <string name="timer_countdown_label_fasting">Mancano al pasto</string>
+    <string name="timer_countdown_label_eating">Mancano al digiuno</string>
+    <string name="timer_label_start">Inizio</string>
+    <string name="timer_label_end_fasting">Fine</string>
+    <string name="timer_label_end_eating">Pross. digiuno</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_start">Inizia</string>
+    <string name="button_change_plan">Piano</string>
+    <string name="content_desc_change_plan">Cambia piano di digiuno</string>
+
+    <!-- Dialog Conferma Stop -->
+    <string name="dialog_stop_title">Concludere il digiuno?</string>
+    <string name="dialog_stop_message">Sei sicuro di voler terminare la sessione di digiuno in corso?</string>
+    <string name="dialog_stop_confirm">Interrompi</string>
+    <string name="dialog_stop_cancel">Annulla</string>
+
+    <!-- Piano Settimanale -->
+    <string name="weekly_plan_title">Piano settimanale</string>
+    <string name="legend_fasting">Digiuno</string>
+    <string name="legend_eating">Pasto</string>
+
+    <!-- Fasi Metaboliche -->
+    <string name="stage_phase_prefix">Fase</string>
+    <string name="stage_1_title">Fase 1 · Digestione e glicemia.</string>
+    <string name="stage_1_desc">Il corpo assorbe i nutrienti dell\'ultimo pasto.</string>
+    <string name="stage_2_title">Fase 2 · Calo dell\'insulina.</string>
+    <string name="stage_2_desc">Lo stomaco si svuota e inizia l\'uso del glicogeno.</string>
+    <string name="stage_3_title">Fase 3 · Combustione grassi.</string>
+    <string name="stage_3_desc">Il corpo usa le riserve di grasso come energia.</string>
+    <string name="stage_4_title">Fase 4 · Chetosi e autofagia.</string>
+    <string name="stage_4_desc">Massima lucidità mentale e rigenerazione cellulare.</string>
+    <string name="stage_eating_title">Finestra pasto attiva.</string>
+    <string name="stage_eating_desc">Nutrizione sana ed idratazione equilibrata.</string>
+
+    <!-- Accessibilità (contentDescription) -->
+    <string name="content_desc_notifications">Impostazioni notifiche</string>
+    <string name="content_desc_settings">Impostazioni</string>
+    <string name="content_desc_stop">Interrompi digiuno</string>
+    <string name="content_desc_start">Inizia digiuno</string>
+    <string name="content_desc_timer_ring">Digiuno al %1$d%%, mancano %2$d ore e %3$d minuti</string>
+    <string name="content_desc_timer_ring_eating">Finestra pasto al %1$d%%, mancano %2$d ore e %3$d minuti</string>
+
+    <!-- Modifica Piano Bottom Sheet -->
+    <string name="plan_editor_title">Modifica piano</string>
+    <string name="plan_editor_save">Salva</string>
+    <string name="plan_editor_close">Chiudi</string>
+    <string name="plan_editor_apply_to">APPLICA A</string>
+    <string name="plan_editor_scope_all">Tutti</string>
+    <string name="plan_editor_start_fasting">Inizio digiuno</string>
+    <string name="plan_editor_end_fasting">Fine digiuno</string>
+    <string name="plan_editor_next_day_badge">+1 g</string>
+    <string name="plan_editor_summary_fasting">digiuno</string>
+    <string name="plan_editor_summary_eating">pasto</string>
+    <string name="plan_editor_shift_title">Sposta orari</string>
+    <string name="plan_editor_shift_periods_title">Sposta i periodi</string>
+    <string name="plan_editor_duration_title">Durata</string>
+    <string name="plan_editor_stepper_1_hour">1 ora</string>
+    <string name="plan_editor_stepper_15_min">15 min</string>
+    <string name="plan_editor_shift_minus_1h">Anticipa di 1 ora</string>
+    <string name="plan_editor_shift_plus_1h">Posticipa di 1 ora</string>
+    <string name="plan_editor_shift_minus_15m">Anticipa di 15 minuti</string>
+    <string name="plan_editor_shift_plus_15m">Posticipa di 15 minuti</string>
+    <string name="plan_editor_duration_minus_1h">Riduci di 1 ora</string>
+    <string name="plan_editor_duration_plus_1h">Aumenta di 1 ora</string>
+    <string name="plan_editor_duration_minus_15m">Riduci di 15 minuti</string>
+    <string name="plan_editor_duration_plus_15m">Aumenta di 15 minuti</string>
+    <string name="plan_editor_unsaved_title">Modifiche non salvate</string>
+    <string name="plan_editor_unsaved_message">Ci sono modifiche non salvate. Vuoi uscire senza salvare?</string>
+    <string name="plan_editor_unsaved_discard">Esci</string>
+    <string name="plan_editor_unsaved_stay">Annulla</string>
+    <string name="plan_editor_periods_title">Periodi</string>
+    <string name="plan_editor_free_day_item">%1$s: Giorno libero (Riposo)</string>
+    <string name="plan_editor_add_period">+ Aggiungi un periodo</string>
+    <string name="plan_editor_reactivate_all">+ Attiva tutti i giorni</string>
+    <string name="plan_editor_scope_all_days">Tutti i giorni</string>
+
+    <!-- Scelta Rapida Piano di Digiuno -->
+    <string name="plan_picker_title">Piani di digiuno</string>
+    <string name="plan_picker_active_badge">ATTIVO</string>
+    <string name="plan_picker_create_custom">+ Crea piano personalizzato</string>
+    <string name="plan_picker_create_custom_desc">Imposta orari e durata su misura</string>
+    <string name="plan_picker_preview_title">Anteprima piano</string>
+    <string name="plan_picker_confirm_button">Conferma ed adotta piano</string>
+    <string name="plan_picker_custom_title">Nuovo piano personalizzato</string>
+    <string name="plan_picker_custom_name_label">Nome del piano</string>
+    <string name="plan_picker_custom_name_placeholder">Es. Mio Digiuno 16-8</string>
+    <string name="plan_picker_custom_save">Salva ed adotta piano</string>
+    <string name="plan_picker_back">Indietro</string>
+    <string name="plan_picker_adjust_times">Regola orari inizio e fine</string>
+    <string name="plan_picker_section_custom">Piani personalizzati</string>
+    <string name="plan_picker_section_predefined">Piani consigliati</string>
+
+    <!-- Notifiche Live -->
+    <string name="notif_fasting_end_title">🍽️ Finestra di Alimentazione Aperta!</string>
+    <string name="notif_fasting_end_msg">Complimenti! Hai completato il tuo digiuno (%1$s). Ora puoi mangiare!</string>
+    <string name="notif_eating_end_title">🔥 Inizia il Digiuno Intermittente!</string>
+    <string name="notif_eating_end_msg">La tua finestra pasto è terminata. Inizia il tuo digiuno programmato (%1$s). Ricordati di bere acqua!</string>
+    <string name="notif_eating_pre_title">⏰ Finestra Pasto in Chiusura</string>
+    <string name="notif_eating_pre_msg">Mancano 15 minuti all\'inizio del digiuno (%1$s). Ultima occasione per completare il tuo pasto!</string>
+    <string name="notif_stage_title">✨ Nuova Fase Metabolica: %1$s</string>
+
+    <!-- Widget Schermata Home -->
+    <string name="widget_name">CiboTimer</string>
+    <string name="widget_description">Visualizza il prossimo periodo di digiuno o pasto</string>
+    <string name="widget_2x1_name">Digiuno</string>
+    <string name="widget_2x1_description">Widget orizzontale con stato, orario prossimo digiuno e azione rapida</string>
+
+    <!-- Aggiornamenti & Disclaimer -->
+    <string name="update_available_title">Aggiornamento disponibile!</string>
+    <string name="update_button_play">Aggiorna su Google Play</string>
+    <string name="update_button_direct">Aggiorna Ora</string>
+    <string name="update_button_later">Più tardi</string>
+    <string name="health_disclaimer_title">Disclaimer Medico &amp; Benessere</string>
+    <string name="health_disclaimer_text">CiboTimer è progettato a scopo informativo ed educativo e non costituisce parere o diagnosi medica. Consulta sempre il tuo medico prima di iniziare regimi di digiuno.</string>
+</resources>

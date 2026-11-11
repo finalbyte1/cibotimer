@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Rounded Sapphire Base Container -->
+    <path
+        android:fillColor="#060B12"
+        android:pathData="M24,4 L84,4 C98,4 104,10 104,24 L104,84 C104,98 98,104 84,104 L24,104 C10,104 4,98 4,84 L4,24 C4,10 10,4 24,4 Z" />
+
+    <!-- Ambient Radial Disc -->
+    <path
+        android:fillColor="#0A1C30"
+        android:fillAlpha="0.75"
+        android:pathData="M54,4 A50,50 0 1,1 54,104 A50,50 0 1,1 54,4 Z" />
+
+    <path
+        android:fillColor="#0E335C"
+        android:fillAlpha="0.4"
+        android:pathData="M54,20 A34,34 0 1,1 54,88 A34,34 0 1,1 54,20 Z" />
+
+    <!-- Central Metabolic Ambient Aura -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.12"
+        android:pathData="M54,39 A15,15 0 1,1 54,69 A15,15 0 1,1 54,39 Z" />
+
+    <!-- Circular Timer Inactive Track -->
+    <path
+        android:strokeColor="#112338"
+        android:strokeWidth="3.6"
+        android:strokeAlpha="0.8"
+        android:pathData="M54,27 A27,27 0 1,1 54,81 A27,27 0 1,1 54,27 Z" />
+
+    <!-- FASTING ARC (Digiuno - 240 deg, Cobalt Blue, 1 o'clock to 9 o'clock) -->
+    <path
+        android:strokeColor="#0284C7"
+        android:strokeWidth="7.5"
+        android:strokeAlpha="0.25"
+        android:strokeLineCap="round"
+        android:pathData="M67.5,30.62 A27,27 0 1,1 27,54" />
+    <path
+        android:strokeColor="#0284C7"
+        android:strokeWidth="3.8"
+        android:strokeLineCap="round"
+        android:pathData="M67.5,30.62 A27,27 0 1,1 27,54" />
+    <path
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="3.8"
+        android:strokeAlpha="0.9"
+        android:strokeLineCap="round"
+        android:pathData="M67.5,30.62 A27,27 0 0,1 81,54" />
+
+    <!-- EATING WINDOW ARC (Finestra Pasto - 120 deg, Electric Cyan, 9 o'clock to 1 o'clock) -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="9.0"
+        android:strokeAlpha="0.32"
+        android:strokeLineCap="round"
+        android:pathData="M27,54 A27,27 0 0,1 67.5,30.62" />
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.8"
+        android:strokeLineCap="round"
+        android:pathData="M27,54 A27,27 0 0,1 67.5,30.62" />
+
+    <!-- ACTIVE INDICATOR JEWEL ("Puntino all'inizio dell'anello a sinistra" - 9 o'clock, x=27, y=54) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.28"
+        android:pathData="M27,48 A6,6 0 1,1 27,60 A6,6 0 1,1 27,48 Z" />
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M27,50.5 A3.5,3.5 0 1,1 27,57.5 A3.5,3.5 0 1,1 27,50.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27,52.4 A1.6,1.6 0 1,1 27,55.6 A1.6,1.6 0 1,1 27,52.4 Z" />
+
+    <!-- ================= CROSSED CUTLERY: SPOON & FORK ================= -->
+    <!-- 1. SPOON (Cobalt Blue Fasting Utensil) -->
+    <path
+        android:fillColor="#0284C7"
+        android:pathData="M67.44,40.56 C69.13,42.26 68.28,45.37 65.67,47.99 C63.05,50.61 60.58,50.96 58.74,50.96 L45.3,64.39 C43.75,66.09 42.76,67.51 41.77,67.79 C40.92,67.93 40.07,67.08 40.21,66.23 C40.49,65.24 41.91,64.25 43.61,62.7 L57.04,49.26 C57.04,47.42 57.39,44.95 60.01,42.33 C62.63,39.72 65.74,38.87 67.44,40.56 Z" />
+
+    <!-- Spoon Inner Scoop Depth -->
+    <path
+        android:fillColor="#0077B6"
+        android:pathData="M66.37,41.63 C67.65,42.9 66.8,45.3 64.89,47.21 C62.98,49.12 60.86,49.55 58.95,49.05 C58.45,47.14 58.88,45.02 60.79,43.11 C62.7,41.2 65.1,40.35 66.37,41.63 Z" />
+
+    <!-- Spoon Upper Rim Highlight -->
+    <path
+        android:fillColor="#38BDF8"
+        android:fillAlpha="0.9"
+        android:pathData="M67.01,40.99 C65.6,39.58 63.19,40.28 60.93,42.54 C59.52,43.96 58.81,45.51 58.67,46.79 C59.09,45.51 60.08,44.24 61.21,43.11 C62.91,41.41 65.17,40.56 66.3,41.7 Z" />
+
+    <!-- 2. INTERSECTION CUTOUT GAP -->
+    <path
+        android:strokeColor="#060B12"
+        android:strokeWidth="4.6"
+        android:strokeLineCap="round"
+        android:pathData="M50.5,50.5 L57.5,57.5" />
+
+    <!-- 3. FORK (Electric Cyan Neon Eating Utensil) -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M38.02,43.11 C40.14,45.23 43.61,48.13 45.3,49.26 C47,50.39 48.48,50.32 49.26,50.96 L62.7,64.39 C64.25,66.09 65.24,67.51 66.23,67.79 C67.08,67.93 67.93,67.08 67.79,66.23 C67.51,65.24 66.09,64.25 64.39,62.7 L50.96,49.26 C50.32,48.48 50.39,47 49.26,45.3 C48.13,43.61 45.23,40.14 43.11,38.02 L42.26,38.87 C43.68,40.28 46.58,43.32 47.14,44.17 C47.49,44.67 46.86,45.3 46.36,44.95 L40.99,40.14 L40.14,40.99 L44.95,46.36 C45.3,46.86 44.67,47.49 44.17,47.14 C43.32,46.58 40.28,43.68 38.87,42.26 Z" />
+
+    <!-- Fork Specular Center Spine -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.95"
+        android:pathData="M40.92,41.34 L41.34,40.92 L49.9,49.62 L49.62,49.9 Z" />
+
+</vector>
