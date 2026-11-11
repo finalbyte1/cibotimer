@@ -209,7 +209,7 @@ fun TimeEditorModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Salva con nome",
+                        text = stringResource(R.string.plan_save_as_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = CiboTextPrimary
@@ -222,7 +222,7 @@ fun TimeEditorModal(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Assegna un nuovo nome a questo piano per salvarlo nei tuoi piani personalizzati:",
+                        text = stringResource(R.string.plan_save_as_message),
                         fontSize = 13.sp,
                         color = CiboTextSecondary,
                         lineHeight = 18.sp
@@ -231,8 +231,8 @@ fun TimeEditorModal(
                     OutlinedTextField(
                         value = saveAsName,
                         onValueChange = { saveAsName = it },
-                        label = { Text("Nome del piano", color = CiboAccent) },
-                        placeholder = { Text("es. 16-8 Personalizzato", color = CiboTextSecondary) },
+                        label = { Text(stringResource(R.string.plan_save_as_name_label), color = CiboAccent) },
+                        placeholder = { Text(stringResource(R.string.plan_save_as_name_placeholder), color = CiboTextSecondary) },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CiboAccent,
@@ -247,8 +247,8 @@ fun TimeEditorModal(
                     OutlinedTextField(
                         value = saveAsDescription,
                         onValueChange = { saveAsDescription = it },
-                        label = { Text("Descrizione (opzionale)", color = CiboTextSecondary) },
-                        placeholder = { Text("Note o orari personalizzati", color = CiboTextSecondary) },
+                        label = { Text(stringResource(R.string.plan_save_as_desc_label), color = CiboTextSecondary) },
+                        placeholder = { Text(stringResource(R.string.plan_save_as_desc_placeholder), color = CiboTextSecondary) },
                         maxLines = 2,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CiboAccent,
@@ -293,7 +293,7 @@ fun TimeEditorModal(
                         modifier = Modifier.fillMaxWidth().height(44.dp)
                     ) {
                         Text(
-                            text = "Salva e Attiva",
+                            text = stringResource(R.string.plan_save_and_activate),
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
@@ -327,7 +327,7 @@ fun TimeEditorModal(
                             modifier = Modifier.weight(1f).height(40.dp)
                         ) {
                             Text(
-                                text = "Solo Salva",
+                                text = stringResource(R.string.plan_save_only),
                                 color = CiboAccent,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp
@@ -351,7 +351,7 @@ fun TimeEditorModal(
                                 modifier = Modifier.weight(1f).height(40.dp)
                             ) {
                                 Text(
-                                    text = "Sovrascrivi",
+                                    text = stringResource(R.string.plan_overwrite),
                                     color = CiboAmber,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.sp
@@ -366,7 +366,7 @@ fun TimeEditorModal(
                     onClick = { showSaveAsDialog = false }
                 ) {
                     Text(
-                        text = "Annulla",
+                        text = stringResource(R.string.button_cancel),
                         color = CiboTextSecondary,
                         fontSize = 13.sp
                     )
@@ -595,7 +595,7 @@ fun BottomEditorControlCard(
                             targetM = periodBounds.anteriorEndMinute
                             Toast.makeText(
                                 context,
-                                "Non puoi superare il periodo anteriore (termina alle %02d:%02d)".format(targetH, targetM),
+                                context.getString(R.string.plan_time_bound_anterior, targetH, targetM),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -624,7 +624,7 @@ fun BottomEditorControlCard(
                             targetM = periodBounds.nextStartMinute
                             Toast.makeText(
                                 context,
-                                "Non puoi superare il periodo successivo (inizia alle %02d:%02d)".format(targetH, targetM),
+                                context.getString(R.string.plan_time_bound_posterior, targetH, targetM),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -686,7 +686,7 @@ fun BottomEditorControlCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Inizio: ",
+                            text = stringResource(R.string.plan_time_start_label),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = CiboTextSecondary
@@ -726,7 +726,7 @@ fun BottomEditorControlCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Fine: ",
+                            text = stringResource(R.string.plan_time_end_label),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = CiboTextSecondary

@@ -29,7 +29,9 @@ import com.cibotimer.data.repository.AppRepository
 import com.cibotimer.ui.components.TimeEditorModal
 import com.cibotimer.ui.components.PlanPickerModal
 import com.cibotimer.ui.components.WeekBarChart
+import com.cibotimer.R
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,13 +86,13 @@ fun PlannerScreen(
                         IconButton(onClick = { showDeleteActiveDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = "Elimina questo piano",
+                                contentDescription = text = stringResource(R.string.dialog_delete_plan_title),,
                                 tint = CiboStopRed
                             )
                         }
                     }
                     TextButton(onClick = { showPlanPickerModal = true }) {
-                        Text("Cambia piano", color = CiboTimerAzure, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.planner_change_plan), color = CiboTimerAzure, fontWeight = FontWeight.Bold)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundDark)
@@ -293,7 +295,7 @@ fun PlannerScreen(
             initialDayOfWeek = selectedDayOfWeek,
             onSavePlan = { updatedPlan ->
                 repository.updateActivePlan(updatedPlan)
-                android.widget.Toast.makeText(context, "Piano salvato con successo!", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, context.getString(R.string.planner_plan_saved_toast), android.widget.Toast.LENGTH_SHORT).show()
             },
             onSaveCustomPlan = { newPlan, activate ->
                 repository.saveCustomPlan(newPlan, activate = activate)
@@ -338,12 +340,12 @@ fun PlannerScreen(
                         showDeleteActiveDialog = false
                     }
                 ) {
-                    Text("Elimina", color = CiboStopRed, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.button_delete), color = CiboStopRed, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteActiveDialog = false }) {
-                    Text("Annulla", color = TextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = TextSecondary)
                 }
             },
             containerColor = SurfaceDark,

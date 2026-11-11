@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.cibotimer.R
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -50,7 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.cibotimer.R
 import com.cibotimer.data.models.DayPlan
 import com.cibotimer.data.models.FastingState
 import com.cibotimer.data.repository.AppRepository
@@ -283,7 +283,7 @@ fun TimerScreen(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = CiboAccent)
                         ) {
-                            Text(text = "Passa a Pasto", color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
+                            Text(text = stringResource(R.string.timer_button_switch_eating), color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
                         }
                     } else if (isEating) {
                         Button(
@@ -293,7 +293,7 @@ fun TimerScreen(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = CiboAccent)
                         ) {
-                            Text(text = "Inizia Digiuno", color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
+                            Text(text = stringResource(R.string.timer_button_start_fast), color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
                         }
                     }
                     Button(
@@ -303,7 +303,7 @@ fun TimerScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = CiboStopRed)
                     ) {
-                        Text(text = "Ferma Timer", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(text = stringResource(R.string.timer_button_stop_timer), color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             },
@@ -326,7 +326,7 @@ fun TimerScreen(
             initialDayOfWeek = selectedDayToEdit,
             onSavePlan = { updatedPlan ->
                 repository.updateActivePlan(updatedPlan)
-                android.widget.Toast.makeText(context, "Piano salvato con successo!", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, context.getString(R.string.planner_plan_saved_toast), android.widget.Toast.LENGTH_SHORT).show()
             },
             onSaveCustomPlan = { newPlan, activate ->
                 repository.saveCustomPlan(newPlan, activate = activate)

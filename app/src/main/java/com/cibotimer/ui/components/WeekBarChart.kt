@@ -1,5 +1,6 @@
 ﻿package com.cibotimer.ui.components
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -48,6 +50,7 @@ fun WeekBarChart(
     fillMaxHeight: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val orderedDays = remember(days) {
         days.sortedBy { if (it.dayOfWeek == 7) 7 else it.dayOfWeek }
     }
@@ -172,7 +175,7 @@ fun WeekBarChart(
 
                     val dayPlan = orderedDays.find { it.dayOfWeek == item.dayIndex } ?: orderedDays.first()
                     val subtitle = remember(item.dayIndex, periods, dayPlan) {
-                        getSubtitleForDay(item.dayIndex, item.label, periods, dayPlan)
+                        getSubtitleForDay(context, item.dayIndex, item.label, periods, dayPlan)
                     }
 
                     val isHighlighted = item.isSelected || item.isToday
@@ -214,7 +217,7 @@ fun WeekBarChart(
                             Spacer(modifier = Modifier.width(6.dp))
 
                             Text(
-                                text = if (dayPlan.isFastingDay) "${dayPlan.fastingDurationMinutes / 60} h" else "Libero",
+                                text = if (dayPlan.isFastingDay) "${dayPlan.fastingDurationMinutes / 60} h" else stringResource(R.string.week_chart_free),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (dayPlan.isFastingDay) CiboAccent else CiboAmber,
@@ -257,6 +260,7 @@ fun WeekBarChart(
  * Calcola la dicitura sotto ogni giorno (es: "Lun 20:00 → Mar 12:00").
  */
 private fun getSubtitleForDay(
+    context: Context,
     dayIndex: Int,
     dayLabel: String,
     periods: List<FastingPeriod>?,
@@ -273,7 +277,7 @@ private fun getSubtitleForDay(
         val through = periods.find { it.endDayOfWeek == dayIndex && it.isFasting }
         if (through != null) {
             val startDayName = dayNames.getOrElse(through.startDayOfWeek - 1) { dayLabel }
-            return "Digiuno da $startDayName fino alle ${through.endTimeFormatted}"
+            return context.getString(R.string.week_chart_fasting_from, startDayName, through.endTimeFormatted)
         }
     }
 
@@ -284,7 +288,7 @@ private fun getSubtitleForDay(
         val endDayName = if (isNextDay) dayNames[nextDayIdx - 1] else dayLabel
         return "$dayLabel ${dayPlan.startTimeFormatted} → $endDayName ${dayPlan.endTimeFormatted}"
     } else {
-        return "Nessun digiuno programmato"
+        return context.getString(R.string.week_chart_no_fast)
     }
 }
 

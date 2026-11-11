@@ -24,10 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.repository.AppRepository
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 
 data class CoachProgramItem(
     val plan: FastingPlan,
@@ -50,28 +52,28 @@ fun PlanSelectionStartScreen(
     val coachPrograms = listOf(
         CoachProgramItem(
             plan = FastingPlanTemplates.PLAN_20_4,
-            subtitle = "Il digiuno intensivo, noto anche come dieta del guerriero",
+            subtitle = stringResource(R.string.plan_warrior_subtitle),
             weightLossRating = 4,
             healthRating = 3,
             gradientColors = listOf(Color(0xFF0C4A6E), Color(0xFF0369A1))
         ),
         CoachProgramItem(
             plan = FastingPlanTemplates.PLAN_16_8,
-            subtitle = "Il metodo più amato e collaudato: 16h digiuno e 8h pasti",
+            subtitle = stringResource(R.string.plan_16_8_subtitle),
             weightLossRating = 3,
             healthRating = 4,
             gradientColors = listOf(Color(0xFF0A2E3D), Color(0xFF0077B6))
         ),
         CoachProgramItem(
             plan = FastingPlanTemplates.PLAN_AUTOPHAGY_BOOSTER,
-            subtitle = "Alternanza dinamica per accelerare metabolismo e autofagia",
+            subtitle = stringResource(R.string.plan_dynamic_subtitle),
             weightLossRating = 4,
             healthRating = 4,
             gradientColors = listOf(Color(0xFF1E1B4B), Color(0xFF312E81))
         ),
         CoachProgramItem(
             plan = FastingPlanTemplates.PLAN_18_6,
-            subtitle = "Attivazione profonda della chetosi per bruciare grassi",
+            subtitle = stringResource(R.string.plan_ketosis_subtitle),
             weightLossRating = 4,
             healthRating = 3,
             gradientColors = listOf(Color(0xFF082F49), Color(0xFF0284C7))

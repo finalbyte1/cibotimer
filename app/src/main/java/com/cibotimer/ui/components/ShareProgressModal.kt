@@ -22,9 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.domain.TotalCircumferenceInfo
 import com.cibotimer.domain.WeightProgressInfo
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +83,7 @@ fun ShareProgressModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Condividi Progresso",
+                    text = stringResource(R.string.share_progress_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = CiboTextPrimary
@@ -118,7 +120,7 @@ fun ShareProgressModal(
                         Text(text = "⏱️", fontSize = 20.sp)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "CiboTimer",
+                            text = stringResource(R.string.share_progress_brand),
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 17.sp,
                             color = CiboTimerAzureGlow
@@ -136,7 +138,7 @@ fun ShareProgressModal(
                             color = CiboTimerAzureGlow
                         )
                         Text(
-                            text = "PESO PERSO",
+                            text = stringResource(R.string.share_weight_lost),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTextSecondary,
@@ -150,7 +152,7 @@ fun ShareProgressModal(
                             color = CiboTimerAzureGlow
                         )
                         Text(
-                            text = "PESO ATTUALE",
+                            text = stringResource(R.string.share_current_weight),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTextSecondary,
@@ -167,12 +169,12 @@ fun ShareProgressModal(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Partenza: %.1f kg".format(Locale.US, progressInfo.startingWeightKg),
+                                text = stringResource(R.string.share_starting_format, progressInfo.startingWeightKg),
                                 fontSize = 11.sp,
                                 color = CiboTextSecondary
                             )
                             Text(
-                                text = "Obiettivo: %.1f kg".format(Locale.US, progressInfo.targetWeightKg),
+                                text = stringResource(R.string.share_target_format, progressInfo.targetWeightKg),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = CiboTimerAzure
@@ -226,7 +228,7 @@ fun ShareProgressModal(
                                     color = CiboTextPrimary
                                 )
                                 Text(
-                                    text = "Digiuno totale",
+                                    text = stringResource(R.string.share_total_fast),
                                     fontSize = 10.sp,
                                     color = CiboTextSecondary
                                 )
@@ -250,7 +252,7 @@ fun ShareProgressModal(
                                         color = if (circumferenceInfo.totalDiffCm <= 0) CiboTimerAzureGlow else CiboTimerOrange
                                     )
                                     Text(
-                                        text = "Misure corpo",
+                                        text = stringResource(R.string.share_body_measurements),
                                         fontSize = 10.sp,
                                         color = CiboTextSecondary
                                     )
@@ -271,7 +273,7 @@ fun ShareProgressModal(
                         putExtra(Intent.EXTRA_TEXT, shareText)
                         type = "text/plain"
                     }
-                    val shareIntent = Intent.createChooser(sendIntent, "Condividi i tuoi progressi")
+                    val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share_chooser_title))
                     context.startActivity(shareIntent)
                     onDismiss()
                 },
@@ -291,7 +293,7 @@ fun ShareProgressModal(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "CONDIVIDI PROGRESSO",
+                    text = stringResource(R.string.share_button),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 14.sp,
                     color = Color(0xFF031019)

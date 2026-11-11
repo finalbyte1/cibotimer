@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.data.models.CoachingTip
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.R
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -316,7 +318,7 @@ fun CoachingScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = CiboTimerAzure),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Ho finito di leggere", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.coaching_finish_reading), fontWeight = FontWeight.Bold)
                 }
             }
         }

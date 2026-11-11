@@ -331,7 +331,7 @@ fun PlanPickerListStep(
             onDismissRequest = { planToDelete = null },
             title = {
                 Text(
-                    text = "Elimina Piano",
+                    text = stringResource(R.string.dialog_delete_plan_title),
                     fontWeight = FontWeight.Bold,
                     color = CiboTextPrimary
                 )
@@ -339,7 +339,7 @@ fun PlanPickerListStep(
             text = {
                 Column {
                     Text(
-                        text = "Sei sicuro di voler eliminare definitivamente il piano \"${targetPlan.name}\"?",
+                        text = stringResource(R.string.dialog_delete_plan_message, targetPlan.name),
                         color = CiboTextSecondary,
                         fontSize = 14.sp,
                         lineHeight = 20.sp
@@ -347,7 +347,7 @@ fun PlanPickerListStep(
                     if (targetPlan.id == activePlanId) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "⚠️ Questo piano è attualmente in uso. Se lo elimini, verrà ripristinato il piano predefinito 16-8.",
+                            text = stringResource(R.string.dialog_delete_active_plan_warning),
                             color = CiboAmber,
                             fontSize = 12.sp,
                             lineHeight = 16.sp
@@ -362,12 +362,12 @@ fun PlanPickerListStep(
                         planToDelete = null
                     }
                 ) {
-                    Text("Elimina", color = CiboStopRed, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.button_delete), color = CiboStopRed, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { planToDelete = null }) {
-                    Text("Annulla", color = CiboTextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
                 }
             },
             containerColor = CiboSheetCard,
@@ -508,10 +508,10 @@ fun PlanPickerPreviewStep(
                             shape = CircleShape
                         ) {
                             val cat = when (workingPlan.category) {
-                                PlanCategory.STANDARD -> "Standard"
-                                PlanCategory.AUTOPHAGY -> "Autofagia"
-                                PlanCategory.SPECIAL -> "Speciale"
-                                PlanCategory.CUSTOM -> "Personalizzato"
+                                PlanCategory.STANDARD -> stringResource(R.string.plan_category_standard)
+                                PlanCategory.AUTOPHAGY -> stringResource(R.string.plan_category_autophagy)
+                                PlanCategory.SPECIAL -> stringResource(R.string.plan_category_special)
+                                PlanCategory.CUSTOM -> stringResource(R.string.plan_category_custom)
                             }
                             Text(
                                 text = cat,
@@ -553,7 +553,7 @@ fun PlanPickerPreviewStep(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Rinomina questo piano",
+                                text = stringResource(R.string.plan_rename_action),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = CiboAccent
@@ -572,7 +572,7 @@ fun PlanPickerPreviewStep(
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     Text(
-                        text = "Programma settimanale",
+                        text = stringResource(R.string.plan_preview_weekly_schedule),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = CiboTextPrimary,
@@ -646,7 +646,7 @@ fun PlanPickerPreviewStep(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Modifica orari avanzata",
+                            text = stringResource(R.string.plan_preview_advanced_edit),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboAccent
@@ -725,7 +725,7 @@ fun PlanPickerPreviewStep(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Rinomina Piano",
+                        text = stringResource(R.string.plan_rename_title),
                         fontWeight = FontWeight.Bold,
                         color = CiboTextPrimary
                     )
@@ -734,7 +734,7 @@ fun PlanPickerPreviewStep(
             text = {
                 Column {
                     Text(
-                        text = "Inserisci un nuovo nome per questo piano personalizzato:",
+                        text = stringResource(R.string.plan_rename_subtitle),
                         color = CiboTextSecondary,
                         fontSize = 13.sp,
                         lineHeight = 18.sp
@@ -743,7 +743,7 @@ fun PlanPickerPreviewStep(
                     AppOutlinedTextField(
                         value = renameText,
                         onValueChange = { renameText = it },
-                        label = { Text("Nome del piano") },
+                        label = { Text(stringResource(R.string.plan_picker_custom_name_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -751,7 +751,7 @@ fun PlanPickerPreviewStep(
             },
             confirmButton = {
                 AppPrimaryButton(
-                    text = "Salva",
+                    text = stringResource(R.string.button_save),
                     enabled = renameText.trim().isNotBlank(),
                     onClick = {
                         val trimmed = renameText.trim()
@@ -766,7 +766,7 @@ fun PlanPickerPreviewStep(
             },
             dismissButton = {
                 AppSecondaryButton(
-                    text = "Annulla",
+                    text = stringResource(R.string.button_cancel),
                     onClick = { showRenameDialog = false }
                 )
             },
@@ -781,14 +781,14 @@ fun PlanPickerPreviewStep(
             onDismissRequest = { showDeleteConfirm = false },
             title = {
                 Text(
-                    text = "Elimina Piano",
+                    text = stringResource(R.string.dialog_delete_plan_title),
                     fontWeight = FontWeight.Bold,
                     color = CiboTextPrimary
                 )
             },
             text = {
                 Text(
-                    text = "Sei sicuro di voler eliminare definitivamente il piano \"${workingPlan.name}\"?",
+                    text = stringResource(R.string.dialog_delete_plan_message, workingPlan.name),
                     color = CiboTextSecondary,
                     fontSize = 14.sp,
                     lineHeight = 20.sp
@@ -802,12 +802,12 @@ fun PlanPickerPreviewStep(
                         onBack()
                     }
                 ) {
-                    Text("Elimina", color = CiboStopRed, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.button_delete), color = CiboStopRed, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("Annulla", color = CiboTextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
                 }
             },
             containerColor = CiboSheetCard,
@@ -972,7 +972,7 @@ fun PlanPickerCustomStep(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Programma settimanale (tocca un giorno)",
+                            text = stringResource(R.string.plan_custom_schedule_title),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = CiboTextSecondary
@@ -980,11 +980,11 @@ fun PlanPickerCustomStep(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(modifier = Modifier.size(8.dp).background(CiboAmber, CircleShape))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Pasto", fontSize = 10.sp, color = CiboTextSecondary)
+                            Text(text = stringResource(R.string.legend_eating), fontSize = 10.sp, color = CiboTextSecondary)
                             Spacer(modifier = Modifier.width(10.dp))
                             Box(modifier = Modifier.size(8.dp).background(CiboAccent, CircleShape))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Digiuno", fontSize = 10.sp, color = CiboTextSecondary)
+                            Text(text = stringResource(R.string.legend_fasting), fontSize = 10.sp, color = CiboTextSecondary)
                         }
                     }
 
@@ -1124,13 +1124,13 @@ fun PlanPickerCustomStep(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = if (isFastingActive) "Digiuno attivo in questo giorno" else "Giorno libero (nessun digiuno)",
+                            text = if (isFastingActive) stringResource(R.string.plan_custom_active_day) else stringResource(R.string.plan_custom_free_day),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isFastingActive) CiboAccent else CiboAmber
                         )
                         Text(
-                            text = "Tocca per cambiare",
+                            text = stringResource(R.string.plan_custom_tap_to_change),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )
@@ -1284,15 +1284,17 @@ fun PlanPickerCustomStep(
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            val defaultPlanName = stringResource(R.string.plan_custom_default_name)
+            val defaultPlanDesc = stringResource(R.string.plan_custom_default_desc)
             // Pulsante "Salva ed adotta piano"
             Button(
                 onClick = {
-                    val title = planName.trim().ifBlank { "Piano personalizzato" }
+                    val title = planName.trim().ifBlank { defaultPlanName }
                     val customPlan = FastingPlan(
                         id = "custom_${System.currentTimeMillis()}",
                         name = title,
                         category = PlanCategory.CUSTOM,
-                        description = "Piano su misura con orari personalizzati per la settimana.",
+                        description = defaultPlanDesc,
                         days = customDays,
                         isCustom = true
                     )
@@ -1435,10 +1437,10 @@ fun PlanItemCard(
                             }
                         } else {
                             val categoryName = when (plan.category) {
-                                PlanCategory.STANDARD -> "Standard"
-                                PlanCategory.AUTOPHAGY -> "Autofagia"
-                                PlanCategory.SPECIAL -> "Speciale"
-                                PlanCategory.CUSTOM -> "Personalizzato"
+                                PlanCategory.STANDARD -> stringResource(R.string.plan_category_standard)
+                                PlanCategory.AUTOPHAGY -> stringResource(R.string.plan_category_autophagy)
+                                PlanCategory.SPECIAL -> stringResource(R.string.plan_category_special)
+                                PlanCategory.CUSTOM -> stringResource(R.string.plan_category_custom)
                             }
                             Text(
                                 text = categoryName,

@@ -23,27 +23,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-enum class ChartTimeRange(val label: String, val days: Int) {
-    ONE_MONTH("1 Mese", 30),
-    THREE_MONTHS("3 Mesi", 90),
-    ALL_TIME("Tutto", 0)
+enum class ChartTimeRange(val labelResId: Int, val days: Int) {
+    ONE_MONTH(R.string.chart_range_1_month, 30),
+    THREE_MONTHS(R.string.chart_range_3_months, 90),
+    ALL_TIME(R.string.chart_range_all, 0)
 }
 
-enum class ChartMetric(val label: String, val unit: String) {
-    WEIGHT("Peso", "kg"),
-    WAIST("Vita", "cm"),
-    HIPS("Fianchi", "cm"),
-    CHEST("Torace", "cm"),
-    THIGHS("Cosce", "cm"),
-    ARMS("Braccia", "cm")
+enum class ChartMetric(val labelResId: Int, val unit: String) {
+    WEIGHT(R.string.metric_weight, "kg"),
+    WAIST(R.string.metric_waist, "cm"),
+    HIPS(R.string.metric_hips, "cm"),
+    CHEST(R.string.metric_chest, "cm"),
+    THIGHS(R.string.metric_thighs, "cm"),
+    ARMS(R.string.metric_arms, "cm")
 }
 
 data class ChartPoint(
@@ -131,7 +133,7 @@ fun WeightProgressChart(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Grafico Evoluzione",
+                        text = stringResource(R.string.chart_evolution_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = CiboTextPrimary
@@ -160,7 +162,7 @@ fun WeightProgressChart(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = range.label,
+                                text = stringResource(range.labelResId),
                                 fontSize = 11.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 color = if (isSelected) Color(0xFF031019) else CiboTextSecondary
@@ -199,7 +201,7 @@ fun WeightProgressChart(
                             }
                     ) {
                         Text(
-                            text = metric.label,
+                            text = stringResource(metric.labelResId),
                             fontSize = 11.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             color = if (isSelected) CiboTimerAzureGlow else CiboTextSecondary,
@@ -273,13 +275,13 @@ fun WeightProgressChart(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Nessuna misurazione registrata per ${selectedMetric.label.lowercase()}",
+                            text = stringResource(R.string.chart_empty_measurement, stringResource(selectedMetric.labelResId).lowercase()),
                             fontSize = 13.sp,
                             color = CiboTextSecondary
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Tocca 'Registra Misura' per tracciare il primo dato",
+                            text = stringResource(R.string.chart_tap_to_record),
                             fontSize = 11.sp,
                             color = CiboTimerAzure
                         )
@@ -498,7 +500,7 @@ fun WeightProgressChart(
                                 border = BorderStroke(1.dp, CiboTimerOrange.copy(alpha = 0.5f))
                             ) {
                                 Text(
-                                    text = "Obiettivo: %.1f kg".format(Locale.US, target),
+                                    text = stringResource(R.string.share_target_format, target),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = CiboTimerOrange,
@@ -528,8 +530,8 @@ fun WeightProgressChart(
                         )
 
                         Text(
-                            text = if (isLoss) "Variazione: %.1f %s".format(Locale.US, delta, selectedMetric.unit)
-                            else "Variazione: +%.1f %s".format(Locale.US, delta, selectedMetric.unit),
+                            text = if (isLoss) stringResource(R.string.chart_variation_format, delta, selectedMetric.unit)
+                            else stringResource(R.string.chart_variation_plus_format, delta, selectedMetric.unit),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isLoss) CiboTimerAzureGlow else CiboTimerOrange

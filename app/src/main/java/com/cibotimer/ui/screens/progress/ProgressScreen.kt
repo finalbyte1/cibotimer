@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.data.models.Trophy
 import com.cibotimer.data.models.WeightEntry
 import com.cibotimer.data.repository.AppRepository
@@ -28,6 +29,7 @@ import com.cibotimer.domain.BodyStatsCalculator
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.ui.components.*
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -270,8 +272,8 @@ fun ProgressScreen(
             containerColor = CiboSheetBg,
             titleContentColor = CiboTextPrimary,
             textContentColor = CiboTextSecondary,
-            title = { Text("Eliminare misurazione?") },
-            text = { Text("Sei sicuro di voler eliminare la misurazione di ${entryToDelete!!.weightKg} kg?") },
+            title = { Text(stringResource(R.string.dialog_delete_measurement_title)) },
+            text = { Text(stringResource(R.string.dialog_delete_measurement_message, entryToDelete!!.weightKg)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -280,12 +282,12 @@ fun ProgressScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444), contentColor = Color.White)
                 ) {
-                    Text("Elimina", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.button_delete), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { entryToDelete = null }) {
-                    Text("Annulla", color = CiboTextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
                 }
             }
         )
@@ -390,7 +392,7 @@ fun WeightAndMeasurementsTab(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                            Text("Iniziale", fontSize = 11.sp, color = CiboTextSecondary)
+                            Text(stringResource(R.string.progress_initial_label), fontSize = 11.sp, color = CiboTextSecondary)
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = "%.1f kg".format(Locale.US, weightProgress.startingWeightKg),
@@ -411,7 +413,7 @@ fun WeightAndMeasurementsTab(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
                             ) {
-                                Text("Attuale", fontSize = 11.sp, color = CiboTimerAzureLight)
+                                Text(stringResource(R.string.progress_current_label), fontSize = 11.sp, color = CiboTimerAzureLight)
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "%.1f kg".format(Locale.US, weightProgress.currentWeightKg),
@@ -423,7 +425,7 @@ fun WeightAndMeasurementsTab(
                         }
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                            Text("Obiettivo", fontSize = 11.sp, color = CiboTextSecondary)
+                            Text(stringResource(R.string.progress_target_label), fontSize = 11.sp, color = CiboTextSecondary)
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = "%.1f kg".format(Locale.US, weightProgress.targetWeightKg),
@@ -774,7 +776,7 @@ fun WeightAndMeasurementsTab(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF031019))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("REGISTRA PESO & MISURE", fontWeight = FontWeight.ExtraBold, color = Color(0xFF031019))
+                Text(stringResource(R.string.progress_record_button), fontWeight = FontWeight.ExtraBold, color = Color(0xFF031019))
             }
         }
 
@@ -935,14 +937,14 @@ fun FastingStatsTab(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 StatCard(
-                    title = "Digiuni Conclusi",
+                    title = stringResource(R.string.progress_stat_fasts),
                     value = "$completedFastsCount",
                     icon = Icons.Default.CheckCircle,
                     color = CiboTimerAzureGlow,
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
-                    title = "Ore Totali",
+                    title = stringResource(R.string.progress_stat_hours),
                     value = "$totalFastingHours h",
                     icon = Icons.Default.Schedule,
                     color = CiboTimerAzure,
@@ -953,7 +955,7 @@ fun FastingStatsTab(
 
         item {
             StatCard(
-                title = "Digiuno Più Lungo",
+                title = stringResource(R.string.progress_stat_longest),
                 value = "$longestFastingHours ore consecutive",
                 icon = Icons.Default.EmojiEvents,
                 color = CiboTimerOrange,

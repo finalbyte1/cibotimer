@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cibotimer.R
 import com.cibotimer.data.models.FastingStage
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.ui.theme.*
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun FastingStagesSheet(
@@ -56,7 +58,7 @@ fun FastingStagesSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Fasi del Digiuno Intermittente",
+                        text = stringResource(R.string.stages_sheet_title),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -66,13 +68,13 @@ fun FastingStagesSheet(
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Chiudi",
+                            contentDescription = stringResource(R.string.plan_editor_close),
                             tint = CiboTextPrimary
                         )
                     }
                 }
                 Text(
-                    text = "Cosa accade nel tuo corpo ora dopo ora durante il digiuno.",
+                    text = stringResource(R.string.stages_sheet_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = CiboTextSecondary,
                     modifier = Modifier.padding(bottom = 16.dp)

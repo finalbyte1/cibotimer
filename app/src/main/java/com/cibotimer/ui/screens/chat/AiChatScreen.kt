@@ -129,7 +129,7 @@ fun AiChatScreen(
                                 )
                                 Spacer(Modifier.width(5.dp))
                                 Text(
-                                    text = if (aiConfig.isEnabled) "${aiConfig.modelName} · ${aiConfig.providerName}" else "Disattivato (tocca qui)",
+                                    text = if (aiConfig.isEnabled) "${aiConfig.modelName} · ${aiConfig.providerName}" else stringResource(R.string.ai_chat_subtitle_disabled),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontSize = 11.5.sp,
                                     color = if (aiConfig.isEnabled) CiboTimerAzureLight else TextSecondary,
@@ -153,7 +153,7 @@ fun AiChatScreen(
                         IconButton(onClick = { showClearConfirmDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = "Cancella cronologia",
+                                contentDescription = stringResource(R.string.ai_dialog_clear_title),
                                 tint = TextSecondary
                             )
                         }
@@ -163,7 +163,7 @@ fun AiChatScreen(
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Configurazione AI",
+                            contentDescription = stringResource(R.string.ai_config_button),
                             tint = TextSecondary
                         )
                     }
@@ -237,7 +237,7 @@ fun AiChatScreen(
                         ) {
                             Icon(Icons.Default.Settings, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Apri Impostazioni AI", fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(stringResource(R.string.ai_open_settings), fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                 }
@@ -380,8 +380,8 @@ fun AiChatScreen(
     if (showClearConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showClearConfirmDialog = false },
-            title = { Text("Cancella conversazione?", fontWeight = FontWeight.Bold) },
-            text = { Text("Tutti i messaggi scambiati con il Coach AI verranno rimossi permanentemente.") },
+            title = { Text(stringResource(R.string.ai_dialog_clear_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.ai_dialog_clear_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -389,12 +389,12 @@ fun AiChatScreen(
                         showClearConfirmDialog = false
                     }
                 ) {
-                    Text("Cancella", color = CiboStopRed, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.ai_dialog_clear_confirm), color = CiboStopRed, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showClearConfirmDialog = false }) {
-                    Text("Annulla", color = TextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = TextSecondary)
                 }
             },
             containerColor = SurfaceDark,
@@ -1389,7 +1389,7 @@ fun ProposedPlanCard(
                         value = renameInput,
                         onValueChange = { renameInput = it },
                         singleLine = true,
-                        placeholder = { Text("Es. Mio Digiuno Weekend", color = TextSecondary.copy(alpha = 0.6f)) },
+                        placeholder = { Text(stringResource(R.string.ai_custom_plan_placeholder), color = TextSecondary.copy(alpha = 0.6f)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CiboTimerAzureGlow,
                             unfocusedBorderColor = CardBorderGlow,
@@ -1421,7 +1421,7 @@ fun ProposedPlanCard(
                         border = androidx.compose.foundation.BorderStroke(1.dp, CiboTimerAzure),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Solo Salva", fontWeight = FontWeight.Bold, color = CiboTimerAzure, fontSize = 12.sp)
+                        Text(stringResource(R.string.plan_save_only), fontWeight = FontWeight.Bold, color = CiboTimerAzure, fontSize = 12.sp)
                     }
 
                     Button(
@@ -1433,13 +1433,13 @@ fun ProposedPlanCard(
                         colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Salva e Attiva", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
+                        Text(stringResource(R.string.plan_save_and_activate), fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
                     }
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showRenameDialog = false }) {
-                    Text("Annulla", color = TextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = TextSecondary)
                 }
             },
             containerColor = Color(0xFF0F1726)

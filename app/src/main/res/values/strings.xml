@@ -259,4 +259,108 @@
     <string name="settings_dialog_reset_button">Delete Permanently</string>
     <string name="settings_reset_success">✅ All local data has been deleted and the app has been restored to its initial state.</string>
     <string name="settings_reset_error">⚠️ Error during reset: %1$s</string>
+
+    <!-- Plan Picker Additional -->
+    <string name="dialog_delete_plan_title">Delete Plan</string>
+    <string name="dialog_delete_plan_message">Are you sure you want to permanently delete the plan \"%1$s\"?</string>
+    <string name="dialog_delete_active_plan_warning">⚠️ This plan is currently in use. If you delete it, the default 16-8 plan will be restored.</string>
+    <string name="plan_rename_title">Rename Plan</string>
+    <string name="plan_rename_subtitle">Enter a new name for this custom plan:</string>
+    <string name="plan_rename_action">Rename this plan</string>
+    <string name="plan_preview_weekly_schedule">Weekly schedule</string>
+    <string name="plan_preview_advanced_edit">Advanced schedule edit</string>
+    <string name="plan_category_standard">Standard</string>
+    <string name="plan_category_autophagy">Autophagy</string>
+    <string name="plan_category_special">Special</string>
+    <string name="plan_category_custom">Custom</string>
+    <string name="plan_custom_schedule_title">Weekly schedule (tap a day)</string>
+    <string name="plan_custom_active_day">Fasting active on this day</string>
+    <string name="plan_custom_free_day">Free day (no fast)</string>
+    <string name="plan_custom_tap_to_change">Tap to change</string>
+    <string name="plan_custom_default_name">Custom plan</string>
+    <string name="plan_custom_default_desc">Custom plan with personalized schedule for the week.</string>
+
+    <!-- Time Editor Modal Additional -->
+    <string name="plan_save_as_title">Save As</string>
+    <string name="plan_save_as_message">Assign a new name to this plan to save it in your custom plans:</string>
+    <string name="plan_save_as_name_label">Plan Name</string>
+    <string name="plan_save_as_name_placeholder">e.g. 16-8 Custom</string>
+    <string name="plan_save_as_desc_label">Description (optional)</string>
+    <string name="plan_save_as_desc_placeholder">Custom notes or schedule</string>
+    <string name="plan_save_and_activate">Save and Activate</string>
+    <string name="plan_save_only">Save Only</string>
+    <string name="plan_overwrite">Overwrite</string>
+    <string name="plan_time_start_label">Start: </string>
+    <string name="plan_time_end_label">End: </string>
+    <string name="plan_time_bound_anterior">You cannot exceed the previous period (ends at %02d:%02d)</string>
+    <string name="plan_time_bound_posterior">You cannot exceed the next period (starts at %02d:%02d)</string>
+
+    <!-- AI Chat Screen Additional -->
+    <string name="ai_open_settings">Open AI Settings</string>
+    <string name="ai_dialog_clear_title">Clear conversation?</string>
+    <string name="ai_dialog_clear_message">All messages exchanged with the AI Coach will be permanently removed.</string>
+    <string name="ai_dialog_clear_confirm">Clear</string>
+    <string name="ai_config_button">Configure</string>
+    <string name="ai_custom_plan_placeholder">e.g. My Weekend Fasting</string>
+    <string name="ai_chat_subtitle_disabled">Disabled in settings</string>
+
+    <!-- Progress Screen & Chart Additional -->
+    <string name="dialog_delete_measurement_title">Delete measurement?</string>
+    <string name="dialog_delete_measurement_message">Are you sure you want to delete the measurement of %1$s kg?</string>
+    <string name="progress_initial_label">Initial</string>
+    <string name="progress_current_label">Current</string>
+    <string name="progress_target_label">Target</string>
+    <string name="progress_record_button">RECORD WEIGHT &amp; MEASUREMENTS</string>
+    <string name="progress_stat_fasts">Completed Fasts</string>
+    <string name="progress_stat_hours">Total Hours</string>
+    <string name="progress_stat_longest">Longest Fast</string>
+    <string name="chart_evolution_title">Evolution Chart</string>
+    <string name="chart_empty_measurement">No measurements recorded for %1$s</string>
+    <string name="chart_tap_to_record">Tap \'Record Measurement\' to track the first data point</string>
+    <string name="chart_variation_format">Variation: %.1f %s</string>
+    <string name="chart_variation_plus_format">Variation: +%.1f %s</string>
+    <string name="chart_range_1_month">1 Month</string>
+    <string name="chart_range_3_months">3 Months</string>
+    <string name="chart_range_all">All Time</string>
+    <string name="metric_weight">Weight</string>
+    <string name="metric_waist">Waist</string>
+    <string name="metric_hips">Hips</string>
+    <string name="metric_chest">Chest</string>
+    <string name="metric_thighs">Thighs</string>
+    <string name="metric_arms">Arms</string>
+
+    <!-- Plan Selection Start Screen Additional -->
+    <string name="plan_warrior_subtitle">Intensive fasting, also known as the warrior diet</string>
+    <string name="plan_16_8_subtitle">The most loved and proven method: 16h fasting and 8h eating</string>
+    <string name="plan_dynamic_subtitle">Dynamic alternation to accelerate metabolism and autophagy</string>
+    <string name="plan_ketosis_subtitle">Deep activation of ketosis for fat burning</string>
+
+    <!-- Misc UI Additional -->
+    <string name="planner_change_plan">Change plan</string>
+    <string name="planner_plan_saved_toast">Plan saved successfully!</string>
+    <string name="timer_button_switch_eating">Switch to Eating</string>
+    <string name="timer_button_start_fast">Start Fasting</string>
+    <string name="timer_button_stop_timer">Stop Timer</string>
+    <string name="timer_stopped_status">Timer stopped, tap to start fasting</string>
+    <string name="timer_stopped_badge">STOPPED</string>
+    <string name="timer_tap_to_start">Tap Start to begin</string>
+    <string name="timer_planned_duration_format">Planned duration: %1$dh</string>
+    <string name="coaching_finish_reading">I\'m done reading</string>
+    <string name="stages_sheet_title">Intermittent Fasting Stages</string>
+    <string name="stages_sheet_subtitle">What happens in your body hour after hour during fasting.</string>
+    <string name="markdown_copy_code">Copy code</string>
+    <string name="markdown_copied">Copied!</string>
+    <string name="share_progress_title">Share Progress</string>
+    <string name="share_progress_brand">CiboTimer</string>
+    <string name="share_weight_lost">WEIGHT LOST</string>
+    <string name="share_current_weight">CURRENT WEIGHT</string>
+    <string name="share_starting_format">Starting: %.1f kg</string>
+    <string name="share_target_format">Target: %.1f kg</string>
+    <string name="share_total_fast">Total fast</string>
+    <string name="share_body_measurements">Body measurements</string>
+    <string name="share_chooser_title">Share your progress</string>
+    <string name="share_button">SHARE PROGRESS</string>
+    <string name="week_chart_free">Free</string>
+    <string name="week_chart_fasting_from">Fasting from %1$s until %2$s</string>
+    <string name="week_chart_no_fast">No fasting scheduled</string>
 </resources>

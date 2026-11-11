@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
+import androidx.compose.ui.res.stringResource
 import com.cibotimer.ui.theme.*
 import kotlinx.coroutines.delay
 
@@ -207,13 +209,13 @@ private fun CodeBlockCard(block: Block.CodeBlock) {
             ) {
                 Icon(
                     imageVector = if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
-                    contentDescription = "Copia codice",
+                    contentDescription = stringResource(R.string.markdown_copy_code),
                     tint = if (copied) CiboTimerAzureGlow else CiboTextSecondary,
                     modifier = Modifier.size(13.dp)
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = if (copied) "Copiato!" else "Copia",
+                    text = if (copied) stringResource(R.string.markdown_copied) else stringResource(R.string.markdown_copy_code),
                     color = if (copied) CiboTimerAzureGlow else CiboTextSecondary,
                     fontSize = 11.sp
                 )
