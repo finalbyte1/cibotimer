@@ -26,6 +26,7 @@ import com.cibotimer.ui.screens.settings.SettingsScreen
 import com.cibotimer.ui.screens.timer.TimerScreen
 import com.cibotimer.ui.screens.water.WaterTrackerScreen
 import com.cibotimer.ui.theme.*
+import com.cibotimer.R
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector, val titleRes: Int) {
     data object Timer : Screen("timer", "Digiuno", Icons.Default.Timer, R.string.nav_timer)

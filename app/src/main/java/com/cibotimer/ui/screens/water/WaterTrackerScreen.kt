@@ -17,9 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.data.repository.AppRepository
 import com.cibotimer.ui.theme.*
 import java.text.SimpleDateFormat
@@ -72,7 +74,7 @@ fun WaterTrackerScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Tracciatore Idratazione",
+                        text = stringResource(R.string.water_tracker_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -80,7 +82,7 @@ fun WaterTrackerScreen(
                 },
                 actions = {
                     IconButton(onClick = { showTargetDialog = true }) {
-                        Icon(Icons.Default.Tune, contentDescription = "Imposta obiettivo", tint = CiboTimerAzure)
+                        Icon(Icons.Default.Tune, contentDescription = stringResource(R.string.water_content_desc_tune), tint = CiboTimerAzure)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundDark)
@@ -131,13 +133,13 @@ fun WaterTrackerScreen(
                             color = TextPrimary
                         )
                         Text(
-                            text = "Obiettivo: $targetMl ml",
+                            text = stringResource(R.string.water_target_format, targetMl),
                             fontSize = 13.sp,
                             color = TextSecondary
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "${(progressFraction * 100).toInt()}% completato",
+                            text = stringResource(R.string.water_progress_format, (progressFraction * 100).toInt()),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTimerAzure
@@ -149,7 +151,7 @@ fun WaterTrackerScreen(
             // Quick Add Buttons Row
             item {
                 Text(
-                    text = "Aggiungi acqua velocemente",
+                    text = stringResource(R.string.water_quick_add_header),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     color = TextPrimary,
@@ -162,9 +164,9 @@ fun WaterTrackerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    WaterPresetButton(label = "+150 ml", sub = "Tazza", onClick = { repository.addWater(150) }, modifier = Modifier.weight(1f))
-                    WaterPresetButton(label = "+250 ml", sub = "Bicchiere", onClick = { repository.addWater(250) }, modifier = Modifier.weight(1f))
-                    WaterPresetButton(label = "+500 ml", sub = "Borraccia", onClick = { repository.addWater(500) }, modifier = Modifier.weight(1f))
+                    WaterPresetButton(label = stringResource(R.string.water_preset_150), sub = stringResource(R.string.water_sub_cup), onClick = { repository.addWater(150) }, modifier = Modifier.weight(1f))
+                    WaterPresetButton(label = stringResource(R.string.water_preset_250), sub = stringResource(R.string.water_sub_glass), onClick = { repository.addWater(250) }, modifier = Modifier.weight(1f))
+                    WaterPresetButton(label = stringResource(R.string.water_preset_500), sub = stringResource(R.string.water_sub_bottle), onClick = { repository.addWater(500) }, modifier = Modifier.weight(1f))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -173,8 +175,8 @@ fun WaterTrackerScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    WaterPresetButton(label = "+750 ml", sub = "Borraccia L", onClick = { repository.addWater(750) }, modifier = Modifier.weight(1f))
-                    WaterPresetButton(label = "+1000 ml", sub = "1 Litro", onClick = { repository.addWater(1000) }, modifier = Modifier.weight(1f))
+                    WaterPresetButton(label = stringResource(R.string.water_preset_750), sub = stringResource(R.string.water_sub_large_bottle), onClick = { repository.addWater(750) }, modifier = Modifier.weight(1f))
+                    WaterPresetButton(label = stringResource(R.string.water_preset_1000), sub = stringResource(R.string.water_sub_1_liter), onClick = { repository.addWater(1000) }, modifier = Modifier.weight(1f))
                     OutlinedButton(
                         onClick = { showCustomDialog = true },
                         modifier = Modifier.weight(1f).height(62.dp),
@@ -183,7 +185,7 @@ fun WaterTrackerScreen(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(Icons.Default.Add, contentDescription = null, tint = CiboTimerAzure, modifier = Modifier.size(18.dp))
-                            Text("Altro", fontSize = 11.sp, color = CiboTimerAzure, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.water_preset_other), fontSize = 11.sp, color = CiboTimerAzure, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -198,7 +200,7 @@ fun WaterTrackerScreen(
                     ) {
                         Icon(Icons.Default.Undo, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Annulla ultimo inserimento")
+                        Text(stringResource(R.string.water_undo_last))
                     }
                 }
             }
@@ -211,7 +213,7 @@ fun WaterTrackerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Assunzioni di oggi (${todayEntries.size})",
+                        text = stringResource(R.string.water_today_history_header, todayEntries.size),
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
                         color = TextPrimary
@@ -222,7 +224,7 @@ fun WaterTrackerScreen(
             if (todayEntries.isEmpty()) {
                 item {
                     Text(
-                        text = "Nessun bicchiere registrato oggi. Ricordati di bere regolarmente per stimolare il metabolismo!",
+                        text = stringResource(R.string.water_empty_state),
                         fontSize = 13.sp,
                         color = TextSecondary,
                         modifier = Modifier.padding(vertical = 12.dp)
@@ -284,12 +286,12 @@ fun WaterTrackerScreen(
     if (showCustomDialog) {
         AlertDialog(
             onDismissRequest = { showCustomDialog = false },
-            title = { Text("Quantità personalizzata") },
+            title = { Text(stringResource(R.string.water_dialog_custom_title)) },
             text = {
                 OutlinedTextField(
                     value = customAmountText,
                     onValueChange = { customAmountText = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Millilitri (ml)") },
+                    label = { Text(stringResource(R.string.water_dialog_custom_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -309,12 +311,12 @@ fun WaterTrackerScreen(
                         contentColor = Color(0xFF031019)
                     )
                 ) {
-                    Text("Aggiungi", color = Color(0xFF031019), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.water_dialog_add), color = Color(0xFF031019), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCustomDialog = false }) {
-                    Text("Annulla")
+                    Text(stringResource(R.string.button_cancel))
                 }
             }
         )
@@ -324,15 +326,15 @@ fun WaterTrackerScreen(
     if (showTargetDialog) {
         AlertDialog(
             onDismissRequest = { showTargetDialog = false },
-            title = { Text("Obiettivo idratazione") },
+            title = { Text(stringResource(R.string.water_dialog_target_title)) },
             text = {
                 Column {
-                    Text("Imposta il tuo obiettivo di acqua giornaliero in ml (es. 2000 per 2 litri):")
+                    Text(stringResource(R.string.water_dialog_target_text))
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(
                         value = targetInputText,
                         onValueChange = { targetInputText = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("Obiettivo ml") },
+                        label = { Text(stringResource(R.string.water_dialog_target_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -352,12 +354,12 @@ fun WaterTrackerScreen(
                         contentColor = Color(0xFF031019)
                     )
                 ) {
-                    Text("Salva", color = Color(0xFF031019), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.button_save), color = Color(0xFF031019), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTargetDialog = false }) {
-                    Text("Annulla")
+                    Text(stringResource(R.string.button_cancel))
                 }
             }
         )

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -79,7 +80,7 @@ fun SettingsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Impostazioni",
+                        text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -100,7 +101,7 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Notifications,
-                            contentDescription = "Impostazioni notifiche di sistema",
+                            contentDescription = stringResource(R.string.settings_content_desc_notifications),
                             tint = FastingBlue
                         )
                     }
@@ -128,7 +129,7 @@ fun SettingsScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher),
-                    contentDescription = "App Icon",
+                    contentDescription = stringResource(R.string.settings_content_desc_app_icon),
                     modifier = Modifier.size(64.dp)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -139,21 +140,21 @@ fun SettingsScreen(
                     color = TextPrimary
                 )
                 Text(
-                    text = "Versione ${BuildConfig.VERSION_NAME}",
+                    text = stringResource(R.string.settings_version_format, BuildConfig.VERSION_NAME),
                     fontSize = 14.sp,
                     color = TextSecondaryLight
                 )
             }
 
             // Section 1: User Profile
-            SettingsSectionCard(title = "Profilo Personale", icon = Icons.Default.Person) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_profile), icon = Icons.Default.Person) {
                 AppOutlinedTextField(
                     value = name,
                     onValueChange = {
                         name = it
                         repository.updateUserProfile(userProfile.copy(name = it))
                     },
-                    label = { Text("Nome") },
+                    label = { Text(stringResource(R.string.settings_profile_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -171,7 +172,7 @@ fun SettingsScreen(
                             val h = it.toDoubleOrNull()
                             if (h != null && h > 0) repository.updateUserProfile(userProfile.copy(heightCm = h))
                         },
-                        label = { Text("Altezza (cm)") },
+                        label = { Text(stringResource(R.string.settings_profile_height)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
@@ -184,7 +185,7 @@ fun SettingsScreen(
                             val w = it.toDoubleOrNull()
                             if (w != null && w > 0) repository.updateUserProfile(userProfile.copy(targetWeightKg = w))
                         },
-                        label = { Text("Obiettivo (kg)") },
+                        label = { Text(stringResource(R.string.settings_profile_target_weight)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
@@ -200,7 +201,7 @@ fun SettingsScreen(
                         val ml = it.toIntOrNull()
                         if (ml != null && ml > 0) repository.updateUserProfile(userProfile.copy(waterTargetMl = ml))
                     },
-                    label = { Text("Obiettivo Acqua (ml)") },
+                    label = { Text(stringResource(R.string.settings_profile_water_target)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -208,16 +209,16 @@ fun SettingsScreen(
             }
 
             // Section 2: Coach AI Settings (ChatGPT / OpenAI API)
-            SettingsSectionCard(title = "Coach AI (API ChatGPT)", icon = Icons.Default.AutoAwesome) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_ai), icon = Icons.Default.AutoAwesome) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Abilita Coach AI", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(stringResource(R.string.settings_ai_enable), fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         Text(
-                            "Disattivato di default per privacy. Attivalo per creare piani personalizzati con l'AI.",
+                            stringResource(R.string.settings_ai_desc),
                             fontSize = 12.sp,
                             color = TextSecondaryLight
                         )
@@ -241,7 +242,7 @@ fun SettingsScreen(
                             aiApiKey = it
                             repository.updateAiConfig(aiConfig.copy(apiKey = it))
                         },
-                        label = { Text("API Key (es. sk-...)") },
+                        label = { Text(stringResource(R.string.settings_ai_apikey_label)) },
                         singleLine = true,
                         visualTransformation = if (showApiKey) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
@@ -263,7 +264,7 @@ fun SettingsScreen(
                             aiBaseUrl = it
                             repository.updateAiConfig(aiConfig.copy(baseUrl = it))
                         },
-                        label = { Text("Base URL API") },
+                        label = { Text(stringResource(R.string.settings_ai_baseurl_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -276,7 +277,7 @@ fun SettingsScreen(
                             aiModelName = it
                             repository.updateAiConfig(aiConfig.copy(modelName = it))
                         },
-                        label = { Text("Nome Modello (es. gpt-4o-mini, gpt-3.5-turbo)") },
+                        label = { Text(stringResource(R.string.settings_ai_model_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -284,24 +285,24 @@ fun SettingsScreen(
             }
 
             // Section 3: Notifiche
-            SettingsSectionCard(title = "Notifiche & Promemoria", icon = Icons.Default.Notifications) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_notifications), icon = Icons.Default.Notifications) {
                 NotificationToggleRow(
-                    title = "Inizio e fine digiuno",
+                    title = stringResource(R.string.settings_notif_fasting),
                     checked = userProfile.notificationsFastingEnabled,
                     onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsFastingEnabled = it)) }
                 )
                 NotificationToggleRow(
-                    title = "Raggiungimento stadi metabolici",
+                    title = stringResource(R.string.settings_notif_stages),
                     checked = userProfile.notificationsStagesEnabled,
                     onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsStagesEnabled = it)) }
                 )
                 NotificationToggleRow(
-                    title = "Promemoria idratazione",
+                    title = stringResource(R.string.settings_notif_water),
                     checked = userProfile.notificationsWaterEnabled,
                     onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsWaterEnabled = it)) }
                 )
                 NotificationToggleRow(
-                    title = "Promemoria pesata settimanale",
+                    title = stringResource(R.string.settings_notif_weighin),
                     checked = userProfile.notificationsWeighInEnabled,
                     onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsWeighInEnabled = it)) }
                 )
@@ -309,7 +310,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 AppSecondaryButton(
-                    text = "Configura Notifica Fissa di Sistema",
+                    text = stringResource(R.string.settings_config_system_notif),
                     icon = Icons.Default.NotificationsActive,
                     onClick = {
                         NotificationHelper.openChannelSettings(context)
@@ -319,7 +320,7 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Apre le impostazioni Android del canale Timer Live per verificare l'importanza elevata ed evitare che il sistema nasconda o chiuda la notifica.",
+                    text = stringResource(R.string.settings_config_system_notif_desc),
                     fontSize = 11.5.sp,
                     color = CiboTextSecondary,
                     lineHeight = 16.sp
@@ -327,16 +328,16 @@ fun SettingsScreen(
             }
 
             // Section 4: Google Drive & Auto Backup Android
-            SettingsSectionCard(title = "Backup Cloud & Google Drive", icon = Icons.Default.CloudSync) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_cloud), icon = Icons.Default.CloudSync) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Backup Automatico su Drive", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(stringResource(R.string.settings_cloud_auto_backup), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         Text(
-                            "Sfrutta l'Auto Backup nativo di Android per salvare e sincronizzare automaticamente il database e le impostazioni su Google Drive.",
+                            stringResource(R.string.settings_cloud_auto_backup_desc),
                             fontSize = 12.sp,
                             color = TextSecondaryLight
                         )
@@ -360,21 +361,21 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     AppPrimaryButton(
-                        text = "Backup ora",
+                        text = stringResource(R.string.settings_cloud_backup_now),
                         icon = Icons.Default.CloudUpload,
                         onClick = {
                             val result = repository.exportAndShareBackup(context)
                             driveStatusMessage = if (result.isSuccess) {
-                                "Condivisione backup avviata verso Google Drive / app esterne"
+                                context.getString(R.string.settings_cloud_share_started)
                             } else {
-                                "Errore apertura condivisione: ${result.exceptionOrNull()?.localizedMessage}"
+                                context.getString(R.string.settings_cloud_share_error, result.exceptionOrNull()?.localizedMessage ?: "")
                             }
                         },
                         modifier = Modifier.weight(1f)
                     )
 
                     AppSecondaryButton(
-                        text = "Ripristina",
+                        text = stringResource(R.string.settings_cloud_restore),
                         icon = Icons.Default.CloudDownload,
                         onClick = { showJsonImportDialog = true },
                         modifier = Modifier.weight(1f)
@@ -393,9 +394,9 @@ fun SettingsScreen(
             }
 
             // Section 5: Backup Locale (Export / Import JSON)
-            SettingsSectionCard(title = "Esportazione & Ripristino Locale", icon = Icons.Default.SaveAlt) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_local_backup), icon = Icons.Default.SaveAlt) {
                 Text(
-                    text = "Puoi esportare l'intero database della tua app (storico pesate, digiuni, bicchieri d'acqua, piani) in un file JSON o importarlo.",
+                    text = stringResource(R.string.settings_local_backup_desc),
                     fontSize = 12.sp,
                     color = TextSecondaryLight,
                     lineHeight = 17.sp
@@ -408,7 +409,7 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     AppPrimaryButton(
-                        text = "Esporta e Condividi",
+                        text = stringResource(R.string.settings_local_export),
                         icon = Icons.Default.Share,
                         onClick = {
                             repository.exportAndShareBackup(context)
@@ -417,7 +418,7 @@ fun SettingsScreen(
                     )
 
                     AppSecondaryButton(
-                        text = "Importa JSON",
+                        text = stringResource(R.string.settings_local_import),
                         icon = Icons.Default.Download,
                         onClick = { showJsonImportDialog = true },
                         modifier = Modifier.weight(1f)
@@ -436,9 +437,9 @@ fun SettingsScreen(
             }
 
             // Section 6: Area Pericolo & Reset Dati Locali
-            SettingsSectionCard(title = "Area Pericolo & Reset", icon = Icons.Default.DeleteForever) {
+            SettingsSectionCard(title = stringResource(R.string.settings_section_danger), icon = Icons.Default.DeleteForever) {
                 Text(
-                    text = "Elimina in modo definitivo tutti i dati locali registrati sull'app (database Room/SQLite, preferenze, cache e cronologia). Utile per ripristinare CiboTimer allo stato iniziale pulito.",
+                    text = stringResource(R.string.settings_danger_desc),
                     fontSize = 12.sp,
                     color = TextSecondaryLight,
                     lineHeight = 17.sp
@@ -447,7 +448,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 AppDangerButton(
-                    text = "Reset App / Elimina Dati Locali",
+                    text = stringResource(R.string.settings_danger_button),
                     icon = Icons.Default.DeleteForever,
                     onClick = { showResetConfirmDialog = true },
                     modifier = Modifier.fillMaxWidth()
@@ -467,14 +468,14 @@ fun SettingsScreen(
             // Section: Live Update & Aggiornamenti
             val isPlayStore = com.cibotimer.BuildConfig.IS_PLAY_STORE_BUILD
             SettingsSectionCard(
-                title = if (isPlayStore) "Aggiornamenti (Google Play)" else "Aggiornamenti & Live Update",
+                title = if (isPlayStore) stringResource(R.string.settings_update_title_play) else stringResource(R.string.settings_update_title_live),
                 icon = Icons.Default.SystemUpdate
             ) {
                 Text(
                     text = if (isPlayStore) {
-                        "Canale di distribuzione: Google Play Store. Gli aggiornamenti dell'app sono distribuiti e verificati in sicurezza tramite Google Play."
+                        stringResource(R.string.settings_update_desc_play)
                     } else {
-                        "L'app controlla automaticamente la presenza di nuovi file APK compilati sul server Live Update locale / GitHub."
+                        stringResource(R.string.settings_update_desc_live)
                     },
                     fontSize = 12.sp,
                     color = TextSecondaryLight,
@@ -489,7 +490,7 @@ fun SettingsScreen(
                             updateServerUrlText = it
                             updateManager?.serverUrl = it
                         },
-                        label = { Text("URL Server Aggiornamenti") },
+                        label = { Text(stringResource(R.string.settings_update_server_url)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -503,7 +504,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Controllo automatico all'avvio",
+                        text = stringResource(R.string.settings_update_auto_check),
                         fontSize = 13.sp,
                         color = Color.White
                     )
@@ -520,7 +521,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 AppPrimaryButton(
-                    text = if (isPlayStore) "Controlla su Google Play" else "Controlla Aggiornamenti Ora",
+                    text = if (isPlayStore) stringResource(R.string.settings_update_check_play) else stringResource(R.string.settings_update_check_now),
                     icon = Icons.Default.Refresh,
                     onClick = {
                         if (isPlayStore) {
@@ -536,7 +537,7 @@ fun SettingsScreen(
                     is UpdateState.Checking -> {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Verifica aggiornamenti in corso...",
+                            text = stringResource(R.string.update_state_checking),
                             fontSize = 12.sp,
                             color = FastingBlue
                         )
@@ -544,7 +545,7 @@ fun SettingsScreen(
                     is UpdateState.UpToDate -> {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "✅ Stai utilizzando la versione più recente!",
+                            text = stringResource(R.string.update_state_uptodate),
                             fontSize = 12.sp,
                             color = FastingBlue,
                             fontWeight = FontWeight.Bold
@@ -554,14 +555,14 @@ fun SettingsScreen(
                         val info = updateState.info
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "🚀 Versione ${info.versionName} disponibile (${info.size})!",
+                            text = stringResource(R.string.update_state_available_format, info.versionName, info.size),
                             fontSize = 12.sp,
                             color = FastingBlue,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         AppPrimaryButton(
-                            text = if (isPlayStore) "Aggiorna su Google Play" else "Scarica e Installa Ora",
+                            text = if (isPlayStore) stringResource(R.string.update_button_play) else stringResource(R.string.update_button_direct),
                             icon = if (isPlayStore) Icons.Default.OpenInNew else Icons.Default.Download,
                             onClick = { updateManager?.downloadAndInstall(info) },
                             modifier = Modifier.fillMaxWidth()
@@ -570,7 +571,7 @@ fun SettingsScreen(
                     is UpdateState.Downloading -> {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Download in corso: ${updateState.progressPercent}%",
+                            text = stringResource(R.string.update_state_downloading_format, updateState.progressPercent),
                             fontSize = 12.sp,
                             color = FastingBlue
                         )
@@ -588,9 +589,9 @@ fun SettingsScreen(
             }
 
             // Section: Disclaimer Medico & Salute (Google Play Compliance)
-            SettingsSectionCard(title = "Disclaimer Medico & Benessere", icon = Icons.Default.Info) {
+            SettingsSectionCard(title = stringResource(R.string.health_disclaimer_title), icon = Icons.Default.Info) {
                 Text(
-                    text = "CiboTimer è uno strumento dedicato al benessere personale e al tracciamento delle abitudini alimentari. I contenuti, le stime delle fasi metaboliche e le risposte dell'assistente AI sono fornite unicamente a scopo informativo ed educativo e non sostituiscono in alcun modo il parere, la diagnosi o la terapia di un medico o professionista sanitario qualificato. Consulta sempre il tuo medico prima di intraprendere regimi di digiuno o variazioni dietetiche rilevanti.",
+                    text = stringResource(R.string.health_disclaimer_text_full),
                     fontSize = 11.sp,
                     color = TextSecondaryLight,
                     lineHeight = 16.sp
@@ -603,13 +604,13 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "CiboTimer Native App v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})",
+                    text = stringResource(R.string.settings_footer_version_format, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
                     color = TextSecondaryLight
                 )
                 Text(
-                    text = "Tema Dark • Blu & Azzurro • Notifiche in tempo reale",
+                    text = stringResource(R.string.settings_footer_subtitle),
                     fontSize = 11.sp,
                     color = TextSecondaryLight
                 )
@@ -621,10 +622,10 @@ fun SettingsScreen(
     if (showJsonImportDialog) {
         AlertDialog(
             onDismissRequest = { showJsonImportDialog = false },
-            title = { Text("Importa Backup JSON") },
+            title = { Text(stringResource(R.string.settings_dialog_import_title)) },
             text = {
                 Column {
-                    Text("Incolla qui il contenuto del file JSON di backup:", fontSize = 12.sp, color = TextSecondaryLight)
+                    Text(stringResource(R.string.settings_dialog_import_text), fontSize = 12.sp, color = TextSecondaryLight)
                     Spacer(modifier = Modifier.height(8.dp))
                     AppOutlinedTextField(
                         value = jsonImportText,
@@ -637,22 +638,22 @@ fun SettingsScreen(
             },
             confirmButton = {
                 AppPrimaryButton(
-                    text = "Importa",
+                    text = stringResource(R.string.settings_dialog_import_button),
                     onClick = {
                         val result = repository.importBackupJson(jsonImportText.trim())
                         if (result.isSuccess) {
-                            importStatusMessage = "Dati importati con successo!"
+                            importStatusMessage = context.getString(R.string.settings_local_import_success)
                             showJsonImportDialog = false
                             jsonImportText = ""
                         } else {
-                            importStatusMessage = "Errore durante l'importazione: ${result.exceptionOrNull()?.localizedMessage}"
+                            importStatusMessage = context.getString(R.string.settings_local_import_error, result.exceptionOrNull()?.localizedMessage ?: "")
                         }
                     }
                 )
             },
             dismissButton = {
                 AppSecondaryButton(
-                    text = "Annulla",
+                    text = stringResource(R.string.button_cancel),
                     onClick = { showJsonImportDialog = false }
                 )
             }
@@ -673,7 +674,7 @@ fun SettingsScreen(
             },
             title = {
                 Text(
-                    text = "Elimina Dati Locali",
+                    text = stringResource(R.string.settings_dialog_reset_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextPrimary
@@ -682,24 +683,20 @@ fun SettingsScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Sei sicuro di voler resettare l'applicazione?",
+                        text = stringResource(R.string.settings_dialog_reset_confirm_q),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
                         color = TextPrimary
                     )
                     Text(
-                        text = "Verranno eliminati in modo permanente:\n" +
-                                "• Database Room e tabelle SQLite locali\n" +
-                                "• Storico di digiuni, sessioni e pesate\n" +
-                                "• Monitoraggio idratazione e piani personalizzati\n" +
-                                "• Tutte le SharedPreferences e la cache interna",
+                        text = stringResource(R.string.settings_dialog_reset_details),
                         fontSize = 13.sp,
                         color = TextSecondaryLight,
                         lineHeight = 19.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "⚠️ Questa operazione è definitiva e non può essere annullata. Se desideri conservare i tuoi dati, effettua prima un'esportazione.",
+                        text = stringResource(R.string.settings_dialog_reset_warning),
                         fontSize = 12.5.sp,
                         color = CiboStopRed,
                         lineHeight = 18.sp
@@ -712,9 +709,9 @@ fun SettingsScreen(
                         showResetConfirmDialog = false
                         val result = repository.resetAllLocalData()
                         if (result.isSuccess) {
-                            resetStatusMessage = "✅ Tutti i dati locali sono stati eliminati e l'app è stata ripristinata allo stato iniziale."
+                            resetStatusMessage = context.getString(R.string.settings_reset_success)
                         } else {
-                            resetStatusMessage = "⚠️ Errore durante il reset: ${result.exceptionOrNull()?.localizedMessage}"
+                            resetStatusMessage = context.getString(R.string.settings_reset_error, result.exceptionOrNull()?.localizedMessage ?: "")
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -723,12 +720,12 @@ fun SettingsScreen(
                     ),
                     shape = RoundedCornerShape(50)
                 ) {
-                    Text("Elimina Definitivamente", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.settings_dialog_reset_button), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 AppSecondaryButton(
-                    text = "Annulla",
+                    text = stringResource(R.string.button_cancel),
                     onClick = { showResetConfirmDialog = false }
                 )
             },

@@ -140,4 +140,123 @@
     <string name="update_button_later">Later</string>
     <string name="health_disclaimer_title">Medical &amp; Wellness Disclaimer</string>
     <string name="health_disclaimer_text">CiboTimer is designed for educational and personal wellness tracking purposes and does not provide medical diagnosis or treatment. Always consult your physician before starting any fasting regimen.</string>
+
+    <!-- Common Buttons -->
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_delete">Delete</string>
+
+    <!-- Goal Editor Dialog -->
+    <string name="goal_editor_title">Edit Goals &amp; Weight</string>
+    <string name="goal_editor_desc">Configure your starting weight, target weight, and height to track your progress.</string>
+    <string name="goal_editor_starting_weight">Starting Weight (kg)</string>
+    <string name="goal_editor_target_weight">Target Weight (kg)</string>
+    <string name="goal_editor_height">Height (cm)</string>
+    <string name="goal_editor_target_bmi">BMI at target: %.1f</string>
+
+    <!-- Measurement Entry Dialog -->
+    <string name="measurement_dialog_title_new">Record Measurement &amp; Weight</string>
+    <string name="measurement_dialog_title_edit">Edit Measurement</string>
+    <string name="measurement_date_prefix">Date: %1$s</string>
+    <string name="measurement_weight_label">Weight (kg) *</string>
+    <string name="measurement_circumferences_header">Body Measurements (cm, optional):</string>
+    <string name="measurement_waist_label">Waist (cm)</string>
+    <string name="measurement_hips_label">Hips (cm)</string>
+    <string name="measurement_whr_format">Waist-to-Hip Ratio (WHR): %.2f</string>
+    <string name="measurement_chest_label">Chest (cm)</string>
+    <string name="measurement_thighs_label">Thighs (cm)</string>
+    <string name="measurement_arms_label">Arms (cm, optional)</string>
+    <string name="measurement_notes_label">Notes (e.g. fasting, post run)</string>
+
+    <!-- Water Tracker Screen -->
+    <string name="water_tracker_title">Hydration Tracker</string>
+    <string name="water_content_desc_tune">Set target</string>
+    <string name="water_target_format">Target: %1$d ml</string>
+    <string name="water_progress_format">%1$d%% completed</string>
+    <string name="water_quick_add_header">Quick add water</string>
+    <string name="water_preset_150">+150 ml</string>
+    <string name="water_sub_cup">Cup</string>
+    <string name="water_preset_250">+250 ml</string>
+    <string name="water_sub_glass">Glass</string>
+    <string name="water_preset_500">+500 ml</string>
+    <string name="water_sub_bottle">Bottle</string>
+    <string name="water_preset_750">+750 ml</string>
+    <string name="water_sub_large_bottle">Large Bottle</string>
+    <string name="water_preset_1000">+1000 ml</string>
+    <string name="water_sub_1_liter">1 Liter</string>
+    <string name="water_preset_other">Other</string>
+    <string name="water_undo_last">Undo last entry</string>
+    <string name="water_today_history_header">Today\'s intake (%1$d)</string>
+    <string name="water_empty_state">No water logged today. Remember to drink regularly to boost your metabolism!</string>
+    <string name="water_dialog_custom_title">Custom amount</string>
+    <string name="water_dialog_custom_label">Milliliters (ml)</string>
+    <string name="water_dialog_add">Add</string>
+    <string name="water_dialog_target_title">Hydration target</string>
+    <string name="water_dialog_target_text">Set your daily water target in ml (e.g. 2000 for 2 liters):</string>
+    <string name="water_dialog_target_label">Target ml</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_content_desc_notifications">System notification settings</string>
+    <string name="settings_content_desc_app_icon">App Icon</string>
+    <string name="settings_version_format">Version %1$s</string>
+    <string name="settings_section_profile">Personal Profile</string>
+    <string name="settings_profile_name">Name</string>
+    <string name="settings_profile_height">Height (cm)</string>
+    <string name="settings_profile_target_weight">Target weight (kg)</string>
+    <string name="settings_profile_water_target">Water Target (ml)</string>
+    <string name="settings_section_ai">AI Coach (ChatGPT API)</string>
+    <string name="settings_ai_enable">Enable AI Coach</string>
+    <string name="settings_ai_desc">Disabled by default for privacy. Enable it to create custom plans with AI.</string>
+    <string name="settings_ai_apikey_label">API Key (e.g. sk-...)</string>
+    <string name="settings_ai_baseurl_label">API Base URL</string>
+    <string name="settings_ai_model_label">Model Name (e.g. gpt-4o-mini, gpt-3.5-turbo)</string>
+    <string name="settings_section_notifications">Notifications &amp; Reminders</string>
+    <string name="settings_notif_fasting">Start and end of fast</string>
+    <string name="settings_notif_stages">Reaching metabolic stages</string>
+    <string name="settings_notif_water">Hydration reminders</string>
+    <string name="settings_notif_weighin">Weekly weigh-in reminder</string>
+    <string name="settings_config_system_notif">Configure Fixed System Notification</string>
+    <string name="settings_config_system_notif_desc">Opens Android settings for Live Timer channel to verify high importance and prevent the system from hiding or closing the notification.</string>
+    <string name="settings_section_cloud">Cloud Backup &amp; Google Drive</string>
+    <string name="settings_cloud_auto_backup">Automatic Drive Backup</string>
+    <string name="settings_cloud_auto_backup_desc">Leverages native Android Auto Backup to automatically save and sync the database and settings to Google Drive.</string>
+    <string name="settings_cloud_backup_now">Backup now</string>
+    <string name="settings_cloud_restore">Restore</string>
+    <string name="settings_cloud_share_started">Backup sharing started to Google Drive / external apps</string>
+    <string name="settings_cloud_share_error">Sharing open error: %1$s</string>
+    <string name="settings_section_local_backup">Local Export &amp; Restore</string>
+    <string name="settings_local_backup_desc">You can export your entire app database (weigh-in history, fasts, water glasses, plans) to a JSON file or import it.</string>
+    <string name="settings_local_export">Export and Share</string>
+    <string name="settings_local_import">Import JSON</string>
+    <string name="settings_local_import_success">Data imported successfully!</string>
+    <string name="settings_local_import_error">Error during import: %1$s</string>
+    <string name="settings_section_danger">Danger Area &amp; Reset</string>
+    <string name="settings_danger_desc">Permanently deletes all local data recorded on the app (Room/SQLite database, preferences, cache, and history). Useful to restore CiboTimer to a clean initial state.</string>
+    <string name="settings_danger_button">Reset App / Delete Local Data</string>
+    <string name="settings_update_title_play">Updates (Google Play)</string>
+    <string name="settings_update_title_live">Updates &amp; Live Update</string>
+    <string name="settings_update_desc_play">Distribution channel: Google Play Store. App updates are securely distributed and verified via Google Play.</string>
+    <string name="settings_update_desc_live">The app automatically checks for new compiled APK files on the local Live Update server / GitHub.</string>
+    <string name="settings_update_server_url">Update Server URL</string>
+    <string name="settings_update_auto_check">Automatic check on startup</string>
+    <string name="settings_update_check_play">Check on Google Play</string>
+    <string name="settings_update_check_now">Check for Updates Now</string>
+    <string name="update_state_checking">Checking for updates...</string>
+    <string name="update_state_uptodate">✅ You are using the latest version!</string>
+    <string name="update_state_available_format">🚀 Version %1$s available (%2$s)s!</string>
+    <string name="update_state_downloading_format">Downloading: %1$d%%</string>
+    <string name="health_disclaimer_text_full">CiboTimer is a tool dedicated to personal wellness and tracking eating habits. Content, metabolic stage estimates, and AI assistant responses are provided solely for informational and educational purposes and do not in any way replace the advice, diagnosis, or treatment of a qualified physician or healthcare professional. Always consult your doctor before starting fasting regimens or significant dietary changes.</string>
+    <string name="settings_footer_version_format">CiboTimer Native App v%1$s (Build %2$d)</string>
+    <string name="settings_footer_subtitle">Dark Theme • Blue &amp; Cyan • Real-time Notifications</string>
+    <string name="settings_dialog_import_title">Import JSON Backup</string>
+    <string name="settings_dialog_import_text">Paste the backup JSON file content here:</string>
+    <string name="settings_dialog_import_button">Import</string>
+    <string name="settings_dialog_reset_title">Delete Local Data</string>
+    <string name="settings_dialog_reset_confirm_q">Are you sure you want to reset the application?</string>
+    <string name="settings_dialog_reset_details">The following will be permanently deleted:\n• Room database and local SQLite tables\n• History of fasts, sessions, and weigh-ins\n• Hydration tracking and custom plans\n• All SharedPreferences and internal cache</string>
+    <string name="settings_dialog_reset_warning">⚠️ This operation is final and cannot be undone. If you wish to keep your data, perform an export first.</string>
+    <string name="settings_dialog_reset_button">Delete Permanently</string>
+    <string name="settings_reset_success">✅ All local data has been deleted and the app has been restored to its initial state.</string>
+    <string name="settings_reset_error">⚠️ Error during reset: %1$s</string>
 </resources>

@@ -12,10 +12,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.domain.BmiCalculator
 import com.cibotimer.ui.theme.*
 import java.util.Locale
@@ -53,7 +55,7 @@ fun GoalEditorDialog(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Modifica Obiettivi e Peso",
+                    text = stringResource(R.string.goal_editor_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
                     color = CiboTextPrimary
@@ -66,7 +68,7 @@ fun GoalEditorDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Configura il tuo peso di partenza, l'obiettivo da raggiungere e la tua altezza per monitorare i tuoi progressi.",
+                    text = stringResource(R.string.goal_editor_desc),
                     fontSize = 12.sp,
                     color = CiboTextSecondary
                 )
@@ -74,7 +76,7 @@ fun GoalEditorDialog(
                 OutlinedTextField(
                     value = startingWeightText,
                     onValueChange = { startingWeightText = it },
-                    label = { Text("Peso di Partenza (kg)") },
+                    label = { Text(stringResource(R.string.goal_editor_starting_weight)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -89,7 +91,7 @@ fun GoalEditorDialog(
                 OutlinedTextField(
                     value = targetWeightText,
                     onValueChange = { targetWeightText = it },
-                    label = { Text("Peso Obiettivo (kg)") },
+                    label = { Text(stringResource(R.string.goal_editor_target_weight)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -104,7 +106,7 @@ fun GoalEditorDialog(
                 OutlinedTextField(
                     value = heightText,
                     onValueChange = { heightText = it },
-                    label = { Text("Altezza (cm)") },
+                    label = { Text(stringResource(R.string.goal_editor_height)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -129,7 +131,7 @@ fun GoalEditorDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "BMI all'obiettivo: %.1f".format(Locale.US, targetBmi.bmiValue),
+                            text = stringResource(R.string.goal_editor_target_bmi, targetBmi.bmiValue),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = CiboTextPrimary
@@ -160,12 +162,12 @@ fun GoalEditorDialog(
                 ),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Salva", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.button_save), fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Annulla", color = CiboTextSecondary)
+                Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
             }
         }
     )

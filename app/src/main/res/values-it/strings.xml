@@ -140,4 +140,123 @@
     <string name="update_button_later">Più tardi</string>
     <string name="health_disclaimer_title">Disclaimer Medico &amp; Benessere</string>
     <string name="health_disclaimer_text">CiboTimer è progettato a scopo informativo ed educativo e non costituisce parere o diagnosi medica. Consulta sempre il tuo medico prima di iniziare regimi di digiuno.</string>
+
+    <!-- Common Buttons -->
+    <string name="button_save">Salva</string>
+    <string name="button_cancel">Annulla</string>
+    <string name="button_delete">Elimina</string>
+
+    <!-- Goal Editor Dialog -->
+    <string name="goal_editor_title">Modifica Obiettivi e Peso</string>
+    <string name="goal_editor_desc">Configura il tuo peso di partenza, l\'obiettivo da raggiungere e la tua altezza per monitorare i tuoi progressi.</string>
+    <string name="goal_editor_starting_weight">Peso di Partenza (kg)</string>
+    <string name="goal_editor_target_weight">Peso Obiettivo (kg)</string>
+    <string name="goal_editor_height">Altezza (cm)</string>
+    <string name="goal_editor_target_bmi">BMI all\'obiettivo: %.1f</string>
+
+    <!-- Measurement Entry Dialog -->
+    <string name="measurement_dialog_title_new">Registra Misura &amp; Peso</string>
+    <string name="measurement_dialog_title_edit">Modifica Misura</string>
+    <string name="measurement_date_prefix">Data: %1$s</string>
+    <string name="measurement_weight_label">Peso (kg) *</string>
+    <string name="measurement_circumferences_header">Circonferenze Corporee (cm, facoltative):</string>
+    <string name="measurement_waist_label">Vita (cm)</string>
+    <string name="measurement_hips_label">Fianchi (cm)</string>
+    <string name="measurement_whr_format">Rapporto Vita/Fianchi (WHR): %.2f</string>
+    <string name="measurement_chest_label">Torace (cm)</string>
+    <string name="measurement_thighs_label">Cosce (cm)</string>
+    <string name="measurement_arms_label">Braccia (cm, facoltativo)</string>
+    <string name="measurement_notes_label">Note (es. a digiuno, dopo corsa)</string>
+
+    <!-- Water Tracker Screen -->
+    <string name="water_tracker_title">Tracciatore Idratazione</string>
+    <string name="water_content_desc_tune">Imposta obiettivo</string>
+    <string name="water_target_format">Obiettivo: %1$d ml</string>
+    <string name="water_progress_format">%1$d%% completato</string>
+    <string name="water_quick_add_header">Aggiungi acqua velocemente</string>
+    <string name="water_preset_150">+150 ml</string>
+    <string name="water_sub_cup">Tazza</string>
+    <string name="water_preset_250">+250 ml</string>
+    <string name="water_sub_glass">Bicchiere</string>
+    <string name="water_preset_500">+500 ml</string>
+    <string name="water_sub_bottle">Borraccia</string>
+    <string name="water_preset_750">+750 ml</string>
+    <string name="water_sub_large_bottle">Borraccia L</string>
+    <string name="water_preset_1000">+1000 ml</string>
+    <string name="water_sub_1_liter">1 Litro</string>
+    <string name="water_preset_other">Altro</string>
+    <string name="water_undo_last">Annulla ultimo inserimento</string>
+    <string name="water_today_history_header">Assunzioni di oggi (%1$d)</string>
+    <string name="water_empty_state">Nessun bicchiere registrato oggi. Ricordati di bere regolarmente per stimolare il metabolismo!</string>
+    <string name="water_dialog_custom_title">Quantità personalizzata</string>
+    <string name="water_dialog_custom_label">Millilitri (ml)</string>
+    <string name="water_dialog_add">Aggiungi</string>
+    <string name="water_dialog_target_title">Obiettivo idratazione</string>
+    <string name="water_dialog_target_text">Imposta il tuo obiettivo di acqua giornaliero in ml (es. 2000 per 2 litri):</string>
+    <string name="water_dialog_target_label">Obiettivo ml</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_content_desc_notifications">Impostazioni notifiche di sistema</string>
+    <string name="settings_content_desc_app_icon">Icona App</string>
+    <string name="settings_version_format">Versione %1$s</string>
+    <string name="settings_section_profile">Profilo Personale</string>
+    <string name="settings_profile_name">Nome</string>
+    <string name="settings_profile_height">Altezza (cm)</string>
+    <string name="settings_profile_target_weight">Obiettivo (kg)</string>
+    <string name="settings_profile_water_target">Obiettivo Acqua (ml)</string>
+    <string name="settings_section_ai">Coach AI (API ChatGPT)</string>
+    <string name="settings_ai_enable">Abilita Coach AI</string>
+    <string name="settings_ai_desc">Disattivato di default per privacy. Attivalo per creare piani personalizzati con l\'AI.</string>
+    <string name="settings_ai_apikey_label">API Key (es. sk-...)</string>
+    <string name="settings_ai_baseurl_label">Base URL API</string>
+    <string name="settings_ai_model_label">Nome Modello (es. gpt-4o-mini, gpt-3.5-turbo)</string>
+    <string name="settings_section_notifications">Notifiche &amp; Promemoria</string>
+    <string name="settings_notif_fasting">Inizio e fine digiuno</string>
+    <string name="settings_notif_stages">Raggiungimento stadi metabolici</string>
+    <string name="settings_notif_water">Promemoria idratazione</string>
+    <string name="settings_notif_weighin">Promemoria pesata settimanale</string>
+    <string name="settings_config_system_notif">Configura Notifica Fissa di Sistema</string>
+    <string name="settings_config_system_notif_desc">Apre le impostazioni Android del canale Timer Live per verificare l\'importanza elevata ed evitare che il sistema nasconda o chiuda la notifica.</string>
+    <string name="settings_section_cloud">Backup Cloud &amp; Google Drive</string>
+    <string name="settings_cloud_auto_backup">Backup Automatico su Drive</string>
+    <string name="settings_cloud_auto_backup_desc">Sfrutta l\'Auto Backup nativo di Android per salvare e sincronizzare automaticamente il database e le impostazioni su Google Drive.</string>
+    <string name="settings_cloud_backup_now">Backup ora</string>
+    <string name="settings_cloud_restore">Ripristina</string>
+    <string name="settings_cloud_share_started">Condivisione backup avviata verso Google Drive / app esterne</string>
+    <string name="settings_cloud_share_error">Errore apertura condivisione: %1$s</string>
+    <string name="settings_section_local_backup">Esportazione &amp; Ripristino Locale</string>
+    <string name="settings_local_backup_desc">Puoi esportare l\'intero database della tua app (storico pesate, digiuni, bicchieri d\'acqua, piani) in un file JSON o importarlo.</string>
+    <string name="settings_local_export">Esporta e Condividi</string>
+    <string name="settings_local_import">Importa JSON</string>
+    <string name="settings_local_import_success">Dati importati con successo!</string>
+    <string name="settings_local_import_error">Errore durante l\'importazione: %1$s</string>
+    <string name="settings_section_danger">Area Pericolo &amp; Reset</string>
+    <string name="settings_danger_desc">Elimina in modo definitivo tutti i dati locali registrati sull\'app (database Room/SQLite, preferenze, cache e cronologia). Utile per ripristinare CiboTimer allo stato iniziale pulito.</string>
+    <string name="settings_danger_button">Reset App / Elimina Dati Locali</string>
+    <string name="settings_update_title_play">Aggiornamenti (Google Play)</string>
+    <string name="settings_update_title_live">Aggiornamenti &amp; Live Update</string>
+    <string name="settings_update_desc_play">Canale di distribuzione: Google Play Store. Gli aggiornamenti dell\'app sono distribuiti e verificati in sicurezza tramite Google Play.</string>
+    <string name="settings_update_desc_live">L\'app controlla automaticamente la presenza di nuovi file APK compilati sul server Live Update locale / GitHub.</string>
+    <string name="settings_update_server_url">URL Server Aggiornamenti</string>
+    <string name="settings_update_auto_check">Controllo automatico all\'avvio</string>
+    <string name="settings_update_check_play">Controlla su Google Play</string>
+    <string name="settings_update_check_now">Controlla Aggiornamenti Ora</string>
+    <string name="update_state_checking">Verifica aggiornamenti in corso...</string>
+    <string name="update_state_uptodate">✅ Stai utilizzando la versione più recente!</string>
+    <string name="update_state_available_format">🚀 Versione %1$s disponibile (%2$s)s!</string>
+    <string name="update_state_downloading_format">Download in corso: %1$d%%</string>
+    <string name="health_disclaimer_text_full">CiboTimer è uno strumento dedicato al benessere personale e al tracciamento delle abitudini alimentari. I contenuti, le stime delle fasi metaboliche e le risposte dell\'assistente AI sono fornite unicamente a scopo informativo ed educativo e non sostituiscono in alcun modo il parere, la diagnosi o la terapia di un medico o professionista sanitario qualificato. Consulta sempre il tuo medico prima di intraprendere regimi di digiuno o variazioni dietetiche rilevanti.</string>
+    <string name="settings_footer_version_format">CiboTimer Native App v%1$s (Build %2$d)</string>
+    <string name="settings_footer_subtitle">Tema Dark • Blu &amp; Azzurro • Notifiche in tempo reale</string>
+    <string name="settings_dialog_import_title">Importa Backup JSON</string>
+    <string name="settings_dialog_import_text">Incolla qui il contenuto del file JSON di backup:</string>
+    <string name="settings_dialog_import_button">Importa</string>
+    <string name="settings_dialog_reset_title">Elimina Dati Locali</string>
+    <string name="settings_dialog_reset_confirm_q">Sei sicuro di voler resettare l\'applicazione?</string>
+    <string name="settings_dialog_reset_details">Verranno eliminati in modo permanente:\n• Database Room e tabelle SQLite locali\n• Storico di digiuni, sessioni e pesate\n• Monitoraggio idratazione e piani personalizzati\n• Tutte le SharedPreferences e la cache interna</string>
+    <string name="settings_dialog_reset_warning">⚠️ Questa operazione è definitiva e non può essere annullata. Se desideri conservare i tuoi dati, effettua prima un\'esportazione.</string>
+    <string name="settings_dialog_reset_button">Elimina Definitivamente</string>
+    <string name="settings_reset_success">✅ Tutti i dati locali sono stati eliminati e l\'app è stata ripristinata allo stato iniziale.</string>
+    <string name="settings_reset_error">⚠️ Errore durante il reset: %1$s</string>
 </resources>

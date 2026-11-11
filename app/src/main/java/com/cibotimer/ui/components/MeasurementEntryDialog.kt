@@ -15,10 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
 import com.cibotimer.domain.BodyStatsCalculator
 import com.cibotimer.ui.theme.*
@@ -82,7 +84,7 @@ fun MeasurementEntryDialog(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (initialEntry == null) "Registra Misura & Peso" else "Modifica Misura",
+                        text = if (initialEntry == null) stringResource(R.string.measurement_dialog_title_new) else stringResource(R.string.measurement_dialog_title_edit),
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp,
                         color = CiboTextPrimary
@@ -93,7 +95,7 @@ fun MeasurementEntryDialog(
                     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = Icons.Default.DeleteOutline,
-                            contentDescription = "Elimina",
+                            contentDescription = stringResource(R.string.button_delete),
                             tint = Color(0xFFEF4444)
                         )
                     }
@@ -108,7 +110,7 @@ fun MeasurementEntryDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
-                    text = "Data: ${dateFmt.format(Date(epochMillis))}",
+                    text = stringResource(R.string.measurement_date_prefix, dateFmt.format(Date(epochMillis))),
                     fontSize = 11.sp,
                     color = CiboTextSecondary
                 )
@@ -117,7 +119,7 @@ fun MeasurementEntryDialog(
                 OutlinedTextField(
                     value = weightText,
                     onValueChange = { weightText = it },
-                    label = { Text("Peso (kg) *") },
+                    label = { Text(stringResource(R.string.measurement_weight_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -130,7 +132,7 @@ fun MeasurementEntryDialog(
                 )
 
                 Text(
-                    text = "Circonferenze Corporee (cm, facoltative):",
+                    text = stringResource(R.string.measurement_circumferences_header),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = CiboTimerAzureLight,
@@ -145,7 +147,7 @@ fun MeasurementEntryDialog(
                     OutlinedTextField(
                         value = waistText,
                         onValueChange = { waistText = it },
-                        label = { Text("Vita (cm)") },
+                        label = { Text(stringResource(R.string.measurement_waist_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -159,7 +161,7 @@ fun MeasurementEntryDialog(
                     OutlinedTextField(
                         value = hipsText,
                         onValueChange = { hipsText = it },
-                        label = { Text("Fianchi (cm)") },
+                        label = { Text(stringResource(R.string.measurement_hips_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -186,7 +188,7 @@ fun MeasurementEntryDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Rapporto Vita/Fianchi (WHR): %.2f".format(Locale.US, liveWhr.ratio),
+                                text = stringResource(R.string.measurement_whr_format, liveWhr.ratio),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = CiboTextPrimary
@@ -209,7 +211,7 @@ fun MeasurementEntryDialog(
                     OutlinedTextField(
                         value = chestText,
                         onValueChange = { chestText = it },
-                        label = { Text("Torace (cm)") },
+                        label = { Text(stringResource(R.string.measurement_chest_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -223,7 +225,7 @@ fun MeasurementEntryDialog(
                     OutlinedTextField(
                         value = thighsText,
                         onValueChange = { thighsText = it },
-                        label = { Text("Cosce (cm)") },
+                        label = { Text(stringResource(R.string.measurement_thighs_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
@@ -240,7 +242,7 @@ fun MeasurementEntryDialog(
                 OutlinedTextField(
                     value = armsText,
                     onValueChange = { armsText = it },
-                    label = { Text("Braccia (cm, facoltativo)") },
+                    label = { Text(stringResource(R.string.measurement_arms_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -256,7 +258,7 @@ fun MeasurementEntryDialog(
                 OutlinedTextField(
                     value = notesText,
                     onValueChange = { notesText = it },
-                    label = { Text("Note (es. a digiuno, dopo corsa)") },
+                    label = { Text(stringResource(R.string.measurement_notes_label)) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CiboTimerAzure,
@@ -291,12 +293,12 @@ fun MeasurementEntryDialog(
                 ),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Salva", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.button_save), fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Annulla", color = CiboTextSecondary)
+                Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
             }
         }
     )
