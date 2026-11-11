@@ -9,6 +9,7 @@ import android.widget.RemoteViews
 import com.cibotimer.CiboTimerApp
 import com.cibotimer.MainActivity
 import com.cibotimer.R
+import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.models.FastingState
 import com.cibotimer.data.repository.AppRepository
@@ -115,37 +116,39 @@ object FastingWidgetUpdater {
 
             if (isCurrentlyEating) {
                 // Finestra pasto aperta -> Prossimo evento: inizio digiuno
-                val nextText = if (minute == 0) "Digiuno alle $hour $dayStr" else String.format(Locale.ITALY, "Digiuno alle %02d:%02d %s", hour, minute, dayStr)
-                val status = "Pasto in corso • $timeRemainingStr"
+                val timeStr = if (minute == 0) "$hour:00" else "%02d:%02d".format(hour, minute)
+                val nextText = context.getString(R.string.widget_fast_at, timeStr, dayStr)
+                val status = context.getString(R.string.widget_status_eating, timeRemainingStr)
 
                 return FastingWidgetState(
                     nextPeriodText = nextText,
                     statusText = status,
                     actionIconResId = R.drawable.ic_widget_cutlery,
-                    actionContentDescription = "Mangiare"
+                    actionContentDescription = context.getString(R.string.widget_action_eat)
                 )
             } else {
                 // Digiuno in corso -> Prossimo evento: inizio finestra pasto
-                val nextText = if (minute == 0) "Mangiare alle ore $hour $dayStr" else String.format(Locale.ITALY, "Mangiare alle %02d:%02d %s", hour, minute, dayStr)
-                val status = "Digiuno in corso • $timeRemainingStr"
+                val timeStr = if (minute == 0) "$hour:00" else "%02d:%02d".format(hour, minute)
+                val nextText = context.getString(R.string.widget_eat_at, timeStr, dayStr)
+                val status = context.getString(R.string.widget_status_fasting, timeRemainingStr)
 
                 return FastingWidgetState(
                     nextPeriodText = nextText,
                     statusText = status,
                     actionIconResId = R.drawable.ic_widget_flame,
-                    actionContentDescription = "Digiunare"
+                    actionContentDescription = context.getString(R.string.widget_action_fast)
                 )
             }
         } else {
             // Nessuna sessione attiva (In pausa)
-            val scheduled = computeNextScheduledFast(activePlan)
-            val nextText = scheduled ?: "Nessun digiuno attivo"
+            val scheduled = computeNextScheduledFast(context, activePlan)
+            val nextText = scheduled ?: context.getString(R.string.widget_no_active_fast)
 
             return FastingWidgetState(
                 nextPeriodText = nextText,
-                statusText = "In pausa • Tocca per avviare",
+                statusText = context.getString(R.string.widget_status_paused),
                 actionIconResId = R.drawable.ic_widget_play,
-                actionContentDescription = "Avvia"
+                actionContentDescription = context.getString(R.string.widget_action_start)
             )
         }
     }
@@ -207,7 +210,7 @@ object FastingWidgetUpdater {
         )
     }
 
-    private fun computeNextScheduledFast(plan: FastingPlan?): String? {
+    private fun computeNextScheduledFast(context: Context, plan: FastingPlan?): String? {
         if (plan == null || plan.days.isEmpty()) return null
         val nowCal = Calendar.getInstance()
         val currentDay = when (val d = nowCal.get(Calendar.DAY_OF_WEEK)) {
@@ -222,42 +225,35 @@ object FastingWidgetUpdater {
             val dayPlan = plan.days.find { it.dayOfWeek == checkDay } ?: continue
             if (!dayPlan.isFastingDay) continue
 
+            val dayStr = getDayShortNameFrom1To7(checkDay)
+            val timeStr = if (dayPlan.startMinute == 0) "${dayPlan.startHour}:00" else "%02d:%02d".format(dayPlan.startHour, dayPlan.startMinute)
+
             if (offset == 0) {
                 if (dayPlan.startHour > currentHour || (dayPlan.startHour == currentHour && dayPlan.startMinute > currentMinute)) {
-                    val dayStr = getDayShortNameFrom1To7(checkDay)
-                    return if (dayPlan.startMinute == 0) "Digiuno alle ${dayPlan.startHour} $dayStr" else String.format(Locale.ITALY, "Digiuno alle %02d:%02d %s", dayPlan.startHour, dayPlan.startMinute, dayStr)
+                    return context.getString(R.string.widget_fast_at, timeStr, dayStr)
                 }
             } else {
-                val dayStr = getDayShortNameFrom1To7(checkDay)
-                return if (dayPlan.startMinute == 0) "Digiuno alle ${dayPlan.startHour} $dayStr" else String.format(Locale.ITALY, "Digiuno alle %02d:%02d %s", dayPlan.startHour, dayPlan.startMinute, dayStr)
+                return context.getString(R.string.widget_fast_at, timeStr, dayStr)
             }
         }
         return null
     }
 
     private fun getDayShortName(calendarDayOfWeek: Int): String {
-        return when (calendarDayOfWeek) {
-            Calendar.MONDAY -> "Lun"
-            Calendar.TUESDAY -> "Mar"
-            Calendar.WEDNESDAY -> "Mer"
-            Calendar.THURSDAY -> "Gio"
-            Calendar.FRIDAY -> "Ven"
-            Calendar.SATURDAY -> "Sab"
-            Calendar.SUNDAY -> "Dom"
-            else -> ""
+        val isoDay = when (calendarDayOfWeek) {
+            Calendar.MONDAY -> 1
+            Calendar.TUESDAY -> 2
+            Calendar.WEDNESDAY -> 3
+            Calendar.THURSDAY -> 4
+            Calendar.FRIDAY -> 5
+            Calendar.SATURDAY -> 6
+            Calendar.SUNDAY -> 7
+            else -> 1
         }
+        return FastingDayFormatter.formatShort(isoDay)
     }
 
     private fun getDayShortNameFrom1To7(dayOfWeek: Int): String {
-        return when (dayOfWeek) {
-            1 -> "Lun"
-            2 -> "Mar"
-            3 -> "Mer"
-            4 -> "Gio"
-            5 -> "Ven"
-            6 -> "Sab"
-            7 -> "Dom"
-            else -> ""
-        }
+        return FastingDayFormatter.formatShort(dayOfWeek)
     }
 }

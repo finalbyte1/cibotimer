@@ -1,6 +1,50 @@
 ﻿package com.cibotimer.data.models
 
 import kotlinx.serialization.Serializable
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
+
+object FastingDayFormatter {
+    fun formatShort(dayOfWeek: Int, locale: Locale = Locale.getDefault()): String {
+        return try {
+            DayOfWeek.of(dayOfWeek.coerceIn(1, 7))
+                .getDisplayName(TextStyle.SHORT, locale)
+                .trimEnd('.')
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+        } catch (_: Throwable) {
+            when (dayOfWeek) {
+                1 -> if (locale.language == "it") "Lun" else "Mon"
+                2 -> if (locale.language == "it") "Mar" else "Tue"
+                3 -> if (locale.language == "it") "Mer" else "Wed"
+                4 -> if (locale.language == "it") "Gio" else "Thu"
+                5 -> if (locale.language == "it") "Ven" else "Fri"
+                6 -> if (locale.language == "it") "Sab" else "Sat"
+                7 -> if (locale.language == "it") "Dom" else "Sun"
+                else -> ""
+            }
+        }
+    }
+
+    fun formatFull(dayOfWeek: Int, locale: Locale = Locale.getDefault()): String {
+        return try {
+            DayOfWeek.of(dayOfWeek.coerceIn(1, 7))
+                .getDisplayName(TextStyle.FULL, locale)
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+        } catch (_: Throwable) {
+            when (dayOfWeek) {
+                1 -> if (locale.language == "it") "Lunedì" else "Monday"
+                2 -> if (locale.language == "it") "Martedì" else "Tuesday"
+                3 -> if (locale.language == "it") "Mercoledì" else "Wednesday"
+                4 -> if (locale.language == "it") "Giovedì" else "Thursday"
+                5 -> if (locale.language == "it") "Venerdì" else "Friday"
+                6 -> if (locale.language == "it") "Sabato" else "Saturday"
+                7 -> if (locale.language == "it") "Domenica" else "Sunday"
+                else -> ""
+            }
+        }
+    }
+}
 
 @Serializable
 enum class PlanCategory {
@@ -36,16 +80,7 @@ data class FastingPeriod(
     val endTimeFormatted: String
         get() = "%02d:%02d".format(endHour, endMinute)
 
-    fun dayNameShort(day: Int): String = when (day) {
-        1 -> "lun"
-        2 -> "mar"
-        3 -> "mer"
-        4 -> "gio"
-        5 -> "ven"
-        6 -> "sab"
-        7 -> "dom"
-        else -> "lun"
-    }
+    fun dayNameShort(day: Int): String = FastingDayFormatter.formatShort(day)
 
     val startDayShort: String get() = dayNameShort(startDayOfWeek)
     val endDayShort: String get() = dayNameShort(endDayOfWeek)
@@ -75,28 +110,10 @@ data class DayPlan(
         get() = "%02d:%02d".format(endHour, endMinute)
 
     val dayNameShort: String
-        get() = when (dayOfWeek) {
-            1 -> "Lun"
-            2 -> "Mar"
-            3 -> "Mer"
-            4 -> "Gio"
-            5 -> "Ven"
-            6 -> "Sab"
-            7 -> "Dom"
-            else -> "Giorno $dayOfWeek"
-        }
+        get() = FastingDayFormatter.formatShort(dayOfWeek)
 
     val dayName: String
-        get() = when (dayOfWeek) {
-            1 -> "Lunedì"
-            2 -> "Martedì"
-            3 -> "Mercoledì"
-            4 -> "Giovedì"
-            5 -> "Venerdì"
-            6 -> "Sabato"
-            7 -> "Domenica"
-            else -> "Giorno $dayOfWeek"
-        }
+        get() = FastingDayFormatter.formatFull(dayOfWeek)
 }
 
 @Serializable

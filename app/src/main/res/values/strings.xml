@@ -132,6 +132,15 @@
     <string name="widget_description">Displays the next fasting or eating window</string>
     <string name="widget_2x1_name">Fasting</string>
     <string name="widget_2x1_description">Horizontal widget with status, next fasting time and quick action</string>
+    <string name="widget_fast_at">Fast at %1$s %2$s</string>
+    <string name="widget_eat_at">Eat at %1$s %2$s</string>
+    <string name="widget_status_eating">Eating in progress • %1$s</string>
+    <string name="widget_status_fasting">Fasting in progress • %1$s</string>
+    <string name="widget_status_paused">Paused • Tap to start</string>
+    <string name="widget_no_active_fast">No active fast</string>
+    <string name="widget_action_eat">Eat</string>
+    <string name="widget_action_fast">Fast</string>
+    <string name="widget_action_start">Start</string>
 
     <!-- Updates & Disclaimer -->
     <string name="update_available_title">Update available!</string>

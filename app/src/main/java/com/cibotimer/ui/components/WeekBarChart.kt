@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.models.DayPlan
+import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPeriod
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.TimelineSegment
@@ -74,15 +75,14 @@ fun WeekBarChart(
     )
 
     val rowItems = remember(orderedDays, todayDayOfWeek, selectedDayOfWeek) {
-        listOf(
-            RowDayInfo(1, "Lun", todayDayOfWeek == 1, selectedDayOfWeek == 1),
-            RowDayInfo(2, "Mar", todayDayOfWeek == 2, selectedDayOfWeek == 2),
-            RowDayInfo(3, "Mer", todayDayOfWeek == 3, selectedDayOfWeek == 3),
-            RowDayInfo(4, "Gio", todayDayOfWeek == 4, selectedDayOfWeek == 4),
-            RowDayInfo(5, "Ven", todayDayOfWeek == 5, selectedDayOfWeek == 5),
-            RowDayInfo(6, "Sab", todayDayOfWeek == 6, selectedDayOfWeek == 6),
-            RowDayInfo(7, "Dom", todayDayOfWeek == 7, selectedDayOfWeek == 7)
-        )
+        (1..7).map { dayIdx ->
+            RowDayInfo(
+                dayIndex = dayIdx,
+                label = FastingDayFormatter.formatShort(dayIdx),
+                isToday = todayDayOfWeek == dayIdx,
+                isSelected = selectedDayOfWeek == dayIdx
+            )
+        }
     }
 
     Surface(
@@ -266,7 +266,7 @@ private fun getSubtitleForDay(
     periods: List<FastingPeriod>?,
     dayPlan: DayPlan
 ): String {
-    val dayNames = listOf("Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom")
+    val dayNames = (1..7).map { FastingDayFormatter.formatShort(it) }
 
     if (!periods.isNullOrEmpty()) {
         val p = periods.find { it.startDayOfWeek == dayIndex && it.isFasting }

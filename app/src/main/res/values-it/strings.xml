@@ -132,6 +132,15 @@
     <string name="widget_description">Visualizza il prossimo periodo di digiuno o pasto</string>
     <string name="widget_2x1_name">Digiuno</string>
     <string name="widget_2x1_description">Widget orizzontale con stato, orario prossimo digiuno e azione rapida</string>
+    <string name="widget_fast_at">Digiuno alle %1$s %2$s</string>
+    <string name="widget_eat_at">Mangiare alle %1$s %2$s</string>
+    <string name="widget_status_eating">Pasto in corso • %1$s</string>
+    <string name="widget_status_fasting">Digiuno in corso • %1$s</string>
+    <string name="widget_status_paused">In pausa • Tocca per avviare</string>
+    <string name="widget_no_active_fast">Nessun digiuno attivo</string>
+    <string name="widget_action_eat">Mangiare</string>
+    <string name="widget_action_fast">Digiunare</string>
+    <string name="widget_action_start">Avvia</string>
 
     <!-- Aggiornamenti & Disclaimer -->
     <string name="update_available_title">Aggiornamento disponibile!</string>

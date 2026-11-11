@@ -38,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cibotimer.R
 import com.cibotimer.data.models.DayPlan
+import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.models.PlanCategory
 import com.cibotimer.domain.FastingPlanTemplates
@@ -1088,7 +1089,7 @@ fun PlanPickerCustomStep(
                         modifier = Modifier.weight(1.35f)
                     )
 
-                    val daysShort = listOf("Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom")
+                    val daysShort = (1..7).map { FastingDayFormatter.formatShort(it) }
                     daysShort.forEachIndexed { index, name ->
                         val dayOfWeek = index + 1
                         PlanScopeChip(
