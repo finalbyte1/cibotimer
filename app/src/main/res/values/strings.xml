@@ -294,6 +294,8 @@
     <string name="plan_time_end_label">End: </string>
     <string name="plan_time_bound_anterior">You cannot exceed the previous period (ends at %02d:%02d)</string>
     <string name="plan_time_bound_posterior">You cannot exceed the next period (starts at %02d:%02d)</string>
+    <string name="content_desc_edit_start_time">Edit start time</string>
+    <string name="content_desc_edit_end_time">Edit end time</string>
 
     <!-- AI Chat Screen Additional -->
     <string name="ai_open_settings">Open AI Settings</string>
@@ -363,4 +365,108 @@
     <string name="week_chart_free">Free</string>
     <string name="week_chart_fasting_from">Fasting from %1$s until %2$s</string>
     <string name="week_chart_no_fast">No fasting scheduled</string>
+
+    <!-- TimerScreen Updates & Live Status -->
+    <string name="update_version_info">Version %1$s (%2$s)</string>
+    <string name="update_downloading_title">Downloading update...</string>
+    <string name="update_progress_percent">%1$d%% completed</string>
+    <string name="update_ready_title">Update ready!</string>
+    <string name="update_ready_message">The update package has been downloaded. Tap Install to update CiboTimer.</string>
+    <string name="update_button_install">Install</string>
+    <string name="timer_label_now">Now:</string>
+    <string name="timer_status_stopped_short">Stopped</string>
+
+    <!-- PlannerScreen -->
+    <string name="planner_title">Weekly planner</string>
+    <string name="planner_hours_per_week">%1$d hrs/week</string>
+    <string name="planner_edit_day_button">EDIT PLAN (%1$s)</string>
+    <string name="planner_days_detail_title">Days of the week detail</string>
+    <string name="planner_day_fasting_detail">Fasting: %1$s - %2$s (%3$dh)</string>
+    <string name="planner_day_eating_detail">Eating: %1$s - %2$s (%3$dh)</string>
+    <string name="content_desc_edit_day">Edit day</string>
+    <string name="dialog_delete_plan_active_message">Are you sure you want to permanently delete the plan \"%1$s\"? The default 16-8 Classic plan will be restored automatically.</string>
+
+    <!-- PlanSelectionStartScreen -->
+    <string name="program_coach_title">Coach Programs</string>
+    <string name="program_coach_subtitle">The Coach guides you along your journey</string>
+    <string name="rating_weight_loss">Weight loss: </string>
+    <string name="rating_health">Health: </string>
+    <string name="button_start_week_1">Start week 1</string>
+    <string name="single_plans_title">Single fasting plans</string>
+    <string name="single_plans_subtitle">Manually choose your fasting method</string>
+    <string name="plans_suggestions_title">Suggestions</string>
+
+    <!-- NotificationsScreen -->
+    <string name="notif_live_timer_title">Persistent Live Timer</string>
+    <string name="notif_live_timer_desc">The active timer is set to High Priority in the system notification shade and is not removed by Clear All.</string>
+    <string name="notif_channel_config_desc">Configure notification channel</string>
+    <string name="notif_empty_title">No notifications</string>
+    <string name="notif_empty_desc">The history of fasting end, meal window, metabolic stage, and reminder alerts will appear here.</string>
+    <string name="notif_clear_dialog_title">Clear all notifications?</string>
+    <string name="notif_clear_dialog_message">This action will remove all alerts from the app history. The live timer notification will continue working normally.</string>
+    <string name="notif_clear_dialog_confirm">Clear all</string>
+    <string name="notif_archive_empty">No alerts in archive</string>
+    <string name="notif_archive_count">%1$d alerts received</string>
+    <string name="notif_time_now">Just now</string>
+    <string name="notif_time_today">Today at %1$s</string>
+    <string name="notif_time_yesterday">Yesterday at %1$s</string>
+
+    <!-- CoachingScreen -->
+    <string name="coaching_title">Coach &amp; Knowledge</string>
+    <string name="category_all">All</string>
+    <string name="coaching_ai_card_title">Custom AI Coach</string>
+    <string name="coaching_ai_card_desc">Create a customized fasting plan or ask the Coach for advice.</string>
+    <string name="coaching_read_full_article">Read the full article</string>
+
+    <!-- ProgressScreen -->
+    <string name="button_share">Share</string>
+    <string name="progress_goals_weight_title">Goals &amp; Weight</string>
+    <string name="button_edit">Edit</string>
+    <string name="progress_lost_label">Lost</string>
+    <string name="progress_gained_label">Gained</string>
+    <string name="progress_to_target_label">To goal</string>
+    <string name="progress_goal_reached">Reached!</string>
+    <string name="progress_measurements_title">Body Measurements</string>
+    <string name="progress_total_diff_format">Total: %1$+.1f cm</string>
+    <string name="progress_no_circumferences_desc">No circumferences recorded yet. When recording your weight you can also log hips, waist, chest, thighs, and arms to track inches lost.</string>
+    <string name="measurement_whr_prefix">Waist-to-Hip Ratio (WHR): </string>
+    <string name="bmi_title">Body Mass Index (BMI)</string>
+    <string name="bmi_height_format">Height set: %1$.0f cm</string>
+    <string name="progress_history_count_format">Measurement history (%1$d)</string>
+    <string name="progress_no_weight_desc">No weigh-ins recorded yet. Tap \'Record Weight &amp; Measurements\' to start tracking your evolution.</string>
+    <string name="progress_stats_section_title">Your Fasting Stats</string>
+    <string name="progress_stat_consecutive_hours">%1$d consecutive hours</string>
+    <string name="progress_consistency_title">Consistency &amp; Metabolic Benefits</string>
+    <string name="progress_consistency_desc">Every hour of fasting allows your body to reduce inflammation, stimulate autophagy (cellular recycling), and increase insulin sensitivity. Tracking weight and body measurements confirms real body composition progress.</string>
+    <string name="progress_trophies_title">Unlocked Trophies</string>
+    <string name="progress_trophies_desc">Unlock all trophies as you continue your fasting and wellness journey.</string>
+    <string name="progress_trophy_unlocked_badge">Unlocked</string>
+
+    <!-- AiChatScreen -->
+    <string name="ai_chat_header_title">CiboTimer AI Coach</string>
+    <string name="ai_chat_intro_title">AI Nutrition Coach</string>
+    <string name="ai_chat_intro_desc">The AI Coach is your personal assistant to create customized fasting plans, analyze meals, and understand ketosis.\n\nSupports any OpenAI-compatible provider (OpenAI, DeepSeek, Groq, Google Gemini, local Ollama).\n\nTo preserve your privacy, it is disabled until you configure your API key.</string>
+    <string name="ai_chat_regenerate">Regenerate</string>
+    <string name="ai_chat_thinking_format">Model reasoning (%1$d chars)</string>
+    <string name="ai_chat_coach_responding">The coach is typing...</string>
+    <string name="ai_chat_input_placeholder">Ask Coach CiboTimer...</string>
+    <string name="ai_chat_welcome_title">Nutrition Coach</string>
+    <string name="ai_chat_welcome_subtitle">Ask for advice on fasting, recipes, ketosis, and create personalized weekly plans.</string>
+    <string name="ai_provider_modal_title">Select AI Provider</string>
+    <string name="ai_provider_modal_subtitle">Choose an OpenAI API-compatible preset or customize endpoints and keys.</string>
+    <string name="ai_plan_recommended_badge">Recommended Nutrition Plan</string>
+    <string name="ai_plan_coach_badge">COACH AI</string>
+    <string name="ai_plan_verified_hours">Verified and consistent schedule</string>
+    <string name="ai_plan_fasting_format">🔥 Fasting: %1$s → %2$s (%3$s)</string>
+    <string name="ai_plan_eating_format">🍽️ Eating window: %1$s → %2$s (%3$s)</string>
+    <string name="ai_plan_frequency_all_days">📅 Frequency: 7 days a week</string>
+    <string name="ai_plan_frequency_custom">📅 Frequency: %1$d fasting days · %2$d free days</string>
+    <string name="ai_plan_apply_and_activate">Apply and Activate</string>
+    <string name="ai_plan_rename_or_save_as">Rename or save as...</string>
+    <string name="ai_plan_save_as_title">Save Plan With Another Name</string>
+    <string name="ai_plan_save_as_desc">Enter the name to save this plan in your custom plans:</string>
+    <string name="ai_plan_save_as_note">You can choose to simply save it for later or activate it immediately.</string>
+
+    <!-- PlanPickerModal -->
+    <string name="plan_delete_action">Delete this plan</string>
 </resources>

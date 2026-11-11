@@ -418,7 +418,7 @@ fun TimeEditorModal(
                         }
                     ) {
                         Text(
-                            text = "Salva con nome",
+                            text = stringResource(R.string.plan_save_as_title),
                             color = CiboAccent,
                             fontWeight = FontWeight.Bold
                         )
@@ -509,7 +509,7 @@ fun TimeEditorSheetContent(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Salva con nome",
+                    text = stringResource(R.string.plan_save_as_title),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = CiboButtonDarkText
@@ -700,7 +700,7 @@ fun BottomEditorControlCard(
                         Spacer(modifier = Modifier.width(3.dp))
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Modifica orario inizio",
+                            contentDescription = stringResource(R.string.content_desc_edit_start_time),
                             tint = CiboAccent,
                             modifier = Modifier.size(13.dp)
                         )
@@ -740,7 +740,7 @@ fun BottomEditorControlCard(
                         Spacer(modifier = Modifier.width(3.dp))
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Modifica orario fine",
+                            contentDescription = stringResource(R.string.content_desc_edit_end_time),
                             tint = CiboAccent,
                             modifier = Modifier.size(13.dp)
                         )

@@ -102,7 +102,7 @@ fun ProgressScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Io",
+                            text = stringResource(R.string.nav_progress),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = CiboTextPrimary
@@ -129,7 +129,7 @@ fun ProgressScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Condividi",
+                            text = stringResource(R.string.button_share),
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         )
@@ -357,7 +357,7 @@ fun WeightAndMeasurementsTab(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Obiettivi & Peso",
+                            text = stringResource(R.string.progress_goals_weight_title),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = CiboTextPrimary
@@ -375,7 +375,7 @@ fun WeightAndMeasurementsTab(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Modifica",
+                                text = stringResource(R.string.button_edit),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = CiboTimerAzureGlow
@@ -461,7 +461,7 @@ fun WeightAndMeasurementsTab(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Column {
                                     Text(
-                                        text = if (weightProgress.lostKg >= 0) "Persi" else "Aumentati",
+                                        text = if (weightProgress.lostKg >= 0) stringResource(R.string.progress_lost_label) else stringResource(R.string.progress_gained_label),
                                         fontSize = 10.sp,
                                         color = CiboTextSecondary
                                     )
@@ -493,12 +493,12 @@ fun WeightAndMeasurementsTab(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Column {
                                     Text(
-                                        text = "Al traguardo",
+                                        text = stringResource(R.string.progress_to_target_label),
                                         fontSize = 10.sp,
                                         color = CiboTextSecondary
                                     )
                                     Text(
-                                        text = if (weightProgress.isGoalReached) "Raggiunto!"
+                                        text = if (weightProgress.isGoalReached) stringResource(R.string.progress_goal_reached)
                                         else "%.1f kg".format(Locale.US, weightProgress.remainingKg),
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
@@ -537,7 +537,7 @@ fun WeightAndMeasurementsTab(
                         )
 
                         Text(
-                            text = "Target: %.1f kg".format(Locale.US, weightProgress.targetWeightKg),
+                            text = stringResource(R.string.share_target_format, weightProgress.targetWeightKg),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )
@@ -577,7 +577,7 @@ fun WeightAndMeasurementsTab(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Misure Corporee",
+                                text = stringResource(R.string.progress_measurements_title),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                                 color = CiboTextPrimary
@@ -591,7 +591,7 @@ fun WeightAndMeasurementsTab(
                                 border = BorderStroke(1.dp, CiboTimerAzureGlow.copy(alpha = 0.3f))
                             ) {
                                 Text(
-                                    text = "Totale: %+.1f cm".format(Locale.US, totalCircumference.totalDiffCm),
+                                    text = stringResource(R.string.progress_total_diff_format, totalCircumference.totalDiffCm),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (totalCircumference.totalDiffCm <= 0) CiboTimerAzureGlow else CiboTimerOrange,
@@ -607,7 +607,7 @@ fun WeightAndMeasurementsTab(
                     val activeCircumferences = circumferences.filter { it.currentCm != null }
                     if (activeCircumferences.isEmpty()) {
                         Text(
-                            text = "Nessuna circonferenza ancora registrata. Quando registri il tuo peso puoi inserire anche fianchi, vita, torace, cosce e braccia per monitorare i centimetri persi.",
+                            text = stringResource(R.string.progress_no_circumferences_desc),
                             fontSize = 12.sp,
                             color = CiboTextSecondary,
                             lineHeight = 17.sp
@@ -681,7 +681,7 @@ fun WeightAndMeasurementsTab(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = "Rapporto Vita/Fianchi (WHR): ", fontSize = 12.sp, color = CiboTextSecondary)
+                                        Text(text = stringResource(R.string.measurement_whr_prefix), fontSize = 12.sp, color = CiboTextSecondary)
                                         Text(
                                             text = "%.2f".format(Locale.US, whrResult.ratio),
                                             fontWeight = FontWeight.ExtraBold,
@@ -741,7 +741,7 @@ fun WeightAndMeasurementsTab(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Indice di Massa Corporea (BMI)",
+                            text = stringResource(R.string.bmi_title),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )
@@ -752,7 +752,7 @@ fun WeightAndMeasurementsTab(
                             color = Color(bmiResult.colorHex)
                         )
                         Text(
-                            text = "Altezza impostata: %.0f cm".format(Locale.US, userProfile.heightCm),
+                            text = stringResource(R.string.bmi_height_format, userProfile.heightCm),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )
@@ -788,7 +788,7 @@ fun WeightAndMeasurementsTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Storico misurazioni (${weightEntries.size})",
+                    text = stringResource(R.string.progress_history_count_format, weightEntries.size),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = CiboTextPrimary
@@ -799,7 +799,7 @@ fun WeightAndMeasurementsTab(
         if (weightEntries.isEmpty()) {
             item {
                 Text(
-                    text = "Nessuna pesata registrata ancora. Tocca 'Registra peso & misure' per iniziare a tracciare la tua evoluzione.",
+                    text = stringResource(R.string.progress_no_weight_desc),
                     fontSize = 13.sp,
                     color = CiboTextSecondary
                 )
@@ -924,7 +924,7 @@ fun FastingStatsTab(
     ) {
         item {
             Text(
-                text = "I Tuoi Numeri nel Digiuno",
+                text = stringResource(R.string.progress_stats_section_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = CiboTextPrimary
@@ -956,7 +956,7 @@ fun FastingStatsTab(
         item {
             StatCard(
                 title = stringResource(R.string.progress_stat_longest),
-                value = "$longestFastingHours ore consecutive",
+                value = stringResource(R.string.progress_stat_consecutive_hours, longestFastingHours),
                 icon = Icons.Default.EmojiEvents,
                 color = CiboTimerOrange,
                 modifier = Modifier.fillMaxWidth()
@@ -975,7 +975,7 @@ fun FastingStatsTab(
                         Icon(Icons.Default.Insights, contentDescription = null, tint = CiboTimerAzureGlow)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Costanza e Benefici Metabolici",
+                            text = stringResource(R.string.progress_consistency_title),
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = CiboTextPrimary
@@ -983,7 +983,7 @@ fun FastingStatsTab(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Ogni ora di digiuno permette al tuo organismo di ridurre l'infiammazione, stimolare l'autofagia (riciclo cellulare) e aumentare la sensibilità insulinica. Il monitoraggio del peso e delle misure corporee conferma i progressi reali della tua composizione corporea.",
+                        text = stringResource(R.string.progress_consistency_desc),
                         fontSize = 13.sp,
                         color = CiboTextSecondary,
                         lineHeight = 18.sp
@@ -1039,13 +1039,13 @@ fun TrophiesTab(trophies: List<Trophy>) {
     ) {
         item {
             Text(
-                text = "Trofei Raggiunti",
+                text = stringResource(R.string.progress_trophies_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = CiboTextPrimary
             )
             Text(
-                text = "Sblocca tutti i trofei continuando il tuo percorso di digiuno e salute.",
+                text = stringResource(R.string.progress_trophies_desc),
                 fontSize = 13.sp,
                 color = CiboTextSecondary
             )
@@ -1098,7 +1098,7 @@ fun TrophiesTab(trophies: List<Trophy>) {
                                     color = CiboTimerAzureContainer
                                 ) {
                                     Text(
-                                        text = "Sbloccato",
+                                        text = stringResource(R.string.progress_trophy_unlocked_badge),
                                         color = CiboTimerAzureGlow,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp,

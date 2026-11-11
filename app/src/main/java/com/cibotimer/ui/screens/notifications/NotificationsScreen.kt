@@ -28,6 +28,8 @@ import com.cibotimer.notifications.NotificationHelper
 import com.cibotimer.ui.components.AppPrimaryButton
 import com.cibotimer.ui.components.AppSecondaryButton
 import com.cibotimer.ui.theme.*
+import com.cibotimer.R
+import androidx.compose.ui.res.stringResource
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,13 +58,13 @@ fun NotificationsScreen(
         ) {
             Column {
                 Text(
-                    text = "Notifiche",
+                    text = stringResource(R.string.nav_notifications),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = CiboTextPrimary
                 )
                 Text(
-                    text = if (notifications.isEmpty()) "Nessun avviso in archivio" else "${notifications.size} avvisi ricevuti",
+                    text = if (notifications.isEmpty()) stringResource(R.string.notif_archive_empty) else stringResource(R.string.notif_archive_count, notifications.size),
                     fontSize = 13.sp,
                     color = CiboTextSecondary
                 )
@@ -117,14 +119,14 @@ fun NotificationsScreen(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Timer Live Permanente",
+                        text = stringResource(R.string.notif_live_timer_title),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = CiboTextPrimary
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Il cronometro attivo è impostato ad Alta Priorità nella tendina di sistema e non viene rimosso dal tasto Cancella.",
+                        text = stringResource(R.string.notif_live_timer_desc),
                         fontSize = 11.5.sp,
                         color = CiboTextSecondary,
                         lineHeight = 15.sp
@@ -139,7 +141,7 @@ fun NotificationsScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "Configura canale notifica",
+                        contentDescription = stringResource(R.string.notif_channel_config_desc),
                         tint = CiboAccent,
                         modifier = Modifier.size(20.dp)
                     )
@@ -180,7 +182,7 @@ fun NotificationsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Nessuna notifica",
+                        text = stringResource(R.string.notif_empty_title),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = CiboTextPrimary
@@ -189,7 +191,7 @@ fun NotificationsScreen(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "La cronologia degli avvisi di fine digiuno, inizio pasti, traguardi metabolici e promemoria verrà visualizzata qui.",
+                        text = stringResource(R.string.notif_empty_desc),
                         fontSize = 13.sp,
                         color = CiboTextSecondary,
                         textAlign = TextAlign.Center,
@@ -219,7 +221,7 @@ fun NotificationsScreen(
             onDismissRequest = { showClearAllDialog = false },
             title = {
                 Text(
-                    text = "Cancella tutte le notifiche?",
+                    text = stringResource(R.string.notif_clear_dialog_title),
                     color = CiboTextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -227,7 +229,7 @@ fun NotificationsScreen(
             },
             text = {
                 Text(
-                    text = "Questa azione rimuoverà tutti gli avvisi dalla cronologia dell'applicazione. La notifica del timer live continuerà a funzionare normalmente.",
+                    text = stringResource(R.string.notif_clear_dialog_message),
                     color = CiboTextSecondary,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
@@ -235,7 +237,7 @@ fun NotificationsScreen(
             },
             confirmButton = {
                 AppPrimaryButton(
-                    text = "Cancella tutto",
+                    text = stringResource(R.string.notif_clear_dialog_confirm),
                     onClick = {
                         repository.clearAllNotifications()
                         showClearAllDialog = false
@@ -244,7 +246,7 @@ fun NotificationsScreen(
             },
             dismissButton = {
                 AppSecondaryButton(
-                    text = "Annulla",
+                    text = stringResource(R.string.button_cancel),
                     onClick = { showClearAllDialog = false }
                 )
             },
@@ -284,15 +286,29 @@ fun NotificationCard(
         val isYesterday = calYesterday.get(Calendar.YEAR) == calItem.get(Calendar.YEAR) &&
                 calYesterday.get(Calendar.DAY_OF_YEAR) == calItem.get(Calendar.DAY_OF_YEAR)
 
-        val hourFormat = SimpleDateFormat("HH:mm", Locale.ITALIAN)
-        val fullFormat = SimpleDateFormat("EEE d MMM, HH:mm", Locale.ITALIAN)
+        val hourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val fullFormat = SimpleDateFormat("EEE d MMM, HH:mm", Locale.getDefault())
 
-        when {
-            diff < 60_000L -> "Adesso"
-            isToday -> "Oggi alle ${hourFormat.format(Date(item.timestampMillis))}"
-            isYesterday -> "Ieri alle ${hourFormat.format(Date(item.timestampMillis))}"
+        val timeStr = when {
+            diff < 60_000L -> null
+            isToday -> hourFormat.format(Date(item.timestampMillis))
+            isYesterday -> hourFormat.format(Date(item.timestampMillis))
             else -> fullFormat.format(Date(item.timestampMillis)).replaceFirstChar { it.uppercase() }
         }
+        Triple(diff < 60_000L, isToday, if (isYesterday) timeStr else if (diff >= 60_000L && !isToday) timeStr else null)
+    }
+
+    val displayTime = when {
+        timeFormatted.first -> stringResource(R.string.notif_time_now)
+        timeFormatted.second -> stringResource(R.string.notif_time_today, timeFormatted.third ?: "")
+        timeFormatted.third != null -> {
+            val calItem = Calendar.getInstance().apply { timeInMillis = item.timestampMillis }
+            val calYesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
+            val isYesterday = calYesterday.get(Calendar.YEAR) == calItem.get(Calendar.YEAR) &&
+                    calYesterday.get(Calendar.DAY_OF_YEAR) == calItem.get(Calendar.DAY_OF_YEAR)
+            if (isYesterday) stringResource(R.string.notif_time_yesterday, timeFormatted.third!!) else timeFormatted.third!!
+        }
+        else -> ""
     }
 
     Box(
@@ -345,7 +361,7 @@ fun NotificationCard(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = timeFormatted,
+                    text = displayTime,
                     fontSize = 11.sp,
                     color = CiboAccent,
                     fontWeight = FontWeight.Medium

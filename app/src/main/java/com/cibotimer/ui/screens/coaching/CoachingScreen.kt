@@ -59,7 +59,7 @@ fun CoachingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Coach & Conoscenza",
+                        text = stringResource(R.string.coaching_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -67,10 +67,10 @@ fun CoachingScreen(
                 },
                 actions = {
                     IconButton(onClick = onNavigateToChat) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = "Chat AI Coach", tint = CiboTimerAzure)
+                        Icon(Icons.Default.AutoAwesome, contentDescription = stringResource(R.string.nav_chat), tint = CiboTimerAzure)
                     }
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Impostazioni", tint = TextSecondary)
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.content_desc_settings), tint = TextSecondary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundDark)
@@ -98,7 +98,7 @@ fun CoachingScreen(
                         onClick = {
                             selectedCategory = if (cat == "Tutti") null else cat
                         },
-                        label = { Text(cat) },
+                        label = { Text(if (cat == "Tutti") stringResource(R.string.category_all) else cat) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = CiboTimerAzure,
                             selectedLabelColor = Color.White
@@ -135,14 +135,14 @@ fun CoachingScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Coach AI Personalizzato",
+                                    text = stringResource(R.string.coaching_ai_card_title),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = CiboTimerAzure
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "Crea un piano di digiuno su misura o chiedi consigli al Coach.",
+                                    text = stringResource(R.string.coaching_ai_card_desc),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -220,7 +220,7 @@ fun CoachingScreen(
                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Text(
-                                    text = "Leggi l'articolo completo",
+                                    text = stringResource(R.string.coaching_read_full_article),
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = CiboTimerAzure

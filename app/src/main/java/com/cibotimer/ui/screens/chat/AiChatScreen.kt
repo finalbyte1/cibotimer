@@ -107,7 +107,7 @@ fun AiChatScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Coach AI CiboTimer",
+                                text = stringResource(R.string.ai_chat_header_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -212,7 +212,7 @@ fun AiChatScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Coach Nutrizionale AI",
+                            text = stringResource(R.string.ai_chat_intro_title),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = TextPrimary
@@ -221,7 +221,7 @@ fun AiChatScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Il Coach AI è il tuo assistente personale per creare piani di digiuno su misura, analizzare i pasti e comprendere la chetosi.\n\nSupporta qualsiasi provider OpenAI-compatibile (OpenAI, DeepSeek, Groq, Google Gemini, Ollama locale).\n\nPer preservare la tua privacy è disattivato finché non configuri la tua chiave API.",
+                            text = stringResource(R.string.ai_chat_intro_desc),
                             fontSize = 13.sp,
                             color = TextSecondary,
                             lineHeight = 19.sp
@@ -671,7 +671,7 @@ private fun ChatMessageItem(
                                 )
                                 Spacer(Modifier.width(4.dp))
                                 Text(
-                                    text = "Rigenera",
+                                    text = stringResource(R.string.ai_chat_regenerate),
                                     fontSize = 11.5.sp,
                                     color = TextSecondary
                                 )
@@ -688,7 +688,7 @@ private fun ChatMessageItem(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = "Elimina",
+                                contentDescription = stringResource(R.string.button_delete),
                                 tint = TextSecondary,
                                 modifier = Modifier.size(13.dp)
                             )
@@ -730,7 +730,7 @@ private fun ThinkingAccordionBlock(thinking: String) {
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "Pensiero del modello (${thinking.length} car.)",
+                        text = stringResource(R.string.ai_chat_thinking_format, thinking.length),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = CiboTimerAzureLight
@@ -804,7 +804,7 @@ private fun TypingDotsIndicator() {
         }
         Spacer(Modifier.width(8.dp))
         Text(
-            text = "Il coach sta rispondendo...",
+            text = stringResource(R.string.ai_chat_coach_responding),
             fontSize = 12.sp,
             color = CiboTimerAzureLight
         )
@@ -845,7 +845,7 @@ private fun ChatInputBar(
             ) {
                 if (value.isEmpty()) {
                     Text(
-                        text = "Chiedi al Coach CiboTimer...",
+                        text = stringResource(R.string.ai_chat_input_placeholder),
                         color = TextSecondary,
                         fontSize = 14.sp
                     )
@@ -945,7 +945,7 @@ private fun EmptyChatState(
         Spacer(Modifier.height(14.dp))
 
         Text(
-            text = "Coach Nutrizionale",
+            text = stringResource(R.string.ai_chat_welcome_title),
             fontWeight = FontWeight.Bold,
             fontSize = 19.sp,
             color = TextPrimary
@@ -954,7 +954,7 @@ private fun EmptyChatState(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "Chiedi consigli su digiuno, ricette, chetosi e crea piani settimanali personalizzati.",
+            text = stringResource(R.string.ai_chat_welcome_subtitle),
             fontSize = 13.sp,
             color = TextSecondary,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -1065,7 +1065,7 @@ private fun ModelPickerBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Seleziona Provider AI",
+                    text = stringResource(R.string.ai_provider_modal_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -1074,12 +1074,12 @@ private fun ModelPickerBottomSheet(
                 TextButton(onClick = onOpenSettings) {
                     Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(16.dp), tint = CiboTimerAzure)
                     Spacer(Modifier.width(4.dp))
-                    Text("Configura", color = CiboTimerAzure, fontSize = 13.sp)
+                    Text(stringResource(R.string.ai_config_button), color = CiboTimerAzure, fontSize = 13.sp)
                 }
             }
 
             Text(
-                text = "Scegli un preset compatibile con le API OpenAI o personalizza endpoint e chiavi.",
+                text = stringResource(R.string.ai_provider_modal_subtitle),
                 fontSize = 12.sp,
                 color = TextSecondary,
                 lineHeight = 17.sp
@@ -1191,7 +1191,7 @@ fun ProposedPlanCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Piano Nutrizionale Consigliato",
+                            text = stringResource(R.string.ai_plan_recommended_badge),
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp,
                             color = CiboTimerAzureGlow
@@ -1203,7 +1203,7 @@ fun ProposedPlanCard(
                         color = CiboTimerAzureContainer
                     ) {
                         Text(
-                            text = "COACH AI",
+                            text = stringResource(R.string.ai_plan_coach_badge),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTimerAzureGlow,
@@ -1256,7 +1256,7 @@ fun ProposedPlanCard(
                                 modifier = Modifier.size(15.dp)
                             )
                             Text(
-                                text = "Orari verificati e coerenti",
+                                text = stringResource(R.string.ai_plan_verified_hours),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = CiboTimerAzureGlow
@@ -1271,14 +1271,24 @@ fun ProposedPlanCard(
 
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
-                                text = "🔥 Digiuno: ${sampleDay.startTimeFormatted} → ${sampleDay.endTimeFormatted} (${sampleDay.durationHoursString})",
+                                text = stringResource(
+                                    R.string.ai_plan_fasting_format,
+                                    sampleDay.startTimeFormatted,
+                                    sampleDay.endTimeFormatted,
+                                    sampleDay.durationHoursString
+                                ),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "🍽️ Finestra pasti: ${sampleDay.endTimeFormatted} → ${sampleDay.startTimeFormatted} ($eatingDurationStr)",
+                                text = stringResource(
+                                    R.string.ai_plan_eating_format,
+                                    sampleDay.endTimeFormatted,
+                                    sampleDay.startTimeFormatted,
+                                    eatingDurationStr
+                                ),
                                 fontSize = 12.sp,
                                 color = CiboTextSecondary
                             )
@@ -1287,9 +1297,9 @@ fun ProposedPlanCard(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = if (restDaysCount == 0) {
-                                "📅 Frequenza: 7 giorni su 7"
+                                stringResource(R.string.ai_plan_frequency_all_days)
                             } else {
-                                "📅 Frequenza: $fastingDaysCount giorni di digiuno · $restDaysCount giorni liberi"
+                                stringResource(R.string.ai_plan_frequency_custom, fastingDaysCount, restDaysCount)
                             },
                             fontSize = 11.sp,
                             color = CiboTimerAzureLight
@@ -1315,7 +1325,7 @@ fun ProposedPlanCard(
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(15.dp), tint = CiboTimerAzure)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Solo Salva",
+                            text = stringResource(R.string.plan_save_only),
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp,
                             color = CiboTimerAzure
@@ -1333,7 +1343,7 @@ fun ProposedPlanCard(
                         Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(15.dp), tint = Color.White)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Applica e Attiva",
+                            text = stringResource(R.string.ai_plan_apply_and_activate),
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
                             color = Color.White
@@ -1355,7 +1365,7 @@ fun ProposedPlanCard(
                     Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(13.dp), tint = CiboTimerAzureLight)
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Rinomina o salva con altro nome...",
+                        text = stringResource(R.string.ai_plan_rename_or_save_as),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = CiboTimerAzureLight
@@ -1370,7 +1380,7 @@ fun ProposedPlanCard(
             onDismissRequest = { showRenameDialog = false },
             title = {
                 Text(
-                    text = "Salva Piano con Altro Nome",
+                    text = stringResource(R.string.ai_plan_save_as_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 17.sp,
                     color = TextPrimary
@@ -1379,7 +1389,7 @@ fun ProposedPlanCard(
             text = {
                 Column {
                     Text(
-                        text = "Inserisci il nome con cui vuoi salvare questo piano nei tuoi piani personalizzati:",
+                        text = stringResource(R.string.ai_plan_save_as_desc),
                         fontSize = 13.sp,
                         color = TextSecondary,
                         lineHeight = 18.sp
@@ -1401,7 +1411,7 @@ fun ProposedPlanCard(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Puoi scegliere se salvarlo semplicemente per usarlo in seguito, oppure renderlo subito attivo.",
+                        text = stringResource(R.string.ai_plan_save_as_note),
                         fontSize = 11.sp,
                         color = TextSecondary,
                         lineHeight = 15.sp

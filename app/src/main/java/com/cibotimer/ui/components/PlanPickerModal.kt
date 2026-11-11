@@ -702,7 +702,7 @@ fun PlanPickerPreviewStep(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Elimina questo piano",
+                        text = stringResource(R.string.plan_delete_action),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = CiboStopRed

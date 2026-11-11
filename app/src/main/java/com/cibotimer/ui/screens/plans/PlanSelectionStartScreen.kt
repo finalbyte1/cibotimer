@@ -133,14 +133,14 @@ fun PlanSelectionStartScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Programmi Coach",
+                        text = stringResource(R.string.program_coach_title),
                         fontSize = 26.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = TextPrimary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Il Coach ti accompagna nel tuo percorso",
+                        text = stringResource(R.string.program_coach_subtitle),
                         fontSize = 14.sp,
                         color = TextSecondary
                     )
@@ -200,7 +200,7 @@ fun PlanSelectionStartScreen(
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Text(
-                                                    text = "Perdita peso: ",
+                                                    text = stringResource(R.string.rating_weight_loss),
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.Medium,
                                                     color = Color.White.copy(alpha = 0.9f)
@@ -210,7 +210,7 @@ fun PlanSelectionStartScreen(
 
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Text(
-                                                    text = "Salute: ",
+                                                    text = stringResource(R.string.rating_health),
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.Medium,
                                                     color = Color.White.copy(alpha = 0.9f)
@@ -241,7 +241,7 @@ fun PlanSelectionStartScreen(
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = "Inizia la settimana 1",
+                                                text = stringResource(R.string.button_start_week_1),
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 15.sp,
                                                 color = Color.White
@@ -265,14 +265,14 @@ fun PlanSelectionStartScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Piani singoli di digiuno",
+                        text = stringResource(R.string.single_plans_title),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Scegli manualmente il metodo di digiuno",
+                        text = stringResource(R.string.single_plans_subtitle),
                         fontSize = 13.sp,
                         color = TextSecondary
                     )
@@ -281,7 +281,7 @@ fun PlanSelectionStartScreen(
 
             item {
                 Text(
-                    text = "Suggerimenti",
+                    text = stringResource(R.string.plans_suggestions_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary,

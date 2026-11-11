@@ -69,7 +69,7 @@ fun PlannerScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Pianificatore settimanale",
+                            text = stringResource(R.string.planner_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = TextPrimary
@@ -86,7 +86,7 @@ fun PlannerScreen(
                         IconButton(onClick = { showDeleteActiveDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteOutline,
-                                contentDescription = text = stringResource(R.string.dialog_delete_plan_title),,
+                                contentDescription = stringResource(R.string.dialog_delete_plan_title),
                                 tint = CiboStopRed
                             )
                         }
@@ -141,7 +141,7 @@ fun PlannerScreen(
                             color = CiboTimerAzureContainer
                         ) {
                             Text(
-                                text = "$totalFastingHoursWeek ore/sett.",
+                                text = stringResource(R.string.planner_hours_per_week, totalFastingHoursWeek),
                                 color = CiboTimerAzure,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
@@ -178,7 +178,7 @@ fun PlannerScreen(
                     Icon(Icons.Default.Edit, contentDescription = null, tint = Color(0xFF031019))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "MODIFICA PIANO (${selectedDayPlan.dayName})",
+                        text = stringResource(R.string.planner_edit_day_button, selectedDayPlan.dayName),
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
                         color = Color(0xFF031019)
@@ -189,7 +189,7 @@ fun PlannerScreen(
             // List of the 7 days with detailed intervals
             item {
                 Text(
-                    text = "Dettaglio giorni della settimana",
+                    text = stringResource(R.string.planner_days_detail_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = TextPrimary,
@@ -249,7 +249,7 @@ fun PlannerScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Digiuno: ${day.startTimeFormatted} - ${day.endTimeFormatted} (${day.fastingDurationMinutes / 60}h)",
+                                    text = stringResource(R.string.planner_day_fasting_detail, day.startTimeFormatted, day.endTimeFormatted, day.fastingDurationMinutes / 60),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -264,7 +264,7 @@ fun PlannerScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Pasti: ${day.endTimeFormatted} - ${day.startTimeFormatted} (${(24 * 60 - day.fastingDurationMinutes) / 60}h)",
+                                    text = stringResource(R.string.planner_day_eating_detail, day.endTimeFormatted, day.startTimeFormatted, (24 * 60 - day.fastingDurationMinutes) / 60),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -273,7 +273,7 @@ fun PlannerScreen(
 
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Modifica giorno",
+                            contentDescription = stringResource(R.string.content_desc_edit_day),
                             tint = if (isSelected) CiboTimerAzure else TextSecondary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -320,14 +320,14 @@ fun PlannerScreen(
             onDismissRequest = { showDeleteActiveDialog = false },
             title = {
                 Text(
-                    text = "Elimina Piano",
+                    text = stringResource(R.string.dialog_delete_plan_title),
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
                 )
             },
             text = {
                 Text(
-                    text = "Sei sicuro di voler eliminare definitivamente il piano \"${activePlan.name}\"? Verrà automaticamente ripristinato il piano 16-8 Classico.",
+                    text = stringResource(R.string.dialog_delete_plan_active_message, activePlan.name),
                     color = TextSecondary,
                     fontSize = 14.sp,
                     lineHeight = 20.sp

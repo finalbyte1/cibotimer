@@ -294,6 +294,8 @@
     <string name="plan_time_end_label">Fine: </string>
     <string name="plan_time_bound_anterior">Non puoi superare il periodo anteriore (termina alle %02d:%02d)</string>
     <string name="plan_time_bound_posterior">Non puoi superare il periodo successivo (inizia alle %02d:%02d)</string>
+    <string name="content_desc_edit_start_time">Modifica orario inizio</string>
+    <string name="content_desc_edit_end_time">Modifica orario fine</string>
 
     <!-- AI Chat Screen Additional -->
     <string name="ai_open_settings">Apri Impostazioni AI</string>
@@ -363,4 +365,108 @@
     <string name="week_chart_free">Libero</string>
     <string name="week_chart_fasting_from">Digiuno da %1$s fino alle %2$s</string>
     <string name="week_chart_no_fast">Nessun digiuno programmato</string>
+
+    <!-- TimerScreen Updates & Live Status -->
+    <string name="update_version_info">Versione %1$s (%2$s)</string>
+    <string name="update_downloading_title">Download aggiornamento...</string>
+    <string name="update_progress_percent">%1$d%% completato</string>
+    <string name="update_ready_title">Aggiornamento pronto!</string>
+    <string name="update_ready_message">Il pacchetto di aggiornamento è stato scaricato. Tocca Installa per aggiornare CiboTimer.</string>
+    <string name="update_button_install">Installa</string>
+    <string name="timer_label_now">Adesso:</string>
+    <string name="timer_status_stopped_short">Fermo</string>
+
+    <!-- PlannerScreen -->
+    <string name="planner_title">Pianificatore settimanale</string>
+    <string name="planner_hours_per_week">%1$d ore/sett.</string>
+    <string name="planner_edit_day_button">MODIFICA PIANO (%1$s)</string>
+    <string name="planner_days_detail_title">Dettaglio giorni della settimana</string>
+    <string name="planner_day_fasting_detail">Digiuno: %1$s - %2$s (%3$dh)</string>
+    <string name="planner_day_eating_detail">Pasti: %1$s - %2$s (%3$dh)</string>
+    <string name="content_desc_edit_day">Modifica giorno</string>
+    <string name="dialog_delete_plan_active_message">Sei sicuro di voler eliminare definitivamente il piano \"%1$s\"? Verrà automaticamente ripristinato il piano 16-8 Classico.</string>
+
+    <!-- PlanSelectionStartScreen -->
+    <string name="program_coach_title">Programmi Coach</string>
+    <string name="program_coach_subtitle">Il Coach ti accompagna nel tuo percorso</string>
+    <string name="rating_weight_loss">Perdita peso: </string>
+    <string name="rating_health">Salute: </string>
+    <string name="button_start_week_1">Inizia la settimana 1</string>
+    <string name="single_plans_title">Piani singoli di digiuno</string>
+    <string name="single_plans_subtitle">Scegli manualmente il metodo di digiuno</string>
+    <string name="plans_suggestions_title">Suggerimenti</string>
+
+    <!-- NotificationsScreen -->
+    <string name="notif_live_timer_title">Timer Live Permanente</string>
+    <string name="notif_live_timer_desc">Il cronometro attivo è impostato ad Alta Priorità nella tendina di sistema e non viene rimosso dal tasto Cancella.</string>
+    <string name="notif_channel_config_desc">Configura canale notifica</string>
+    <string name="notif_empty_title">Nessuna notifica</string>
+    <string name="notif_empty_desc">La cronologia degli avvisi di fine digiuno, inizio pasti, traguardi metabolici e promemoria verrà visualizzata qui.</string>
+    <string name="notif_clear_dialog_title">Cancella tutte le notifiche?</string>
+    <string name="notif_clear_dialog_message">Questa azione rimuoverà tutti gli avvisi dalla cronologia dell\'applicazione. La notifica del timer live continuerà a funzionare normalmente.</string>
+    <string name="notif_clear_dialog_confirm">Cancella tutto</string>
+    <string name="notif_archive_empty">Nessun avviso in archivio</string>
+    <string name="notif_archive_count">%1$d avvisi ricevuti</string>
+    <string name="notif_time_now">Adesso</string>
+    <string name="notif_time_today">Oggi alle %1$s</string>
+    <string name="notif_time_yesterday">Ieri alle %1$s</string>
+
+    <!-- CoachingScreen -->
+    <string name="coaching_title">Coach &amp; Conoscenza</string>
+    <string name="category_all">Tutti</string>
+    <string name="coaching_ai_card_title">Coach AI Personalizzato</string>
+    <string name="coaching_ai_card_desc">Crea un piano di digiuno su misura o chiedi consigli al Coach.</string>
+    <string name="coaching_read_full_article">Leggi l\'articolo completo</string>
+
+    <!-- ProgressScreen -->
+    <string name="button_share">Condividi</string>
+    <string name="progress_goals_weight_title">Obiettivi &amp; Peso</string>
+    <string name="button_edit">Modifica</string>
+    <string name="progress_lost_label">Persi</string>
+    <string name="progress_gained_label">Aumentati</string>
+    <string name="progress_to_target_label">Al traguardo</string>
+    <string name="progress_goal_reached">Raggiunto!</string>
+    <string name="progress_measurements_title">Misure Corporee</string>
+    <string name="progress_total_diff_format">Totale: %1$+.1f cm</string>
+    <string name="progress_no_circumferences_desc">Nessuna circonferenza ancora registrata. Quando registri il tuo peso puoi inserire anche fianchi, vita, torace, cosce e braccia per monitorare i centimetri persi.</string>
+    <string name="measurement_whr_prefix">Rapporto Vita/Fianchi (WHR): </string>
+    <string name="bmi_title">Indice di Massa Corporea (BMI)</string>
+    <string name="bmi_height_format">Altezza impostata: %1$.0f cm</string>
+    <string name="progress_history_count_format">Storico misurazioni (%1$d)</string>
+    <string name="progress_no_weight_desc">Nessuna pesata registrata ancora. Tocca \'Registra peso &amp; misure\' per iniziare a tracciare la tua evoluzione.</string>
+    <string name="progress_stats_section_title">I Tuoi Numeri nel Digiuno</string>
+    <string name="progress_stat_consecutive_hours">%1$d ore consecutive</string>
+    <string name="progress_consistency_title">Costanza e Benefici Metabolici</string>
+    <string name="progress_consistency_desc">Ogni ora di digiuno permette al tuo organismo di ridurre l\'infiammazione, stimolare l\'autofagia (riciclo cellulare) e aumentare la sensibilità insulinica. Il monitoraggio del peso e delle misure corporee conferma i progressi reali della tua composizione corporea.</string>
+    <string name="progress_trophies_title">Trofei Raggiunti</string>
+    <string name="progress_trophies_desc">Sblocca tutti i trofei continuando il tuo percorso di digiuno e salute.</string>
+    <string name="progress_trophy_unlocked_badge">Sbloccato</string>
+
+    <!-- AiChatScreen -->
+    <string name="ai_chat_header_title">Coach AI CiboTimer</string>
+    <string name="ai_chat_intro_title">Coach Nutrizionale AI</string>
+    <string name="ai_chat_intro_desc">Il Coach AI è il tuo assistente personale per creare piani di digiuno su misura, analizzare i pasti e comprendere la chetosi.\n\nSupporta qualsiasi provider OpenAI-compatibile (OpenAI, DeepSeek, Groq, Google Gemini, Ollama locale).\n\nPer preservare la tua privacy è disattivato finché non configuri la tua chiave API.</string>
+    <string name="ai_chat_regenerate">Rigenera</string>
+    <string name="ai_chat_thinking_format">Pensiero del modello (%1$d car.)</string>
+    <string name="ai_chat_coach_responding">Il coach sta rispondendo...</string>
+    <string name="ai_chat_input_placeholder">Chiedi al Coach CiboTimer...</string>
+    <string name="ai_chat_welcome_title">Coach Nutrizionale</string>
+    <string name="ai_chat_welcome_subtitle">Chiedi consigli su digiuno, ricette, chetosi e crea piani settimanali personalizzati.</string>
+    <string name="ai_provider_modal_title">Seleziona Provider AI</string>
+    <string name="ai_provider_modal_subtitle">Scegli un preset compatibile con le API OpenAI o personalizza endpoint e chiavi.</string>
+    <string name="ai_plan_recommended_badge">Piano Nutrizionale Consigliato</string>
+    <string name="ai_plan_coach_badge">COACH AI</string>
+    <string name="ai_plan_verified_hours">Orari verificati e coerenti</string>
+    <string name="ai_plan_fasting_format">🔥 Digiuno: %1$s → %2$s (%3$s)</string>
+    <string name="ai_plan_eating_format">🍽️ Finestra pasti: %1$s → %2$s (%3$s)</string>
+    <string name="ai_plan_frequency_all_days">📅 Frequenza: 7 giorni su 7</string>
+    <string name="ai_plan_frequency_custom">📅 Frequenza: %1$d giorni di digiuno · %2$d giorni liberi</string>
+    <string name="ai_plan_apply_and_activate">Applica e Attiva</string>
+    <string name="ai_plan_rename_or_save_as">Rinomina o salva con altro nome...</string>
+    <string name="ai_plan_save_as_title">Salva Piano con Altro Nome</string>
+    <string name="ai_plan_save_as_desc">Inserisci il nome con cui vuoi salvare questo piano nei tuoi piani personalizzati:</string>
+    <string name="ai_plan_save_as_note">Puoi scegliere se salvarlo semplicemente per usarlo in seguito, oppure renderlo subito attivo.</string>
+
+    <!-- PlanPickerModal -->
+    <string name="plan_delete_action">Elimina questo piano</string>
 </resources>

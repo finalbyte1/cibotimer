@@ -390,7 +390,7 @@ fun TimerScreen(
                         Text("🚀", fontSize = 22.sp)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Aggiornamento disponibile!",
+                            text = stringResource(R.string.update_available_title),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = CiboTextPrimary
@@ -400,7 +400,7 @@ fun TimerScreen(
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
-                            text = "Versione ${info.versionName} (${info.size})",
+                            text = stringResource(R.string.update_version_info, info.versionName, info.size),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboAccent
@@ -419,13 +419,13 @@ fun TimerScreen(
                 },
                 confirmButton = {
                     AppPrimaryButton(
-                        text = if (com.cibotimer.BuildConfig.IS_PLAY_STORE_BUILD) "Aggiorna su Google Play" else "Aggiorna Ora",
+                        text = if (com.cibotimer.BuildConfig.IS_PLAY_STORE_BUILD) stringResource(R.string.update_button_play) else stringResource(R.string.update_button_direct),
                         onClick = { updateManager?.downloadAndInstall(info) }
                     )
                 },
                 dismissButton = {
                     AppSecondaryButton(
-                        text = "Più tardi",
+                        text = stringResource(R.string.update_button_later),
                         onClick = { updateManager?.dismissBanner() }
                     )
                 }
@@ -439,7 +439,7 @@ fun TimerScreen(
                 shape = RoundedCornerShape(20.dp),
                 title = {
                     Text(
-                        text = "Download aggiornamento...",
+                        text = stringResource(R.string.update_downloading_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = CiboTextPrimary
@@ -457,7 +457,7 @@ fun TimerScreen(
                             trackColor = CiboTrack
                         )
                         Text(
-                            text = "${updateState.progressPercent}% completato",
+                            text = stringResource(R.string.update_progress_percent, updateState.progressPercent),
                             fontSize = 13.sp,
                             color = CiboTextSecondary
                         )
@@ -474,7 +474,7 @@ fun TimerScreen(
                 shape = RoundedCornerShape(20.dp),
                 title = {
                     Text(
-                        text = "Aggiornamento pronto!",
+                        text = stringResource(R.string.update_ready_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = CiboTextPrimary
@@ -482,20 +482,20 @@ fun TimerScreen(
                 },
                 text = {
                     Text(
-                        text = "Il pacchetto di aggiornamento è stato scaricato. Tocca Installa per aggiornare CiboTimer.",
+                        text = stringResource(R.string.update_ready_message),
                         fontSize = 14.sp,
                         color = CiboTextSecondary
                     )
                 },
                 confirmButton = {
                     AppPrimaryButton(
-                        text = "Installa",
+                        text = stringResource(R.string.update_button_install),
                         onClick = { updateManager?.triggerInstall(updateState.apkUri) }
                     )
                 },
                 dismissButton = {
                     AppSecondaryButton(
-                        text = "Annulla",
+                        text = stringResource(R.string.button_cancel),
                         onClick = { updateManager?.dismissBanner() }
                     )
                 }
@@ -621,14 +621,14 @@ fun CompactTimerContent(
                         verticalArrangement = Arrangement.Top
                     ) {
                         Text(
-                            text = "Adesso:",
+                            text = stringResource(R.string.timer_label_now),
                             fontSize = if (isVeryShort) 10.5.sp else 11.5.sp,
                             fontWeight = FontWeight.Normal,
                             color = CiboTextSecondary,
                             textAlign = TextAlign.End
                         )
                         Text(
-                            text = if (isFasting) "Digiunare" else if (isEating) "Mangiare" else "Fermo",
+                            text = if (isFasting) stringResource(R.string.legend_fasting) else if (isEating) stringResource(R.string.legend_eating) else stringResource(R.string.timer_status_stopped_short),
                             fontSize = if (isVeryShort) 12.5.sp else 13.5.sp,
                             fontWeight = if (isRunning) FontWeight.Bold else FontWeight.SemiBold,
                             color = if (isFasting) CiboAccent else if (isEating) CiboTimerAzureGlow else CiboTextSecondary,
@@ -787,7 +787,7 @@ fun CompactTimerContent(
                     )
                 }
                 Text(
-                    text = "Cambia",
+                    text = stringResource(R.string.button_change_plan),
                     color = CiboAccent,
                     fontWeight = FontWeight.Medium,
                     fontSize = 12.sp,
