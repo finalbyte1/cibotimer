@@ -206,20 +206,6 @@ You can configure signing credentials locally:
 
 ---
 
-## 🏪 Google Play Store Publishing
-
-For step-by-step instructions on:
-- Google Play Console setup
-- Ready-to-copy declarations for **Foreground Service** and **Exact Alarms**
-- **Data Safety** questionnaire answers
-- Ready-to-publish **Privacy Policy** template
-- Managing the **20 testers for 14 days** rule for personal developer accounts
-
-Refer to the local guide:
-📄 [PLAYSTORE_PUBLISHING_GUIDE.md](git_exclude/PLAYSTORE_PUBLISHING_GUIDE.md) or open `git_exclude/playstore_guide.html` in your browser.
-
----
-
 ## 🛡️ Privacy & Data Security
 
 - **No Trackers**: No third-party ad networks (Google AdMob, Unity, AppLovin) or intrusive tracking SDKs.
