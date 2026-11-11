@@ -482,4 +482,12 @@
 
     <!-- PlanPickerModal -->
     <string name="plan_delete_action">Elimina questo piano</string>
+    <string name="plan_card_duration_hours">%1$dh digiuno · %2$dh pasto</string>
+    <string name="plan_card_duration_mins">%1$dh %2$dm digiuno</string>
+    <string name="plan_name_modified_suffix">%1$s (Modificato)</string>
+    <string name="content_desc_rename_plan">Rinomina piano</string>
+    <string name="content_desc_edit_time">Modifica orario</string>
+    <string name="content_desc_selected">Selezionato</string>
+    <string name="content_desc_not_selected">Non selezionato</string>
+    <string name="content_desc_delete_plan">Elimina piano</string>
 </resources>

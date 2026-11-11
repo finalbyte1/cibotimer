@@ -482,4 +482,12 @@
 
     <!-- PlanPickerModal -->
     <string name="plan_delete_action">Delete this plan</string>
+    <string name="plan_card_duration_hours">%1$dh fast · %2$dh meal</string>
+    <string name="plan_card_duration_mins">%1$dh %2$dm fast</string>
+    <string name="plan_name_modified_suffix">%1$s (Modified)</string>
+    <string name="content_desc_rename_plan">Rename plan</string>
+    <string name="content_desc_edit_time">Edit time</string>
+    <string name="content_desc_selected">Selected</string>
+    <string name="content_desc_not_selected">Not selected</string>
+    <string name="content_desc_delete_plan">Delete plan</string>
 </resources>

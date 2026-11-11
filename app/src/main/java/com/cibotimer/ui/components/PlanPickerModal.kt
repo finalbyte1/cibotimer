@@ -495,7 +495,7 @@ fun PlanPickerPreviewStep(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Rinomina piano",
+                                    contentDescription = stringResource(R.string.content_desc_rename_plan),
                                     tint = CiboAccent,
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -830,7 +830,8 @@ fun PlanPickerCustomStep(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    var planName by remember { mutableStateOf(initialPlan?.name?.let { "$it (Modificato)" } ?: "") }
+    val modifiedSuffix = initialPlan?.name?.let { stringResource(R.string.plan_name_modified_suffix, it) } ?: ""
+    var planName by remember { mutableStateOf(modifiedSuffix) }
     var selectedDayScope by remember { mutableStateOf<Int?>(null) } // null = "Tutti", 1..7 = Lun..Dom
 
     var customDays by remember {
@@ -1038,7 +1039,7 @@ fun PlanPickerCustomStep(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 
                                 Text(
-                                    text = if (day.isFastingDay) "${day.fastingDurationMinutes / 60}h" else "Libero",
+                                    text = if (day.isFastingDay) "${day.fastingDurationMinutes / 60}h" else stringResource(R.string.week_chart_free),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (day.isFastingDay) CiboAccent else CiboAmber,
@@ -1173,7 +1174,7 @@ fun PlanPickerCustomStep(
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Icon(
                                         imageVector = Icons.Default.Edit,
-                                        contentDescription = "Modifica orario",
+                                        contentDescription = stringResource(R.string.content_desc_edit_time),
                                         tint = CiboAccent.copy(alpha = 0.7f),
                                         modifier = Modifier.size(14.dp)
                                     )
@@ -1375,9 +1376,9 @@ fun PlanItemCard(
     val eatingHours = 24 - fastingHours
 
     val durationLabel = if (fastingMinutes == 0) {
-        "${fastingHours}h digiuno · ${eatingHours}h pasto"
+        stringResource(R.string.plan_card_duration_hours, fastingHours, eatingHours)
     } else {
-        "${fastingHours}h ${fastingMinutes}m digiuno"
+        stringResource(R.string.plan_card_duration_mins, fastingHours, fastingMinutes)
     }
 
     Surface(
@@ -1398,7 +1399,7 @@ fun PlanItemCard(
         ) {
             Icon(
                 imageVector = if (isActive) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                contentDescription = if (isActive) "Selezionato" else "Non selezionato",
+                contentDescription = if (isActive) stringResource(R.string.content_desc_selected) else stringResource(R.string.content_desc_not_selected),
                 tint = if (isActive) CiboAccent else Color(0xFF4A5A75),
                 modifier = Modifier.size(24.dp)
             )
@@ -1458,7 +1459,7 @@ fun PlanItemCard(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.DeleteOutline,
-                                    contentDescription = "Elimina piano",
+                                    contentDescription = stringResource(R.string.content_desc_delete_plan),
                                     tint = CiboStopRed,
                                     modifier = Modifier.size(18.dp)
                                 )
