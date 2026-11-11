@@ -14,6 +14,7 @@
 [![UI](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4.svg?style=for-the-badge&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Flavors](https://img.shields.io/badge/Flavors-Play%20%7C%20Sideload-orange.svg?style=for-the-badge)](#-dual-channel-distribution-architecture)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline%20First-success.svg?style=for-the-badge)](#-privacy--data-security)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/agpl-3.0)
 
 </div>
 
@@ -61,9 +62,9 @@ Biological explanations of your body's biochemical processes throughout the fast
 - **Dynamic 2x1 Widget**: Live fasting progress, percentage, and estimated completion time right on your launcher.
 - **One-Tap Widget Button**: Instantly start or conclude eating windows directly from the home screen.
 
-### 6. 💧 Water Tracker & ⚖️ Body Weight Journal
-- **Hydration Log**: Daily glass counter with customizable targets and reminders.
+### 6. ⚖️ Body Weight & Measurements Journal
 - **Weight & BMI Log**: Chronological weigh-in history, automated Body Mass Index calculation, and anthropometric measurements (waist, hips, chest, thighs).
+- **Progress Tracking**: Visual charts showing long-term trends alongside fasting adherence.
 
 ### 7. 🤖 Built-in AI Fasting Coach (BYOK)
 - Conversational coach compatible with **OpenAI** API specifications and custom endpoints (Ollama, vLLM, LocalLLM).
@@ -222,7 +223,7 @@ Refer to the local guide:
 ## 🛡️ Privacy & Data Security
 
 - **No Trackers**: No third-party ad networks (Google AdMob, Unity, AppLovin) or intrusive tracking SDKs.
-- **On-Device Storage**: Fasting logs, body weight, water intake, and personal notes are kept locally on device storage.
+- **On-Device Storage**: Fasting logs, body weight, anthropometric measurements, and personal notes are kept locally on device storage.
 - **Encrypted Networking**: All network requests (Google Drive, OpenAI, DuckDNS) strictly use encrypted **HTTPS/TLS**.
 - **User Control**: You can export or permanently delete all your data at any time from the Settings screen.
 
@@ -236,4 +237,4 @@ Refer to the local guide:
 
 ## 📄 License
 
-This project is licensed under the terms of the open source license. See [LICENSE](LICENSE) for details.
+This project is licensed under the terms of the GNU Affero General Public License v3 (AGPL-3.0). See [LICENSE](LICENSE) for details.

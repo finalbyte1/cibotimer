@@ -14,6 +14,7 @@
 [![UI](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4.svg?style=for-the-badge&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Flavor](https://img.shields.io/badge/Flavors-Play%20%7C%20Sideload-orange.svg?style=for-the-badge)](#-architettura-di-distribuzione-a-doppio-canale)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline%20First-success.svg?style=for-the-badge)](#-privacy--sicurezza-dei-dati)
+[![Licenza: AGPL v3](https://img.shields.io/badge/Licenza-AGPL%20v3-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/agpl-3.0)
 
 </div>
 
@@ -61,9 +62,9 @@ Spiegazione scientifica e approfondita dei processi biochimici attivi durante il
 - **Widget 2x1 Dinamico**: Stato attivo del digiuno, percentuale completata e orario stimato di conclusione direttamente sul launcher.
 - **Pulsante One-Tap sul Widget**: Avvia o termina la finestra di alimentazione istantaneamente senza dover aprire l'applicazione.
 
-### 6. 💧 Tracker Idratazione & ⚖️ Diario del Peso Corporeo
-- **Registro Acqua**: Tracciamento dei bicchieri d'acqua bevuti con target giornaliero regolabile e notifiche di promemoria.
+### 6. ⚖️ Diario del Peso & Misure Corporee
 - **Diario Peso & BMI**: Storico cronologico delle pesate, calcolo automatico del Body Mass Index, stato corporeo e misurazioni antropometriche (vita, fianchi, torace, cosce).
+- **Monitoraggio dei Progressi**: Grafici visivi sull'andamento nel tempo e traguardi raggiunti parallelamente ai ritmi di digiuno.
 
 ### 7. 🤖 Coach Nutrizionale AI Integrato (BYOK)
 - Chatbot motivazionale compatibile con le API **OpenAI** e qualsiasi endpoint compatibile (LocalLLM, Ollama, vLLM).
@@ -220,7 +221,7 @@ Consulta la guida dedicata nella cartella locale:
 ## 🛡️ Privacy & Sicurezza dei Dati
 
 - **Nessun tracciamento**: L'app non include SDK pubblicitari (Google AdMob, Unity, AppLovin) né librerie di analisi invasiva.
-- **Dati sul dispositivo**: Sessioni di digiuno, peso, idratazione e parametri corporei sono memorizzati nello storage protetto dell'app.
+- **Dati sul dispositivo**: Sessioni di digiuno, peso, misurazioni antropometriche e note personali sono memorizzati nello storage protetto dell'app.
 - **Comunicazioni Cifrate**: Qualsiasi connessione di rete opzionale (Google Drive, OpenAI, DuckDNS) avviene esclusivamente su protocollo crittografato **HTTPS/TLS**.
 - **Controllo Utente**: È possibile esportare tutti i dati o cancellarli completamente in qualsiasi momento con un tocco.
 
@@ -234,4 +235,4 @@ Consulta la guida dedicata nella cartella locale:
 
 ## 📄 Licenza
 
-Questo progetto è rilasciato sotto licenza open source. Consulta il file [LICENSE](LICENSE) per maggiori informazioni.
+Questo progetto è rilasciato sotto licenza GNU Affero General Public License v3 (AGPL-3.0). Consulta il file [LICENSE](LICENSE) per maggiori informazioni.
