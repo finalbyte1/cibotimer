@@ -7,16 +7,16 @@ plugins {
 
 android {
     namespace = "com.cibotimer"
-    compileSdk = 34
+    compileSdk = 36
 
     val enableLiveUpdate = (project.findProperty("enableLiveUpdate") as? String)?.toBoolean() ?: true
 
     defaultConfig {
         applicationId = "com.cibotimer"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 66
-        versionName = "1.0.65"
+        targetSdk = 36
+        versionCode = 67
+        versionName = "1.0.66"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

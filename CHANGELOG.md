@@ -6,6 +6,20 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.66] - 2026-11-12
+
+### 🚀 Aggiornamento Target SDK 36 (Android 16) per Google Play Store
+- **Conformità Requisiti Google Play Console**:
+  - Aggiornato `targetSdk` da 34 a **36** (Android 16) in `app/build.gradle.kts`.
+  - Aggiornato `compileSdk` da 34 a **36** per allineamento completo alle API più recenti.
+  - Incrementato `versionCode` a **67** e `versionName` a **1.0.66**.
+  - Aggiunta la proprietà `android.suppressUnsupportedCompileSdk=36` in `gradle.properties` per compatibilità AGP.
+- **Verifica Compatibilità & Build**:
+  - Superata l'intera suite di test unitari con API level 36.
+  - Generati sia il pacchetto APK (`assembleDebug`) sia il bundle AAB per Play Store (`bundleRelease`).
+
+---
+
 ## [1.0.65] - 2026-11-12
 
 ### 📱 Regolazione Tipografica Widget 2x1 (Font Tempo a 22dp)
