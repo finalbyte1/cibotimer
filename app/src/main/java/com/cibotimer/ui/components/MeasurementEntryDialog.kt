@@ -15,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,6 +26,7 @@ import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
 import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.domain.BodyStatsCalculator
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import java.text.SimpleDateFormat
@@ -65,8 +68,9 @@ fun MeasurementEntryDialog(
     var armsText by remember { mutableStateOf(initialEntry?.armsCm?.toString() ?: "") }
     var notesText by remember { mutableStateOf(initialEntry?.notes ?: "") }
 
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val epochMillis = remember { initialEntry?.epochMillis ?: System.currentTimeMillis() }
-    val dateFmt = remember { SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.getDefault()) }
 
     // Live WHR calculation
     val waistVal = waistText.toDoubleOrNull()
@@ -123,7 +127,7 @@ fun MeasurementEntryDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.measurement_date_prefix, dateFmt.format(Date(epochMillis))),
+                    text = stringResource(R.string.measurement_date_prefix, DateTimeFormatters.formatFullDateTime(epochMillis, context, locale)),
                     fontSize = 11.sp,
                     color = CiboTextSecondary
                 )

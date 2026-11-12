@@ -7,42 +7,11 @@ import java.util.Locale
 
 object FastingDayFormatter {
     fun formatShort(dayOfWeek: Int, locale: Locale = Locale.getDefault()): String {
-        return try {
-            DayOfWeek.of(dayOfWeek.coerceIn(1, 7))
-                .getDisplayName(TextStyle.SHORT, locale)
-                .trimEnd('.')
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
-        } catch (_: Throwable) {
-            when (dayOfWeek) {
-                1 -> if (locale.language == "it") "Lun" else "Mon"
-                2 -> if (locale.language == "it") "Mar" else "Tue"
-                3 -> if (locale.language == "it") "Mer" else "Wed"
-                4 -> if (locale.language == "it") "Gio" else "Thu"
-                5 -> if (locale.language == "it") "Ven" else "Fri"
-                6 -> if (locale.language == "it") "Sab" else "Sat"
-                7 -> if (locale.language == "it") "Dom" else "Sun"
-                else -> ""
-            }
-        }
+        return com.cibotimer.domain.DateTimeFormatters.formatShortDay(dayOfWeek, locale, capitalize = true)
     }
 
     fun formatFull(dayOfWeek: Int, locale: Locale = Locale.getDefault()): String {
-        return try {
-            DayOfWeek.of(dayOfWeek.coerceIn(1, 7))
-                .getDisplayName(TextStyle.FULL, locale)
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
-        } catch (_: Throwable) {
-            when (dayOfWeek) {
-                1 -> if (locale.language == "it") "Lunedì" else "Monday"
-                2 -> if (locale.language == "it") "Martedì" else "Tuesday"
-                3 -> if (locale.language == "it") "Mercoledì" else "Wednesday"
-                4 -> if (locale.language == "it") "Giovedì" else "Thursday"
-                5 -> if (locale.language == "it") "Venerdì" else "Friday"
-                6 -> if (locale.language == "it") "Sabato" else "Saturday"
-                7 -> if (locale.language == "it") "Domenica" else "Sunday"
-                else -> ""
-            }
-        }
+        return com.cibotimer.domain.DateTimeFormatters.formatFullDay(dayOfWeek, locale, capitalize = true)
     }
 }
 

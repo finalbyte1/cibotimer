@@ -16,8 +16,10 @@ import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.models.FastingState
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * Stato normalizzato e condiviso per i formati widget 1x1 e 2x1.
@@ -201,11 +203,18 @@ object FastingWidgetUpdater {
     }
 
     /**
-     * Formatta l'orario target garantendo il formato coerente (es. "7:00", "12:00", "12:30").
+     * Formatta l'orario target garantendo il formato coerente (es. "7:00", "12:00", "12:30" o "7:00 AM", "12:00 PM").
      */
-    fun formatTargetTime(hour: Int, minute: Int): String {
-        return "%d:%02d".format(hour, minute)
+    fun formatTargetTime(context: Context?, hour: Int, minute: Int): String {
+        return if (context != null) {
+            val locale = DateTimeFormatters.getActiveLocale(context)
+            DateTimeFormatters.formatTime(hour, minute, context, locale)
+        } else {
+            "%d:%02d".format(hour, minute)
+        }
     }
+
+    fun formatTargetTime(hour: Int, minute: Int): String = "%d:%02d".format(hour, minute)
 
     fun formatEatingTargetTime(hour: Int, minute: Int): String = formatTargetTime(hour, minute)
 
@@ -258,13 +267,13 @@ object FastingWidgetUpdater {
 
             val cal = Calendar.getInstance().apply { timeInMillis = targetMillis }
             val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
-            val dayStr = getDayShortName(dayOfWeek)
+            val dayStr = getDayShortName(dayOfWeek, context)
             val hour = cal.get(Calendar.HOUR_OF_DAY)
             val minute = cal.get(Calendar.MINUTE)
 
             val isTargetToday = isSameDay(now, targetMillis)
             val timeRemainingStr = formatDurationShort(targetMillis - now)
-            val timeStr = formatTargetTime(hour, minute)
+            val timeStr = formatTargetTime(context, hour, minute)
 
             if (isCurrentlyEating) {
                 // Pasto in corso (si può mangiare)
@@ -434,10 +443,10 @@ object FastingWidgetUpdater {
 
         val cal = Calendar.getInstance().apply { timeInMillis = targetMillis }
         val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
-        val dayStr = getDayShortName(dayOfWeek)
+        val dayStr = getDayShortName(dayOfWeek, context)
         val hour = cal.get(Calendar.HOUR_OF_DAY)
         val minute = cal.get(Calendar.MINUTE)
-        val timeStr = formatTargetTime(hour, minute)
+        val timeStr = formatTargetTime(context, hour, minute)
         val isToday = isSameDay(now, targetMillis)
 
         val title = if (scheduled.isNowInsideFasting) {
@@ -478,7 +487,7 @@ object FastingWidgetUpdater {
                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 
-    private fun getDayShortName(calendarDayOfWeek: Int): String {
+    fun getDayShortName(calendarDayOfWeek: Int, context: Context? = null): String {
         val isoDay = when (calendarDayOfWeek) {
             Calendar.MONDAY -> 1
             Calendar.TUESDAY -> 2
@@ -489,10 +498,12 @@ object FastingWidgetUpdater {
             Calendar.SUNDAY -> 7
             else -> 1
         }
-        return FastingDayFormatter.formatShort(isoDay)
+        val locale = context?.let { DateTimeFormatters.getActiveLocale(it) } ?: Locale.getDefault()
+        return FastingDayFormatter.formatShort(isoDay, locale)
     }
 
-    private fun getDayShortNameFrom1To7(dayOfWeek: Int): String {
-        return FastingDayFormatter.formatShort(dayOfWeek)
+    fun getDayShortNameFrom1To7(dayOfWeek: Int, context: Context? = null): String {
+        val locale = context?.let { DateTimeFormatters.getActiveLocale(it) } ?: Locale.getDefault()
+        return FastingDayFormatter.formatShort(dayOfWeek, locale)
     }
 }

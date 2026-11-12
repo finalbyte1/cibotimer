@@ -32,6 +32,9 @@ import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.components.*
 import com.cibotimer.ui.theme.*
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import com.cibotimer.domain.DateTimeFormatters
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -348,7 +351,8 @@ fun WeightAndMeasurementsTab(
     onEditWeight: (WeightEntry) -> Unit,
     onDeleteWeight: (WeightEntry) -> Unit
 ) {
-    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()) }
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
 
     LazyColumn(
         modifier = Modifier
@@ -867,7 +871,7 @@ fun WeightAndMeasurementsTab(
 
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = dateFormat.format(Date(entry.epochMillis)),
+                                text = DateTimeFormatters.formatFullDateTime(entry.epochMillis, context, locale),
                                 fontSize = 11.sp,
                                 color = CiboTextSecondary
                             )

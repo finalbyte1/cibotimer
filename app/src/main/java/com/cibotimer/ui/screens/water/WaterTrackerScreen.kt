@@ -17,12 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -67,7 +70,8 @@ fun WaterTrackerScreen(
     var showTargetDialog by remember { mutableStateOf(false) }
     var targetInputText by remember { mutableStateOf(targetMl.toString()) }
 
-    val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.ITALIAN) }
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
 
     Scaffold(
         topBar = {
@@ -267,7 +271,7 @@ fun WaterTrackerScreen(
                                 )
                             }
                             Text(
-                                text = timeFormat.format(Date(entry.epochMillis)),
+                                text = DateTimeFormatters.formatTime(entry.epochMillis, context, locale),
                                 fontSize = 13.sp,
                                 color = TextSecondary
                             )

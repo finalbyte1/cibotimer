@@ -58,6 +58,7 @@ import androidx.core.content.ContextCompat
 import com.cibotimer.data.models.DayPlan
 import com.cibotimer.data.models.FastingState
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.notifications.NotificationHelper
 import com.cibotimer.ui.components.AppPrimaryButton
@@ -212,8 +213,8 @@ fun TimerScreen(
         }
     }
 
-    // Formattazione orari Inizio e Fine identici al periodo della popup
-    val timeFormat = remember { SimpleDateFormat("EEE HH:mm", Locale.ITALIAN) }
+    // Formattazione orari Inizio e Fine localizzati (es. "mer 20:00" in IT, "Wed 8:00 PM" in EN 12h)
+    val locale = LocalConfiguration.current.locales[0]
 
     val activeStartMillis = if (currentSession != null) {
         currentSession!!.startTimeEpochMillis
@@ -227,12 +228,12 @@ fun TimerScreen(
         scheduled.periodEndEpochMillis
     }
 
-    val startTimeFormatted = remember(activeStartMillis) {
-        timeFormat.format(Date(activeStartMillis)).lowercase()
+    val startTimeFormatted = remember(activeStartMillis, locale) {
+        DateTimeFormatters.formatDayAndTime(activeStartMillis, context, locale)
     }
 
-    val endTimeFormatted = remember(activeEndMillis) {
-        timeFormat.format(Date(activeEndMillis)).lowercase()
+    val endTimeFormatted = remember(activeEndMillis, locale) {
+        DateTimeFormatters.formatDayAndTime(activeEndMillis, context, locale)
     }
 
     val currentTimeFraction = remember(currentEpochMillis) {
@@ -304,9 +305,9 @@ fun TimerScreen(
             text = {
                 Text(
                     text = if (isFasting) {
-                        "Sei in digiuno. Desideri passare subito alla finestra pasto oppure fermare completamente il timer?"
+                        stringResource(R.string.timer_dialog_switch_fasting_msg)
                     } else {
-                        "Sei nella finestra di alimentazione. Desideri iniziare il digiuno adesso oppure fermare completamente il timer?"
+                        stringResource(R.string.timer_dialog_switch_eating_msg)
                     },
                     color = CiboTextSecondary,
                     fontSize = 14.sp
@@ -555,7 +556,7 @@ fun TimerScreen(
             shape = RoundedCornerShape(20.dp),
             title = {
                 Text(
-                    text = "Notifiche del Digiuno",
+                    text = stringResource(R.string.timer_notif_permission_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = CiboTextPrimary
@@ -563,7 +564,7 @@ fun TimerScreen(
             },
             text = {
                 Text(
-                    text = "Per mostrarti il timer persistente con il conto alla rovescia sempre attivo nella tendina e avvisarti al cambio tra digiuno e alimentazione, CiboTimer necessita del permesso per le notifiche.",
+                    text = stringResource(R.string.timer_notif_permission_msg),
                     fontSize = 14.sp,
                     color = CiboTextSecondary
                 )
@@ -579,7 +580,7 @@ fun TimerScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
                 ) {
-                    Text("Consenti e Avvia", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.timer_notif_permission_allow), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -589,7 +590,7 @@ fun TimerScreen(
                         repository.startFasting()
                     }
                 ) {
-                    Text("Avvia senza notifica", color = CiboTextSecondary)
+                    Text(stringResource(R.string.timer_notif_permission_skip), color = CiboTextSecondary)
                 }
             }
         )
@@ -603,7 +604,7 @@ fun TimerScreen(
             shape = RoundedCornerShape(20.dp),
             title = {
                 Text(
-                    text = "Notifiche Disattivate",
+                    text = stringResource(R.string.timer_notif_denied_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = CiboTextPrimary
@@ -611,7 +612,7 @@ fun TimerScreen(
             },
             text = {
                 Text(
-                    text = "Il permesso per le notifiche non è stato concesso. Senza questo permesso, la notifica persistente con il timer in tempo reale nella tendina non potrà essere mostrata.",
+                    text = stringResource(R.string.timer_notif_denied_msg),
                     fontSize = 14.sp,
                     color = CiboTextSecondary
                 )
@@ -624,12 +625,12 @@ fun TimerScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
                 ) {
-                    Text("Apri Impostazioni", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.timer_notif_open_settings), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPermissionDeniedWarningDialog = false }) {
-                    Text("OK", color = CiboTextSecondary)
+                    Text(stringResource(R.string.button_cancel), color = CiboTextSecondary)
                 }
             }
         )
@@ -646,7 +647,7 @@ fun TimerScreen(
             shape = RoundedCornerShape(20.dp),
             title = {
                 Text(
-                    text = "Ottimizzazione Batteria",
+                    text = stringResource(R.string.timer_battery_opt_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = CiboTextPrimary
@@ -654,7 +655,7 @@ fun TimerScreen(
             },
             text = {
                 Text(
-                    text = "Il timer del digiuno è stato interrotto in background da Android. Per mantenere il conto alla rovescia sempre attivo e preciso nella tendina e nei widget, escludi CiboTimer dall'ottimizzazione batteria.",
+                    text = stringResource(R.string.timer_battery_opt_msg),
                     fontSize = 14.sp,
                     color = CiboTextSecondary
                 )
@@ -683,7 +684,7 @@ fun TimerScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
                 ) {
-                    Text("Disattiva Ottimizzazione", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.timer_battery_opt_disable), color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -693,7 +694,7 @@ fun TimerScreen(
                         FastingPersistence.setBatteryHintShown(context, true)
                     }
                 ) {
-                    Text("Più tardi", color = CiboTextSecondary)
+                    Text(stringResource(R.string.timer_battery_opt_later), color = CiboTextSecondary)
                 }
             }
         )

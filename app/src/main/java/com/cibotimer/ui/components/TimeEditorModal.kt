@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +54,7 @@ import com.cibotimer.data.models.DayPlan
 import com.cibotimer.data.models.FastingPeriod
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.models.PlanCategory
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.domain.PlanShiftEngine
@@ -671,6 +673,21 @@ fun BottomEditorControlCard(
             )
 
             // Riga Inizio & Fine con matita (cliccabili)
+            val locale = LocalConfiguration.current.locales[0]
+            val startDayStr = DateTimeFormatters.formatShortDay(previewPeriod.startDayOfWeek, locale, capitalize = true)
+            val startTimeStr = DateTimeFormatters.formatTime(previewPeriod.startHour, previewPeriod.startMinute, context, locale)
+            val endDayStr = DateTimeFormatters.formatShortDay(previewPeriod.endDayOfWeek, locale, capitalize = true)
+            val endTimeStr = DateTimeFormatters.formatTime(previewPeriod.endHour, previewPeriod.endMinute, context, locale)
+
+            val anteriorEndDayStr = periodBounds.anteriorEndDayOfWeek?.let { DateTimeFormatters.formatShortDay(it, locale, capitalize = true) } ?: (periodBounds.anteriorEndDayShort ?: "")
+            val anteriorEndTimeStr = if (periodBounds.anteriorEndHour != null && periodBounds.anteriorEndMinute != null) {
+                DateTimeFormatters.formatTime(periodBounds.anteriorEndHour!!, periodBounds.anteriorEndMinute!!, context, locale)
+            } else ""
+            val nextStartDayStr = periodBounds.nextStartDayOfWeek?.let { DateTimeFormatters.formatShortDay(it, locale, capitalize = true) } ?: (periodBounds.nextStartDayShort ?: "")
+            val nextStartTimeStr = if (periodBounds.nextStartHour != null && periodBounds.nextStartMinute != null) {
+                DateTimeFormatters.formatTime(periodBounds.nextStartHour!!, periodBounds.nextStartMinute!!, context, locale)
+            } else ""
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -692,7 +709,7 @@ fun BottomEditorControlCard(
                             color = CiboTextSecondary
                         )
                         Text(
-                            text = "${previewPeriod.startDayShort} ${previewPeriod.startTimeFormatted}",
+                            text = "$startDayStr $startTimeStr",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboAccent
@@ -707,7 +724,7 @@ fun BottomEditorControlCard(
                     }
                     if (selectedPeriodNumber != null && periodBounds.hasAnterior && periodBounds.anteriorEndHour != null && periodBounds.anteriorEndMinute != null) {
                         Text(
-                            text = "≥ ${periodBounds.anteriorEndDayShort ?: ""} %02d:%02d".format(periodBounds.anteriorEndHour, periodBounds.anteriorEndMinute),
+                            text = "≥ $anteriorEndDayStr $anteriorEndTimeStr",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color(0xFF64748B),
@@ -732,7 +749,7 @@ fun BottomEditorControlCard(
                             color = CiboTextSecondary
                         )
                         Text(
-                            text = "${previewPeriod.endDayShort} ${previewPeriod.endTimeFormatted}",
+                            text = "$endDayStr $endTimeStr",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboAccent
@@ -747,7 +764,7 @@ fun BottomEditorControlCard(
                     }
                     if (selectedPeriodNumber != null && periodBounds.hasNext && periodBounds.nextStartHour != null && periodBounds.nextStartMinute != null) {
                         Text(
-                            text = "≤ ${periodBounds.nextStartDayShort ?: ""} %02d:%02d".format(periodBounds.nextStartHour, periodBounds.nextStartMinute),
+                            text = "≤ $nextStartDayStr $nextStartTimeStr",
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color(0xFF64748B),

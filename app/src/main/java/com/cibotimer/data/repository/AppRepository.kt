@@ -4,9 +4,11 @@ import android.app.backup.BackupManager
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
+import com.cibotimer.R
 import com.cibotimer.data.models.*
 import com.cibotimer.data.remote.GoogleDriveSyncClient
 import com.cibotimer.data.remote.OpenAiApiClient
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.domain.PlanShiftEngine
@@ -297,14 +299,14 @@ class AppRepository(
 
         NotificationHelper.cancelFastingAlarms(context)
 
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.ITALIAN)
-        val eatingEndFormatted = timeFormat.format(Date(eatingEnd))
+        val locale = DateTimeFormatters.getActiveLocale(context)
+        val eatingEndFormatted = DateTimeFormatters.formatTime(eatingEnd, context, locale)
         NotificationHelper.showNotification(
             context,
             NotificationHelper.CHANNEL_FASTING_ID,
             NotificationHelper.NOTIF_ID_TRANSITION_EATING,
-            "🍽️ Finestra di Alimentazione Aperta!",
-            "Complimenti! Hai completato il tuo digiuno. Finestra pasto aperta fino alle $eatingEndFormatted.",
+            context.getString(R.string.notif_transition_eating_title),
+            context.getString(R.string.notif_transition_eating_msg, eatingEndFormatted),
             type = "FASTING_END",
             isEating = true
         )
@@ -348,14 +350,14 @@ class AppRepository(
 
         NotificationHelper.cancelEatingAlarms(context)
 
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.ITALIAN)
-        val fastingEndFormatted = timeFormat.format(Date(fastingEnd))
+        val locale = DateTimeFormatters.getActiveLocale(context)
+        val fastingEndFormatted = DateTimeFormatters.formatTime(fastingEnd, context, locale)
         NotificationHelper.showNotification(
             context,
             NotificationHelper.CHANNEL_FASTING_ID,
             NotificationHelper.NOTIF_ID_TRANSITION_FASTING,
-            "🔥 Inizia il Digiuno Intermittente!",
-            "Finestra pasto terminata. Inizia il tuo digiuno programmato (${plan.name}) fino alle $fastingEndFormatted.",
+            context.getString(R.string.notif_transition_fasting_title),
+            context.getString(R.string.notif_transition_fasting_msg, plan.name, fastingEndFormatted),
             type = "EATING_END",
             isEating = false
         )
@@ -854,8 +856,9 @@ class AppRepository(
 
             if (session != null) {
                 val stateStr = if (session.state == FastingState.FASTING) "DIGIUNO ATTIVO" else "FINESTRA PASTO ATTIVA"
-                val startFormatted = java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale.ITALIAN).format(session.startTimeEpochMillis)
-                val endFormatted = java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale.ITALIAN).format(session.plannedEndTimeEpochMillis)
+                val locale = DateTimeFormatters.getActiveLocale(context)
+                val startFormatted = DateTimeFormatters.formatFullDateTime(session.startTimeEpochMillis, context, locale)
+                val endFormatted = DateTimeFormatters.formatFullDateTime(session.plannedEndTimeEpochMillis, context, locale)
                 appendLine("- Stato Sessione: $stateStr (Inizio: $startFormatted, Fine prevista: $endFormatted)")
             }
 

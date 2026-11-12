@@ -131,6 +131,18 @@
     <string name="notif_eating_pre_title">⏰ Eating Window Closing Soon</string>
     <string name="notif_eating_pre_msg">15 minutes remaining before fasting begins (%1$s). Last chance to finish your meal!</string>
     <string name="notif_stage_title">✨ New Metabolic Stage: %1$s</string>
+    <string name="notif_title_eating">Eating Window Open</string>
+    <string name="notif_title_fasting">Fasting Active</string>
+    <string name="notif_fgs_eat_today">Eat at %1$s</string>
+    <string name="notif_fgs_eat_tomorrow">Eat tomorrow at %1$s</string>
+    <string name="notif_fgs_eat_date">Eat %1$s at %2$s</string>
+    <string name="notif_fgs_fast_today">Fast at %1$s</string>
+    <string name="notif_fgs_fast_tomorrow">Fast tomorrow at %1$s</string>
+    <string name="notif_fgs_fast_date">Fast %1$s at %2$s</string>
+    <string name="notif_transition_eating_title">🍽️ Eating Window Open!</string>
+    <string name="notif_transition_eating_msg">Congratulations! You completed your fast. Eating window open until %1$s.</string>
+    <string name="notif_transition_fasting_title">🔥 Intermittent Fasting Begins!</string>
+    <string name="notif_transition_fasting_msg">Eating window ended. Your scheduled fast (%1$s) begins now until %2$s.</string>
 
     <!-- Home Screen Widgets -->
     <string name="widget_name">CiboTimer</string>
@@ -383,6 +395,19 @@
     <string name="timer_stopped_badge">STOPPED</string>
     <string name="timer_tap_to_start">Tap Start to begin</string>
     <string name="timer_planned_duration_format">Planned duration: %1$dh</string>
+    <string name="timer_dialog_switch_fasting_msg">You are currently fasting. Do you want to switch to the eating window now or stop the timer completely?</string>
+    <string name="timer_dialog_switch_eating_msg">You are in the eating window. Do you want to start fasting now or stop the timer completely?</string>
+    <string name="timer_notif_permission_title">Fasting Notifications</string>
+    <string name="timer_notif_permission_msg">To display the persistent real-time countdown timer in your notification shade and alert you when your window changes, CiboTimer requires notification permission.</string>
+    <string name="timer_notif_permission_allow">Allow and Start</string>
+    <string name="timer_notif_permission_skip">Start without notification</string>
+    <string name="timer_notif_denied_title">Notifications Disabled</string>
+    <string name="timer_notif_denied_msg">Notification permission was not granted. Without this permission, the persistent real-time countdown timer in your notification shade cannot be displayed.</string>
+    <string name="timer_notif_open_settings">Open Settings</string>
+    <string name="timer_battery_opt_title">Battery Optimization</string>
+    <string name="timer_battery_opt_msg">The fasting timer was stopped in the background by Android. To keep the countdown always active and accurate in your notification shade and widgets, exclude CiboTimer from battery optimization.</string>
+    <string name="timer_battery_opt_disable">Disable Optimization</string>
+    <string name="timer_battery_opt_later">Later</string>
     <string name="coaching_finish_reading">I\'m done reading</string>
     <string name="stages_sheet_title">Intermittent Fasting Stages</string>
     <string name="stages_sheet_subtitle">What happens in your body hour after hour during fasting.</string>

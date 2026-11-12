@@ -131,6 +131,18 @@
     <string name="notif_eating_pre_title">⏰ Finestra Pasto in Chiusura</string>
     <string name="notif_eating_pre_msg">Mancano 15 minuti all\'inizio del digiuno (%1$s). Ultima occasione per completare il tuo pasto!</string>
     <string name="notif_stage_title">✨ Nuova Fase Metabolica: %1$s</string>
+    <string name="notif_title_eating">Puoi mangiare</string>
+    <string name="notif_title_fasting">Digiuno in corso</string>
+    <string name="notif_fgs_eat_today">Mangiare alle %1$s</string>
+    <string name="notif_fgs_eat_tomorrow">Mangiare domani alle %1$s</string>
+    <string name="notif_fgs_eat_date">Mangiare %1$s alle %2$s</string>
+    <string name="notif_fgs_fast_today">Digiuno alle %1$s</string>
+    <string name="notif_fgs_fast_tomorrow">Digiuno domani alle %1$s</string>
+    <string name="notif_fgs_fast_date">Digiuno %1$s alle %2$s</string>
+    <string name="notif_transition_eating_title">🍽️ Finestra di Alimentazione Aperta!</string>
+    <string name="notif_transition_eating_msg">Complimenti! Hai completato il tuo digiuno. Finestra pasto aperta fino alle %1$s.</string>
+    <string name="notif_transition_fasting_title">🔥 Inizia il Digiuno Intermittente!</string>
+    <string name="notif_transition_fasting_msg">Finestra pasto terminata. Inizia il tuo digiuno programmato (%1$s) fino alle %2$s.</string>
 
     <!-- Widget Schermata Home -->
     <string name="widget_name">CiboTimer</string>
@@ -383,6 +395,19 @@
     <string name="timer_stopped_badge">FERMO</string>
     <string name="timer_tap_to_start">Tocca Inizia per avviare</string>
     <string name="timer_planned_duration_format">Durata prevista: %1$dh</string>
+    <string name="timer_dialog_switch_fasting_msg">Sei in digiuno. Desideri passare subito alla finestra pasto oppure fermare completamente il timer?</string>
+    <string name="timer_dialog_switch_eating_msg">Sei nella finestra di alimentazione. Desideri iniziare il digiuno adesso oppure fermare completamente il timer?</string>
+    <string name="timer_notif_permission_title">Notifiche del Digiuno</string>
+    <string name="timer_notif_permission_msg">Per mostrarti il timer persistente con il conto alla rovescia sempre attivo nella tendina e avvisarti al cambio tra digiuno e alimentazione, CiboTimer necessita del permesso per le notifiche.</string>
+    <string name="timer_notif_permission_allow">Consenti e Avvia</string>
+    <string name="timer_notif_permission_skip">Avvia senza notifica</string>
+    <string name="timer_notif_denied_title">Notifiche Disattivate</string>
+    <string name="timer_notif_denied_msg">Il permesso per le notifiche non è stato concesso. Senza questo permesso, la notifica persistente con il timer in tempo reale nella tendina non potrà essere mostrata.</string>
+    <string name="timer_notif_open_settings">Apri Impostazioni</string>
+    <string name="timer_battery_opt_title">Ottimizzazione Batteria</string>
+    <string name="timer_battery_opt_msg">Il timer del digiuno è stato interrotto in background da Android. Per mantenere il conto alla rovescia sempre attivo e preciso nella tendina e nei widget, escludi CiboTimer dall\'ottimizzazione batteria.</string>
+    <string name="timer_battery_opt_disable">Disattiva Ottimizzazione</string>
+    <string name="timer_battery_opt_later">Più tardi</string>
     <string name="coaching_finish_reading">Ho finito di leggere</string>
     <string name="stages_sheet_title">Fasi del Digiuno Intermittente</string>
     <string name="stages_sheet_subtitle">Cosa accade nel tuo corpo ora dopo ora durante il digiuno.</string>

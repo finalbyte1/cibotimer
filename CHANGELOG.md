@@ -6,6 +6,30 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.61] - 2026-11-12
+
+### 🌍 Internazionalizzazione Completa Date, Giorni e Orari (12h/24h & Locale-Aware)
+- **Centralizzazione Formattazione Temporale (`DateTimeFormatters.kt`)**:
+  - Creata la classe singleton di dominio `DateTimeFormatters` per la gestione unificata, locale-aware e coerente di date, orari (12h AM/PM vs 24h) e giorni della settimana:
+    - `getActiveLocale(context)`: Rileva dinamicamente la lingua attiva dell'applicazione (`locales[0]`).
+    - `is24Hour(context, locale)`: Rispetta sempre il formato a 24 ore per la lingua italiana (`true`) e rispetta le preferenze di sistema dell'utente (`DateFormat.is24HourFormat`) per la lingua inglese.
+    - `formatShortDay(dayOfWeek, locale, capitalize)`: Utilizza `DayOfWeek.getDisplayName(TextStyle.SHORT, locale)` (es. `mer` in italiano, `Wed` in inglese).
+    - `formatFullDay(dayOfWeek, locale, capitalize)`: Fornisce il nome esteso del giorno (es. `Mercoledì` in IT, `Wednesday` in EN).
+    - `formatTime(...)`: Formatta l'orario a 12 ore con suffisso AM/PM (es. `8:00 PM`) o 24 ore (`20:00`).
+    - `formatDayAndTime(...)`: Combina giorno abbreviato e orario (es. `mer 20:00` in IT, `Wed 8:00 PM` in EN 12h, `Wed 20:00` in EN 24h).
+    - `formatFullDateTime(...)` e `formatShortDate(...)`: Formattano date complete e brevi per assi grafici, cronologia pesate e notifiche.
+- **Aggiornamento Schermate & Componenti**:
+  - `TimerScreen`: Card "Inizio / Fine" ("Start / Next") ora visualizza orari e giorni localizzati (es. `mer 20:00` e `gio 16:00` in italiano, `Wed 8:00 PM` e `Thu 4:00 PM` in inglese a 12 ore). Estratte tutte le stringhe di dialogo hardcoded in `strings.xml`.
+  - `WeekBarChart`: Intestazioni di riga dei giorni e descrizioni orarie (es. `Lun 14:00 → Mar 07:00` in IT, `Mon 2:00 PM → Tue 7:00 AM` in EN) localizzate dinamicamente tramite `DateTimeFormatters`.
+  - `FastingForegroundService`: Notifica persistente con orario del prossimo evento localizzato tramite stringhe parametriche (`notif_fgs_*`).
+  - `FastingWidgetUpdater`: Visualizzazione corretta del target orario nel widget 1x1 e 2x1 ("Digiuno alle 12:00 Mer" in IT vs "Fast at 12:00 PM Wed" in EN).
+  - `AppRepository`: Notifiche di transizione digiuno/alimentazione localizzate con stringhe in `strings.xml`.
+  - `NotificationsScreen`, `ProgressScreen`, `MeasurementEntryDialog`, `WeightProgressChart`, `WaterTrackerScreen`, `TimeEditorModal`: Rimossi tutti i `SimpleDateFormat` e riferimenti statici a `Locale.ITALIAN`, sostituendoli con `DateTimeFormatters`.
+- **Suite di Test Unitari (`DateTimeFormattersTest.kt`)**:
+  - Test approfonditi per `formatDayAndTime`, `formatShortDay`, `formatFullDay`, `formatTime` a 12h e 24h, `is24Hour` e `formatShortDate` su locale italiano e inglese, verificando che la lingua italiana rimanga identica al 100% all'output precedente.
+
+---
+
 ## [1.0.60] - 2026-11-12
 
 ### 🧭 Ottimizzazione Barra di Navigazione & Prevenzione Wrapping Etichette

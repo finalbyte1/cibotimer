@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.data.models.AppNotificationItem
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.notifications.NotificationHelper
 import com.cibotimer.ui.components.AppPrimaryButton
 import com.cibotimer.ui.components.AppSecondaryButton
@@ -273,7 +275,10 @@ fun NotificationCard(
         else -> Triple("🔔", CiboCardBorder, CiboCardBorder)
     }
 
-    val timeFormatted = remember(item.timestampMillis) {
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
+
+    val timeFormatted = remember(item.timestampMillis, locale) {
         val now = System.currentTimeMillis()
         val diff = now - item.timestampMillis
         val calNow = Calendar.getInstance()
@@ -286,14 +291,15 @@ fun NotificationCard(
         val isYesterday = calYesterday.get(Calendar.YEAR) == calItem.get(Calendar.YEAR) &&
                 calYesterday.get(Calendar.DAY_OF_YEAR) == calItem.get(Calendar.DAY_OF_YEAR)
 
-        val hourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val fullFormat = SimpleDateFormat("EEE d MMM, HH:mm", Locale.getDefault())
-
         val timeStr = when {
             diff < 60_000L -> null
-            isToday -> hourFormat.format(Date(item.timestampMillis))
-            isYesterday -> hourFormat.format(Date(item.timestampMillis))
-            else -> fullFormat.format(Date(item.timestampMillis)).replaceFirstChar { it.uppercase() }
+            isToday || isYesterday -> DateTimeFormatters.formatTime(item.timestampMillis, context, locale)
+            else -> {
+                val use24h = DateTimeFormatters.is24Hour(context, locale)
+                val pattern = if (locale.language == "it") "EEE d MMM, HH:mm" else if (use24h) "EEE, MMM d, HH:mm" else "EEE, MMM d, h:mm a"
+                val zdt = java.time.Instant.ofEpochMilli(item.timestampMillis).atZone(java.time.ZoneId.systemDefault())
+                zdt.format(java.time.format.DateTimeFormatter.ofPattern(pattern, locale)).replaceFirstChar { it.uppercase() }
+            }
         }
         Triple(diff < 60_000L, isToday, if (isYesterday) timeStr else if (diff >= 60_000L && !isToday) timeStr else null)
     }

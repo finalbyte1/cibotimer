@@ -19,6 +19,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
 import com.cibotimer.data.models.WeightUnit
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import androidx.compose.ui.res.stringResource
@@ -70,8 +73,8 @@ fun WeightProgressChart(
     var selectedMetric by remember { mutableStateOf(ChartMetric.WEIGHT) }
     var selectedPointIndex by remember { mutableStateOf<Int?>(null) }
 
-    val shortDateFmt = remember { SimpleDateFormat("d MMM", Locale.ITALIAN) }
-    val fullDateFmt = remember { SimpleDateFormat("EEE d MMM yyyy, HH:mm", Locale.ITALIAN) }
+    val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
 
     // 1. Filtra i punti in base alla metrica e all'intervallo temporale
     val now = remember { System.currentTimeMillis() }
@@ -81,7 +84,7 @@ fun WeightProgressChart(
         } else 0L
     }
 
-    val chartPoints = remember(entries, selectedMetric, minEpoch, weightUnit) {
+    val chartPoints = remember(entries, selectedMetric, minEpoch, weightUnit, locale) {
         val filtered = entries.filter { entry ->
             val value = when (selectedMetric) {
                 ChartMetric.WEIGHT -> entry.weightKg
@@ -106,7 +109,7 @@ fun WeightProgressChart(
             ChartPoint(
                 epochMillis = entry.epochMillis,
                 value = v,
-                formattedDate = shortDateFmt.format(Date(entry.epochMillis)),
+                formattedDate = DateTimeFormatters.formatShortDate(entry.epochMillis, locale),
                 originalEntry = entry
             )
         }
@@ -234,7 +237,7 @@ fun WeightProgressChart(
                 ) {
                     Column {
                         Text(
-                            text = fullDateFmt.format(Date(activePoint.epochMillis)),
+                            text = DateTimeFormatters.formatFullDateTime(activePoint.epochMillis, context, locale, includeDayOfWeek = true),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )

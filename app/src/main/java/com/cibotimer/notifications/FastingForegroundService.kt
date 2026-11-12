@@ -16,7 +16,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.cibotimer.CiboTimerApp
 import com.cibotimer.MainActivity
+import com.cibotimer.R
 import com.cibotimer.data.models.FastingState
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.widget.FastingWidgetUpdater
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -204,11 +206,16 @@ class FastingForegroundService : Service() {
         var isRunning: Boolean = false
 
         /**
-         * Formatta il testo del prossimo evento:
-         * "Mangiare alle 7:00" / "Digiuno alle 12:00" se l'evento è oggi;
-         * se l'evento è in un giorno diverso da oggi, aggiunge il riferimento al giorno (es. "domani alle 7:00").
+         * Formatta il testo del prossimo evento con supporto per la localizzazione:
+         * In IT: "Mangiare alle 20:00" / "Digiuno alle 12:00" (o domani / giorno della settimana).
+         * In EN: "Eat at 8:00 PM" / "Fast at 12:00 PM" (o tomorrow / day of the week).
          */
-        fun formatNextEvent(targetMillis: Long, isEating: Boolean): String {
+        fun formatNextEvent(
+            context: Context?,
+            targetMillis: Long,
+            isEating: Boolean,
+            locale: Locale = context?.let { DateTimeFormatters.getActiveLocale(it) } ?: Locale.getDefault()
+        ): String {
             val targetCal = Calendar.getInstance().apply { timeInMillis = targetMillis }
             val nowCal = Calendar.getInstance()
             val isToday = targetCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR) &&
@@ -216,23 +223,45 @@ class FastingForegroundService : Service() {
 
             val hour = targetCal.get(Calendar.HOUR_OF_DAY)
             val minute = targetCal.get(Calendar.MINUTE)
-            val timeStr = "%d:%02d".format(hour, minute)
-            val verb = if (isEating) "Digiuno" else "Mangiare"
+            val timeStr = if (context != null) {
+                DateTimeFormatters.formatTime(hour, minute, context, locale)
+            } else {
+                if (locale.language == "it") "%d:%02d".format(hour, minute) else DateTimeFormatters.formatTime(hour, minute, null, locale)
+            }
 
             return if (isToday) {
-                "$verb alle $timeStr"
+                if (context != null) {
+                    if (isEating) context.getString(R.string.notif_fgs_fast_today, timeStr) else context.getString(R.string.notif_fgs_eat_today, timeStr)
+                } else {
+                    val verb = if (isEating) (if (locale.language == "it") "Digiuno" else "Fast") else (if (locale.language == "it") "Mangiare" else "Eat")
+                    if (locale.language == "it") "$verb alle $timeStr" else "$verb at $timeStr"
+                }
             } else {
                 val tomorrowCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }
                 val isTomorrow = targetCal.get(Calendar.YEAR) == tomorrowCal.get(Calendar.YEAR) &&
                         targetCal.get(Calendar.DAY_OF_YEAR) == tomorrowCal.get(Calendar.DAY_OF_YEAR)
                 if (isTomorrow) {
-                    "$verb domani alle $timeStr"
+                    if (context != null) {
+                        if (isEating) context.getString(R.string.notif_fgs_fast_tomorrow, timeStr) else context.getString(R.string.notif_fgs_eat_tomorrow, timeStr)
+                    } else {
+                        val verb = if (isEating) (if (locale.language == "it") "Digiuno" else "Fast") else (if (locale.language == "it") "Mangiare" else "Eat")
+                        if (locale.language == "it") "$verb domani alle $timeStr" else "$verb tomorrow at $timeStr"
+                    }
                 } else {
-                    val dayFmt = SimpleDateFormat("EEE d MMM", Locale.ITALIAN)
-                    "$verb ${dayFmt.format(Date(targetMillis))} alle $timeStr"
+                    val isoDay = if (targetCal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) 7 else targetCal.get(Calendar.DAY_OF_WEEK) - 1
+                    val dayStr = DateTimeFormatters.formatShortDay(isoDay, locale, capitalize = (locale.language != "it"))
+                    if (context != null) {
+                        if (isEating) context.getString(R.string.notif_fgs_fast_date, dayStr, timeStr) else context.getString(R.string.notif_fgs_eat_date, dayStr, timeStr)
+                    } else {
+                        val verb = if (isEating) (if (locale.language == "it") "Digiuno" else "Fast") else (if (locale.language == "it") "Mangiare" else "Eat")
+                        if (locale.language == "it") "$verb $dayStr alle $timeStr" else "$verb $dayStr at $timeStr"
+                    }
                 }
             }
         }
+
+        fun formatNextEvent(targetMillis: Long, isEating: Boolean): String =
+            formatNextEvent(null, targetMillis, isEating, Locale.ITALIAN)
 
         fun buildTimerNotification(
             context: Context,
@@ -271,8 +300,8 @@ class FastingForegroundService : Service() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val notifTitle = if (isEating) "Puoi mangiare" else "Digiuno in corso"
-            val notifText = formatNextEvent(plannedEndTimeMillis, isEating)
+            val notifTitle = if (isEating) context.getString(R.string.notif_title_eating) else context.getString(R.string.notif_title_fasting)
+            val notifText = formatNextEvent(context, plannedEndTimeMillis, isEating)
 
             val smallIcon = NotificationHelper.getNotificationIcon(isEating)
             val notifColor = NotificationHelper.getNotificationColor(isEating)

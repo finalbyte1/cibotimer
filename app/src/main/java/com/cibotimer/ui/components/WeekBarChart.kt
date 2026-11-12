@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -35,10 +36,12 @@ import com.cibotimer.R
 import com.cibotimer.data.models.DayPlan
 import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPeriod
+import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.TimelineSegment
 import com.cibotimer.ui.theme.*
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * Visualizzazione a 7 barre orizzontali (Lun..Dom) 0-24h con diciture sotto ogni giorno (es. "Lun 20:00 → Mar 12:00").
@@ -87,11 +90,13 @@ fun WeekBarChart(
         val isSelected: Boolean
     )
 
-    val rowItems = remember(orderedDays, todayDayOfWeek, selectedDayOfWeek) {
+    val locale = LocalConfiguration.current.locales[0]
+
+    val rowItems = remember(orderedDays, todayDayOfWeek, selectedDayOfWeek, locale) {
         (1..7).map { dayIdx ->
             RowDayInfo(
                 dayIndex = dayIdx,
-                label = FastingDayFormatter.formatShort(dayIdx),
+                label = DateTimeFormatters.formatShortDay(dayIdx, locale, capitalize = true),
                 isToday = todayDayOfWeek == dayIdx,
                 isSelected = selectedDayOfWeek == dayIdx
             )
@@ -187,8 +192,8 @@ fun WeekBarChart(
                     }
 
                     val dayPlan = orderedDays.find { it.dayOfWeek == item.dayIndex } ?: orderedDays.first()
-                    val subtitle = remember(item.dayIndex, periods, dayPlan) {
-                        getSubtitleForDay(context, item.dayIndex, item.label, periods, dayPlan)
+                    val subtitle = remember(item.dayIndex, periods, dayPlan, locale) {
+                        getSubtitleForDay(context, item.dayIndex, item.label, periods, dayPlan, locale)
                     }
 
                     val isHighlighted = item.isSelected || item.isToday
@@ -277,20 +282,24 @@ private fun getSubtitleForDay(
     dayIndex: Int,
     dayLabel: String,
     periods: List<FastingPeriod>?,
-    dayPlan: DayPlan
+    dayPlan: DayPlan,
+    locale: Locale = Locale.getDefault()
 ): String {
-    val dayNames = (1..7).map { FastingDayFormatter.formatShort(it) }
+    val dayNames = (1..7).map { DateTimeFormatters.formatShortDay(it, locale, capitalize = true) }
 
     if (!periods.isNullOrEmpty()) {
         val p = periods.find { it.startDayOfWeek == dayIndex && it.isFasting }
         if (p != null) {
             val endDayName = dayNames.getOrElse(p.endDayOfWeek - 1) { dayLabel }
-            return "$dayLabel ${p.startTimeFormatted} → $endDayName ${p.endTimeFormatted}"
+            val startT = DateTimeFormatters.formatTime(p.startHour, p.startMinute, context, locale)
+            val endT = DateTimeFormatters.formatTime(p.endHour, p.endMinute, context, locale)
+            return "$dayLabel $startT → $endDayName $endT"
         }
         val through = periods.find { it.endDayOfWeek == dayIndex && it.isFasting }
         if (through != null) {
             val startDayName = dayNames.getOrElse(through.startDayOfWeek - 1) { dayLabel }
-            return context.getString(R.string.week_chart_fasting_from, startDayName, through.endTimeFormatted)
+            val endT = DateTimeFormatters.formatTime(through.endHour, through.endMinute, context, locale)
+            return context.getString(R.string.week_chart_fasting_from, startDayName, endT)
         }
     }
 
@@ -299,7 +308,9 @@ private fun getSubtitleForDay(
         val isNextDay = (startTotal + dayPlan.fastingDurationMinutes) >= 24 * 60
         val nextDayIdx = if (dayPlan.dayOfWeek == 7) 1 else dayPlan.dayOfWeek + 1
         val endDayName = if (isNextDay) dayNames[nextDayIdx - 1] else dayLabel
-        return "$dayLabel ${dayPlan.startTimeFormatted} → $endDayName ${dayPlan.endTimeFormatted}"
+        val startT = DateTimeFormatters.formatTime(dayPlan.startHour, dayPlan.startMinute, context, locale)
+        val endT = DateTimeFormatters.formatTime(dayPlan.endHour, dayPlan.endMinute, context, locale)
+        return "$dayLabel $startT → $endDayName $endT"
     } else {
         return context.getString(R.string.week_chart_no_fast)
     }
