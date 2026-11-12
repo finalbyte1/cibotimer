@@ -417,7 +417,18 @@
 
     <!-- PlanSelectionStartScreen -->
     <string name="program_coach_title">Programmi Coach</string>
-    <string name="program_coach_subtitle">Il Coach ti accompagna nel tuo percorso</string>
+    <string name="program_coach_subtitle">Il Coach ti guida lungo il tuo percorso</string>
+    <string name="coach_badge_recommended_start">Consigliato per iniziare</string>
+    <string name="rating_weight_loss_label">Dimagrimento</string>
+    <string name="rating_health_label">Salute</string>
+    <string name="button_start_week_1_short">Inizia settimana 1</string>
+    <string name="button_start_plan">Inizia</string>
+    <string name="single_plans_header_title">Piani singoli</string>
+    <string name="single_plans_header_subtitle">Scegli tu il metodo di digiuno</string>
+    <string name="single_plan_16_8_subtitle">Salta la colazione</string>
+    <string name="single_plan_autophagy_subtitle">Settimana intensa · Perdi peso</string>
+    <string name="legend_hours_fasting">%1$dh Digiuno</string>
+    <string name="legend_hours_eating">%1$dh Pasto</string>
     <string name="rating_weight_loss">Perdita peso: </string>
     <string name="rating_health">Salute: </string>
     <string name="button_start_week_1">Inizia la settimana 1</string>

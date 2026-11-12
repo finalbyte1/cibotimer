@@ -6,6 +6,55 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.58] - 2026-11-12
+
+### 🎯 Misuratori a Segmenti Dimagrimento/Salute & Rinnovamento Schermata Coach Adattiva
+- **Unica Fonte Dati Condivisa per Valutazioni Piani (`FastingPlan.kt`, `FastingPlanTemplates.kt`)**:
+  - Introdotto il modello dati `PlanRatings(weightLoss: Int, health: Int)` (scala 1–4).
+  - Centralizzata la mappa `PLAN_RATINGS` condivisa da tutte le schermate senza duplicazione di logica:
+    - *20-4 (Dieta del guerriero)*: Dimagrimento 4, Salute 4
+    - *16-8 (Classico)*: Dimagrimento 3, Salute 4
+    - *18-6 (Avanzato)*: Dimagrimento 4, Salute 3
+    - *Autophagy Booster*: Dimagrimento 4, Salute 4
+    - *Luigi 1* (piano speciale Coach 20h/4h): Dimagrimento 4, Salute 4
+- **Componente Riutilizzabile Misuratore a Segmenti (`SegmentedRatingBar.kt`)**:
+  - Realizzato il componente Compose `SegmentedRatingBar` con 4 barrette arrotondate affiancate: azzurro `#22B8E8` per i segmenti attivi, blu scuro `#1F2F4B` per i segmenti inattivi.
+  - Supporto configurabile per dimensioni contestuali (più grande nella schermata Coach, compatto con barrette ~14x6dp e testo 11sp nelle card dei piani).
+- **Schermata Piani di Digiuno (`PlanPickerModal.kt`)**:
+  - Aggiunta la riga "Dimagrimento ▰▰▰▰ · Salute ▰▰▰▰" in fondo alle card dei soli piani consigliati (es. Luigi 1, 16-8, 18-6, Autophagy Booster).
+  - Separatore sottile da 0.5dp (`#22314F`) tra descrizione e misuratori.
+  - Esclusione garantita per i piani personalizzati dell'utente (`category != PlanCategory.CUSTOM && !isCustom`).
+- **Nuova Schermata Programmi Coach Adattiva (`PlanSelectionStartScreen.kt`)**:
+  - Titolo "Programmi Coach" e sottotitolo "Il Coach ti guida lungo il tuo percorso".
+  - **Tablet in Orizzontale ($\ge$ 840dp)**: Layout a 2 colonne:
+    - *Colonna Sinistra*: Card in evidenza per il programma consigliato (16-8 Classico) con badge verde "Consigliato per iniziare", barra 24h (digiuno `#2A8FD0`, pasto `#1F9D72`), legenda, misuratori grandi Dimagrimento/Salute, e pulsante pieno azzurro `#22B8E8` ("Inizia settimana 1", testo scuro `#04202B`).
+    - *Colonna Destra*: 3 card compatte in colonna (20-4, 18-6, Autophagy Booster con 7 pillole giornaliere alternate verde/blu), mini-barra 24h, misuratori piccoli e pulsante con contorno azzurro "Inizia".
+  - **Tablet in Verticale / Schermi Medi (600–840dp)**: Colonna singola centrata con larghezza massima di 600dp.
+  - **Smartphone (< 600dp)**: Colonna singola fluida a tutta larghezza.
+  - **Sezione Piani Singoli**: Due tile compatte in fondo ("Piani singoli — Scegli tu il metodo di digiuno"): 16-8 Classico ("Salta la colazione") e Autophagy Booster ("Settimana intensa · Perdi peso").
+  - Rimozione totale dell'arancione in favore dell'azzurro `#22B8E8`, card dark `#0F1B30` con bordo `#1C2D4A` (angoli 16dp).
+  - Estrazione e localizzazione completa delle stringhe in `strings.xml` (default e `values-it`).
+
+---
+
+## [1.0.57] - 2026-11-12
+
+### 📱 Supporto Nativo Tablet & Layout Adattivo Orizzontale & Verticale
+- **Layout Tablet in Orizzontale (Landscape $\ge$ 840dp)**:
+  - Introdotta la `NavigationRail` permanente a sinistra con branding dell'app e icone di navigazione M3 (`Digiuno`, `Io`, `Coach`, `Notifiche`, `Altro`).
+  - Layout a 2 colonne affiancate:
+    - **Colonna Sinistra**: Timer circolare con rapporto 1:1 e dimensione massima calibrata a 250dp, pulsante Stop/Start animato al neon, scheda delle fasi metaboliche (`FastingStagesCard`) e selettore rapido del piano.
+    - **Colonna Destra**: Piano settimanale a 24 ore (`WeekBarChart`) esteso a tutta altezza (`fillMaxHeight = true`) con distribuzione uniforme `Arrangement.SpaceEvenly` dei 7 giorni, asse orario 0h-24h e indicatore dell'orario corrente in tempo reale.
+- **Layout Tablet in Verticale & Schermi Medi (Portrait 600–840dp)**:
+  - `NavigationRail` laterale a sinistra per massimizzare lo spazio verticale.
+  - Contenuto principale centrato orizzontalmente con vincolo protettivo `widthIn(max = 600.dp)`, preservando proporzioni perfette e leggibilità ottimale.
+- **Smartphone (< 600dp)**:
+  - Layout compatto a colonna singola e `NavigationBar` inferiore 100% inalterati.
+- **Nessuna Duplicazione di Stato**:
+  - Tutta la logica reattiva, i timer, gli allarmi, le verifiche permessi e il controllo OTA rimangono unificati nel componente principale `TimerScreen`.
+
+---
+
 ## [1.0.56] - 2026-11-12
 
 ### 🏪 Google Play Store Release (AAB) & Policy Compliance

@@ -418,6 +418,17 @@
     <!-- PlanSelectionStartScreen -->
     <string name="program_coach_title">Coach Programs</string>
     <string name="program_coach_subtitle">The Coach guides you along your journey</string>
+    <string name="coach_badge_recommended_start">Recommended to start</string>
+    <string name="rating_weight_loss_label">Weight Loss</string>
+    <string name="rating_health_label">Health</string>
+    <string name="button_start_week_1_short">Start week 1</string>
+    <string name="button_start_plan">Start</string>
+    <string name="single_plans_header_title">Single plans</string>
+    <string name="single_plans_header_subtitle">Choose your fasting method</string>
+    <string name="single_plan_16_8_subtitle">Skip breakfast</string>
+    <string name="single_plan_autophagy_subtitle">Power week · Lose weight</string>
+    <string name="legend_hours_fasting">%1$dh Fasting</string>
+    <string name="legend_hours_eating">%1$dh Eating</string>
     <string name="rating_weight_loss">Weight loss: </string>
     <string name="rating_health">Health: </string>
     <string name="button_start_week_1">Start week 1</string>

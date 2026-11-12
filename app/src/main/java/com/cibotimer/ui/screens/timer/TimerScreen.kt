@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.cibotimer.R
@@ -239,7 +240,7 @@ fun TimerScreen(
         (cal.get(Calendar.HOUR_OF_DAY) * 3600f + cal.get(Calendar.MINUTE) * 60f + cal.get(Calendar.SECOND).toFloat()) / 86400f
     }
 
-    CompactTimerContent(
+    AdaptiveTimerContent(
         isFasting = isFasting,
         isEating = isEating,
         remainingSeconds = remainingSeconds,
@@ -700,6 +701,421 @@ fun TimerScreen(
 }
 
 /**
+ * Layout adattivo per la schermata Digiuno:
+ * - Tablet in orizzontale (>= 840dp): Layout a 2 colonne (timer a sx, piano settimanale a tutta altezza a dx)
+ * - Tablet in verticale e schermi medi (600-840dp): Stessa disposizione del telefono ma centrato e con max width ~600dp
+ * - Telefono (< 600dp): Identico al layout compatto originale a 1 colonna a tutta larghezza
+ */
+@Composable
+fun AdaptiveTimerContent(
+    isFasting: Boolean,
+    isEating: Boolean = false,
+    remainingSeconds: Long,
+    totalPlannedSeconds: Long,
+    elapsedSeconds: Long,
+    progressFraction: Float,
+    startTimeFormatted: String,
+    endTimeFormatted: String,
+    planName: String = "Luigi 1",
+    planDays: List<DayPlan>,
+    planPeriods: List<com.cibotimer.data.models.FastingPeriod>? = null,
+    currentDayOfWeek: Int,
+    currentTimeFraction: Float? = null,
+    onStopClick: () -> Unit,
+    onStartClick: () -> Unit,
+    onChangePlanClick: () -> Unit = {},
+    onFastingPhaseClick: () -> Unit = {},
+    onInizioClick: () -> Unit = {},
+    onFineClick: () -> Unit = {},
+    onDaySelected: (Int) -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val configuration = LocalConfiguration.current
+    val screenWidthDp = configuration.screenWidthDp
+
+    when {
+        // 1. Tablet orizzontale (>= 840dp): Layout a due colonne
+        screenWidthDp >= 840 -> {
+            TabletLandscapeTimerContent(
+                isFasting = isFasting,
+                isEating = isEating,
+                remainingSeconds = remainingSeconds,
+                totalPlannedSeconds = totalPlannedSeconds,
+                elapsedSeconds = elapsedSeconds,
+                progressFraction = progressFraction,
+                startTimeFormatted = startTimeFormatted,
+                endTimeFormatted = endTimeFormatted,
+                planName = planName,
+                planDays = planDays,
+                planPeriods = planPeriods,
+                currentDayOfWeek = currentDayOfWeek,
+                currentTimeFraction = currentTimeFraction,
+                onStopClick = onStopClick,
+                onStartClick = onStartClick,
+                onChangePlanClick = onChangePlanClick,
+                onFastingPhaseClick = onFastingPhaseClick,
+                onInizioClick = onInizioClick,
+                onFineClick = onFineClick,
+                onDaySelected = onDaySelected,
+                onNotificationsClick = onNotificationsClick,
+                onSettingsClick = onSettingsClick,
+                modifier = modifier
+            )
+        }
+
+        // 2. Tablet verticale e schermi medi (600-840dp): contenuto centrato con larghezza max ~600dp
+        screenWidthDp >= 600 -> {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(CiboBg),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                CompactTimerContent(
+                    isFasting = isFasting,
+                    isEating = isEating,
+                    remainingSeconds = remainingSeconds,
+                    totalPlannedSeconds = totalPlannedSeconds,
+                    elapsedSeconds = elapsedSeconds,
+                    progressFraction = progressFraction,
+                    startTimeFormatted = startTimeFormatted,
+                    endTimeFormatted = endTimeFormatted,
+                    planName = planName,
+                    planDays = planDays,
+                    planPeriods = planPeriods,
+                    currentDayOfWeek = currentDayOfWeek,
+                    currentTimeFraction = currentTimeFraction,
+                    onStopClick = onStopClick,
+                    onStartClick = onStartClick,
+                    onChangePlanClick = onChangePlanClick,
+                    onFastingPhaseClick = onFastingPhaseClick,
+                    onInizioClick = onInizioClick,
+                    onFineClick = onFineClick,
+                    onDaySelected = onDaySelected,
+                    onNotificationsClick = onNotificationsClick,
+                    onSettingsClick = onSettingsClick,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .widthIn(max = 600.dp)
+                )
+            }
+        }
+
+        // 3. Telefono (< 600dp): identico a oggi, nessuna modifica
+        else -> {
+            CompactTimerContent(
+                isFasting = isFasting,
+                isEating = isEating,
+                remainingSeconds = remainingSeconds,
+                totalPlannedSeconds = totalPlannedSeconds,
+                elapsedSeconds = elapsedSeconds,
+                progressFraction = progressFraction,
+                startTimeFormatted = startTimeFormatted,
+                endTimeFormatted = endTimeFormatted,
+                planName = planName,
+                planDays = planDays,
+                planPeriods = planPeriods,
+                currentDayOfWeek = currentDayOfWeek,
+                currentTimeFraction = currentTimeFraction,
+                onStopClick = onStopClick,
+                onStartClick = onStartClick,
+                onChangePlanClick = onChangePlanClick,
+                onFastingPhaseClick = onFastingPhaseClick,
+                onInizioClick = onInizioClick,
+                onFineClick = onFineClick,
+                onDaySelected = onDaySelected,
+                onNotificationsClick = onNotificationsClick,
+                onSettingsClick = onSettingsClick,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+/**
+ * Layout Tablet Orizzontale (>= 840dp):
+ * - Colonna sinistra: Header, Timer circolare (1:1 max size), Pulsante Stop/Start e Fasi, Riga Piano
+ * - Colonna destra: Piano settimanale (WeekBarChart) a tutta altezza
+ */
+@Composable
+fun TabletLandscapeTimerContent(
+    isFasting: Boolean,
+    isEating: Boolean = false,
+    remainingSeconds: Long,
+    totalPlannedSeconds: Long,
+    elapsedSeconds: Long,
+    progressFraction: Float,
+    startTimeFormatted: String,
+    endTimeFormatted: String,
+    planName: String = "Luigi 1",
+    planDays: List<DayPlan>,
+    planPeriods: List<com.cibotimer.data.models.FastingPeriod>? = null,
+    currentDayOfWeek: Int,
+    currentTimeFraction: Float? = null,
+    onStopClick: () -> Unit,
+    onStartClick: () -> Unit,
+    onChangePlanClick: () -> Unit = {},
+    onFastingPhaseClick: () -> Unit = {},
+    onInizioClick: () -> Unit = {},
+    onFineClick: () -> Unit = {},
+    onDaySelected: (Int) -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val isRunning = isFasting || isEating
+
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .background(CiboBg)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(18.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        // ==========================================
+        // COLONNA SINISTRA: Timer, Pulsante Start/Stop, Info Inizio/Prossimo, Riga Piano
+        // ==========================================
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 1. Header: Titolo a sinistra, Stato a destra
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.header_title_fasting),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = CiboTextPrimary
+                )
+
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.timer_label_now),
+                        fontSize = 11.5.sp,
+                        color = CiboTextSecondary,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        text = if (isFasting) stringResource(R.string.legend_fasting) else if (isEating) stringResource(R.string.legend_eating) else stringResource(R.string.timer_status_stopped_short),
+                        fontSize = 13.5.sp,
+                        fontWeight = if (isRunning) FontWeight.Bold else FontWeight.SemiBold,
+                        color = if (isFasting) CiboAccent else if (isEating) CiboTimerAzureGlow else CiboTextSecondary,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            // 2. Timer circolare con rapporto 1:1 e dimensione massima
+            val maxTimerSize = 250.dp
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                FastingCircularProgress(
+                    remainingSeconds = remainingSeconds,
+                    totalPlannedSeconds = totalPlannedSeconds,
+                    elapsedSeconds = elapsedSeconds,
+                    progressFraction = progressFraction,
+                    state = if (isFasting) FastingState.FASTING else if (isEating) FastingState.EATING else FastingState.NOT_STARTED,
+                    modifier = Modifier
+                        .size(maxTimerSize)
+                        .aspectRatio(1f)
+                )
+            }
+
+            // 3. Pulsante Start/Stop agganciato alla FastingStagesCard
+            val stagesBoxPaddingTop = 22.dp
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = stagesBoxPaddingTop),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FastingStagesCard(
+                    elapsedSeconds = elapsedSeconds,
+                    state = if (isFasting) FastingState.FASTING else if (isEating) FastingState.EATING else FastingState.NOT_STARTED,
+                    startTimeFormatted = startTimeFormatted,
+                    endTimeFormatted = endTimeFormatted,
+                    onInizioClick = onInizioClick,
+                    onFineClick = onFineClick,
+                    onClick = onFastingPhaseClick
+                )
+
+                val buttonInteraction = remember { MutableInteractionSource() }
+                val buttonPressed by buttonInteraction.collectIsPressedAsState()
+                val buttonScale by animateFloatAsState(
+                    targetValue = if (buttonPressed) 0.96f else 1f,
+                    animationSpec = spring(dampingRatio = 0.6f, stiffness = 500f),
+                    label = "tabletButtonScale"
+                )
+                val buttonShape = RoundedCornerShape(20.dp)
+
+                Box(
+                    modifier = Modifier
+                        .zIndex(1f)
+                        .offset(y = (-20).dp)
+                        .width(150.dp)
+                        .height(42.dp)
+                        .graphicsLayer {
+                            scaleX = buttonScale
+                            scaleY = buttonScale
+                        }
+                        .clip(buttonShape)
+                        .let {
+                            if (isRunning) it.background(CiboStopRed)
+                            else it.background(Brush.horizontalGradient(listOf(Color(0xFF00E5FF), Color(0xFF0288D1))))
+                        }
+                        .clickable(
+                            interactionSource = buttonInteraction,
+                            indication = LocalIndication.current,
+                            role = Role.Button,
+                            onClick = if (isRunning) onStopClick else onStartClick
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isRunning) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(26.dp)
+                                    .clip(CircleShape)
+                                    .background(CiboButtonDarkText.copy(alpha = 0.85f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(CiboStopRed)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.button_stop),
+                                color = Color(0xFF2A0D0F),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(26.dp)
+                                    .clip(CircleShape)
+                                    .background(CiboButtonDarkText.copy(alpha = 0.85f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = stringResource(R.string.content_desc_start),
+                                    tint = Color(0xFF00E5FF),
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.button_start),
+                                color = Color(0xFF04202B),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 4. Riga del piano
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(CiboCard.copy(alpha = 0.7f))
+                    .border(1.dp, CiboCardBorder.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                    .clickable(onClick = onChangePlanClick)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f, fill = false),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = stringResource(R.string.content_desc_change_plan),
+                        tint = CiboAccent,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(color = CiboTextSecondary, fontWeight = FontWeight.Normal)) {
+                                append("Piano: ")
+                            }
+                            withStyle(SpanStyle(color = CiboTextPrimary, fontWeight = FontWeight.SemiBold)) {
+                                append(planName)
+                            }
+                        },
+                        fontSize = 13.5.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.button_change_plan),
+                    color = CiboAccent,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.5.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
+        // ==========================================
+        // COLONNA DESTRA: Piano Settimanale a tutta altezza
+        // ==========================================
+        Box(
+            modifier = Modifier
+                .weight(1.3f)
+                .fillMaxHeight()
+        ) {
+            WeekBarChart(
+                days = planDays,
+                selectedDayOfWeek = currentDayOfWeek,
+                periods = planPeriods,
+                onDaySelected = onDaySelected,
+                fillMaxHeight = true,
+                currentTimeFraction = currentTimeFraction,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+/**
  * Layout compatto della schermata Digiuno (zero scroll, visualizzazione 1 schermata)
  */
 @Composable
@@ -1064,6 +1480,46 @@ fun PreviewTimerScreenEating() {
 fun PreviewTimerScreenSmall() {
     CiboTimerTheme {
         CompactTimerContent(
+            isFasting = true,
+            remainingSeconds = 39041L,
+            totalPlannedSeconds = 72000L,
+            elapsedSeconds = 32959L,
+            progressFraction = 0.46f,
+            startTimeFormatted = "Lun 00:41",
+            endTimeFormatted = "Lun 20:41",
+            planDays = previewDays,
+            currentDayOfWeek = 1,
+            onStopClick = {},
+            onStartClick = {}
+        )
+    }
+}
+
+@Preview(name = "Tablet Landscape (1280x800)", widthDp = 1280, heightDp = 800, showBackground = true, backgroundColor = 0xFF0B1220)
+@Composable
+fun PreviewTimerScreenTabletLandscape() {
+    CiboTimerTheme {
+        AdaptiveTimerContent(
+            isFasting = true,
+            remainingSeconds = 39041L,
+            totalPlannedSeconds = 72000L,
+            elapsedSeconds = 32959L,
+            progressFraction = 0.46f,
+            startTimeFormatted = "Lun 00:41",
+            endTimeFormatted = "Lun 20:41",
+            planDays = previewDays,
+            currentDayOfWeek = 1,
+            onStopClick = {},
+            onStartClick = {}
+        )
+    }
+}
+
+@Preview(name = "Tablet Portrait (800x1280)", widthDp = 800, heightDp = 1280, showBackground = true, backgroundColor = 0xFF0B1220)
+@Composable
+fun PreviewTimerScreenTabletPortrait() {
+    CiboTimerTheme {
+        AdaptiveTimerContent(
             isFasting = true,
             remainingSeconds = 39041L,
             totalPlannedSeconds = 72000L,

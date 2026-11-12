@@ -4,6 +4,7 @@ import com.cibotimer.data.models.DayPlan
 import com.cibotimer.data.models.FastingPeriod
 import com.cibotimer.data.models.FastingPlan
 import com.cibotimer.data.models.PlanCategory
+import com.cibotimer.data.models.PlanRatings
 
 object FastingPlanTemplates {
 
@@ -175,7 +176,25 @@ object FastingPlanTemplates {
         PLAN_AUTOPHAGY_BOOSTER
     )
 
+    val PLAN_RATINGS: Map<String, PlanRatings> = mapOf(
+        "20-4" to PlanRatings(weightLoss = 4, health = 4),
+        "16-8" to PlanRatings(weightLoss = 3, health = 4),
+        "16-8-late" to PlanRatings(weightLoss = 3, health = 4),
+        "18-6" to PlanRatings(weightLoss = 4, health = 3),
+        "autophagy-booster" to PlanRatings(weightLoss = 4, health = 4),
+        "luigi-1" to PlanRatings(weightLoss = 4, health = 4),
+        "14-10" to PlanRatings(weightLoss = 2, health = 3),
+        "15-9" to PlanRatings(weightLoss = 2, health = 3),
+        "23-1" to PlanRatings(weightLoss = 4, health = 4),
+        "5-2" to PlanRatings(weightLoss = 4, health = 4)
+    )
+
+    fun getRatingsForPlan(planId: String): PlanRatings? = PLAN_RATINGS[planId]
+
     fun getById(id: String): FastingPlan {
         return ALL_PREDEFINED_PLANS.firstOrNull { it.id == id } ?: PLAN_16_8
     }
 }
+
+val FastingPlan.ratings: PlanRatings?
+    get() = FastingPlanTemplates.getRatingsForPlan(id)

@@ -170,8 +170,8 @@ fun WeekBarChart(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .then(if (fillMaxHeight) Modifier.weight(1f, fill = false) else Modifier.wrapContentHeight()),
-                verticalArrangement = Arrangement.spacedBy(1.dp)
+                    .then(if (fillMaxHeight) Modifier.weight(1f, fill = true) else Modifier.wrapContentHeight()),
+                verticalArrangement = if (fillMaxHeight) Arrangement.SpaceEvenly else Arrangement.spacedBy(1.dp)
             ) {
                 rowItems.forEach { item ->
                     val segments = remember(item.dayIndex, periods, orderedDays) {
@@ -216,7 +216,7 @@ fun WeekBarChart(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(if (item.isToday) 23.dp else 8.dp)
+                                    .height(if (item.isToday) 23.dp else (if (fillMaxHeight) 12.dp else 8.dp))
                             ) {
                                 MainHorizontalBar24h(
                                     segments = segments,

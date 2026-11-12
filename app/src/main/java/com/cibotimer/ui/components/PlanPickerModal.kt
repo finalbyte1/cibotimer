@@ -1375,6 +1375,9 @@ fun PlanItemCard(
     val fastingMinutes = (firstDay?.fastingDurationMinutes ?: 960) % 60
     val eatingHours = 24 - fastingHours
 
+    val isCustom = plan.isCustom || plan.category == PlanCategory.CUSTOM
+    val ratings = if (!isCustom) FastingPlanTemplates.getRatingsForPlan(plan.id) else null
+
     val durationLabel = if (fastingMinutes == 0) {
         stringResource(R.string.plan_card_duration_hours, fastingHours, eatingHours)
     } else {
@@ -1486,6 +1489,23 @@ fun PlanItemCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         lineHeight = 16.sp
+                    )
+                }
+
+                if (ratings != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(0.5.dp)
+                            .background(Color(0xFF22314F))
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    PlanRatingsRow(
+                        ratings = ratings,
+                        barWidth = 14.dp,
+                        barHeight = 6.dp,
+                        labelFontSize = 11.sp
                     )
                 }
             }

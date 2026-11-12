@@ -55,6 +55,12 @@ enum class PlanCategory {
 }
 
 @Serializable
+data class PlanRatings(
+    val weightLoss: Int, // 1..4 (Dimagrimento)
+    val health: Int      // 1..4 (Salute)
+)
+
+@Serializable
 data class FastingPeriod(
     val id: String = "",
     val periodNumber: Int = 1,

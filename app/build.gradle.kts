@@ -15,8 +15,8 @@ android {
         applicationId = "com.cibotimer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 57
-        versionName = "1.0.56"
+        versionCode = 59
+        versionName = "1.0.58"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
