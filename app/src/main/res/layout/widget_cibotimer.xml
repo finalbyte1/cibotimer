@@ -34,22 +34,22 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <!-- 2. Tempo rimanente (es. "14h 38m"): textSize 17dp, maxLines=1 (autosize fino a 12dp se lo spazio è ridotto) -->
+        <!-- 2. Tempo rimanente (es. "14h 38m"): textSize 22dp, maxLines=1 (autosize fino a 14dp se lo spazio è ridotto) -->
         <TextView
             android:id="@+id/widget_2x1_time_remaining"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:textColor="#FFFFFF"
-            android:textSize="17dp"
+            android:textSize="22dp"
             android:fontFamily="sans-serif-medium"
             android:includeFontPadding="false"
             android:singleLine="true"
             android:maxLines="1"
             android:ellipsize="end"
             android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="12dp"
-            android:autoSizeMaxTextSize="17dp"
+            android:autoSizeMinTextSize="14dp"
+            android:autoSizeMaxTextSize="22dp"
             android:autoSizeStepGranularity="1dp" />
 
         <!-- 3. Prossimo evento 11.5dp, colore chiaro, maxLines=2 (può andare a capo, es. "Mangiare alle / 7:00") -->

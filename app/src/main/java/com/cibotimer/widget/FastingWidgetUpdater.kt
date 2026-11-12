@@ -192,7 +192,7 @@ object FastingWidgetUpdater {
 
         // Blocco scala caratteri di sistema: imposta sempre unità DIP calibrate per non tagliare il testo
         views.setTextViewTextSize(R.id.widget_2x1_status, TypedValue.COMPLEX_UNIT_DIP, 11f)
-        val timeRemainingTextSize = if (state.timeRemaining2x1.length > 7) 16f else 17f
+        val timeRemainingTextSize = if (state.timeRemaining2x1.length > 7) 18f else 22f
         views.setTextViewTextSize(R.id.widget_2x1_time_remaining, TypedValue.COMPLEX_UNIT_DIP, timeRemainingTextSize)
         views.setTextViewTextSize(R.id.widget_2x1_next_period, TypedValue.COMPLEX_UNIT_DIP, 11.5f)
 

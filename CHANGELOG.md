@@ -6,6 +6,16 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.65] - 2026-11-12
+
+### 📱 Regolazione Tipografica Widget 2x1 (Font Tempo a 22dp)
+- **Calibrazione Font Tempo (`widget_2x1_time_remaining`)**:
+  - Impostata la dimensione principale del font a **22dp** (come richiesto) sia in XML (`widget_fasting_2x1.xml` e `widget_cibotimer.xml`) che in `FastingWidgetUpdater.kt` per una visibilità in grande stile del countdown.
+  - Mantenuto l'autosizing adattivo fino a 14dp per prevenire troncamenti in caso di orizzonti orari estesi a 3 cifre o riduzioni di cella launcher.
+  - Lasciato invariato il resto del layout del widget.
+
+---
+
 ## [1.0.64] - 2026-11-12
 
 ### 📱 Ottimizzazione Layout Widget 2x1 & Risoluzione Troncatura Testo
