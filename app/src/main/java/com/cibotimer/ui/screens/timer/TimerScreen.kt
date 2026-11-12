@@ -178,22 +178,28 @@ fun TimerScreen(
         FastingCalculator.calculateTotalPlannedSeconds(currentSession!!)
     } else if (isEating && currentSession != null) {
         ((currentSession!!.plannedEndTimeEpochMillis - currentSession!!.startTimeEpochMillis) / 1000L).coerceAtLeast(1L)
-    } else {
+    } else if (scheduled.isNowInsideFasting) {
         scheduled.durationSeconds
+    } else {
+        scheduled.eatingDurationSeconds
     }
 
     val remainingSeconds = if (isFasting && currentSession != null) {
         FastingCalculator.calculateRemainingSeconds(currentSession!!, currentEpochMillis)
     } else if (isEating && currentSession != null) {
         ((currentSession!!.plannedEndTimeEpochMillis - currentEpochMillis) / 1000L).coerceAtLeast(0L)
-    } else {
+    } else if (scheduled.isNowInsideFasting) {
         scheduled.remainingSeconds
+    } else {
+        scheduled.eatingRemainingSeconds
     }
 
     val elapsedSeconds = if (isFasting && currentSession != null) {
         FastingCalculator.calculateElapsedSeconds(currentSession!!, currentEpochMillis)
     } else if (isEating && currentSession != null) {
         ((currentEpochMillis - currentSession!!.startTimeEpochMillis) / 1000L).coerceAtLeast(0L)
+    } else if (scheduled.isNowInsideFasting) {
+        scheduled.elapsedSeconds
     } else {
         scheduled.eatingElapsedSeconds
     }
@@ -202,8 +208,10 @@ fun TimerScreen(
         FastingCalculator.calculateProgressFraction(currentSession!!, currentEpochMillis)
     } else if (isEating && currentSession != null) {
         (elapsedSeconds.toFloat() / totalPlannedSeconds.toFloat()).coerceIn(0f, 1f)
-    } else {
+    } else if (scheduled.isNowInsideFasting) {
         scheduled.progressFraction
+    } else {
+        scheduled.eatingProgressFraction
     }
 
     // Transizione continua automatica: il timer non deve MAI fermarsi tra finestra pasto e digiuno o viceversa
@@ -218,14 +226,18 @@ fun TimerScreen(
 
     val activeStartMillis = if (currentSession != null) {
         currentSession!!.startTimeEpochMillis
-    } else {
+    } else if (scheduled.isNowInsideFasting) {
         scheduled.periodStartEpochMillis
+    } else {
+        scheduled.eatingWindowStartMillis
     }
 
     val activeEndMillis = if (currentSession != null) {
         currentSession!!.plannedEndTimeEpochMillis
-    } else {
+    } else if (scheduled.isNowInsideFasting) {
         scheduled.periodEndEpochMillis
+    } else {
+        scheduled.eatingWindowEndMillis
     }
 
     val startTimeFormatted = remember(activeStartMillis, locale) {

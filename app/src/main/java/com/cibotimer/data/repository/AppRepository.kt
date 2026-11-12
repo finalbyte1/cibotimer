@@ -131,10 +131,72 @@ class AppRepository(
     // ==========================================
 
     /**
-     * Avvia il timer di digiuno per la durata prevista dal piano attivo.
+     * Avvia il ciclo continuo del timer (Digiuno <-> Alimentazione) tenendo sempre conto dell'ora attuale.
+     * Se ci si trova in orario di digiuno programmato, avvia il digiuno;
+     * altrimenti avvia la finestra di alimentazione fino al prossimo digiuno.
      */
     fun startFasting(customStartTime: Long? = null) {
-        startFastingNow(customStartTime)
+        val now = customStartTime ?: System.currentTimeMillis()
+        val plan = _activePlan.value
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
+
+        val (startTime, plannedEnd, durationMinutes, state) = if (scheduled.isNowInsideFasting) {
+            val durMin = (scheduled.durationSeconds / 60L).toInt()
+            val start = scheduled.periodStartEpochMillis
+            val end = scheduled.periodEndEpochMillis
+            listOf(start, end, durMin.toLong(), 1L)
+        } else {
+            val start = scheduled.eatingWindowStartMillis
+            val end = scheduled.eatingWindowEndMillis
+            val durMin = (scheduled.eatingDurationSeconds / 60L).toInt()
+            listOf(start, end, durMin.toLong(), 2L)
+        }
+
+        val fastingState = if (state == 1L) FastingState.FASTING else FastingState.EATING
+
+        val newSession = FastingSession(
+            id = UUID.randomUUID().toString(),
+            planId = plan.id,
+            planName = plan.name,
+            startTimeEpochMillis = startTime,
+            plannedEndTimeEpochMillis = plannedEnd,
+            targetDurationMinutes = durationMinutes.toInt(),
+            state = fastingState
+        )
+
+        _currentSession.value = newSession
+        FastingForegroundService.start(
+            context = context,
+            startTime = newSession.startTimeEpochMillis,
+            plannedEndTime = newSession.plannedEndTimeEpochMillis,
+            planName = newSession.planName,
+            isEating = (fastingState == FastingState.EATING)
+        )
+
+        if (fastingState == FastingState.FASTING) {
+            NotificationHelper.cancelEatingAlarms(context)
+            NotificationHelper.scheduleFastingEndAlarm(context, newSession.plannedEndTimeEpochMillis, newSession.planName)
+            for (stage in FastingCalculator.STAGES) {
+                if (stage.startMinutes > 0 && stage.startMinutes < newSession.targetDurationMinutes) {
+                    val triggerMillis = newSession.startTimeEpochMillis + (stage.startMinutes * 60_000L)
+                    val hoursPassed = stage.startMinutes / 60
+                    NotificationHelper.scheduleStageAlarm(
+                        context,
+                        triggerMillis,
+                        "Fase ${stage.stageIndex}: ${stage.title} (${hoursPassed}h passate)",
+                        stage.subtitle,
+                        NotificationHelper.REQUEST_CODE_STAGE_BASE + stage.stageIndex
+                    )
+                }
+            }
+        } else {
+            NotificationHelper.cancelFastingAlarms(context)
+            NotificationHelper.scheduleEatingWindowEndAlarm(context, newSession.plannedEndTimeEpochMillis, plan.name)
+            NotificationHelper.scheduleEatingWindowPreAlarm(context, newSession.plannedEndTimeEpochMillis - 15 * 60_000L, plan.name)
+        }
+
+        saveStateToDisk()
+        triggerAutoBackupIfEnabled()
     }
 
     /**

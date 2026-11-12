@@ -6,6 +6,20 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.63] - 2026-11-12
+
+### ⏰ Sincronizzazione Rigorosa con l'Ora Attuale & Ripristino Logica Oraria Continua
+- **Calcolo Dinamico dell'Ora Attuale (`startFasting`)**:
+  - Ripristinata e perfezionata la risoluzione del periodo in `startFasting(customStartTime)`: il timer determina sempre lo stato corretto (`FASTING` o `EATING`) e i relativi orari di inizio e fine basandosi sull'ora corrente esatta e sul piano attivo.
+  - Se l'orario attuale rientra nella finestra di digiuno programmata (es. ore 22:00 per un piano 20:00-12:00), il timer si posiziona in stato di digiuno con orario di inizio alle 20:00 e fine alle 12:00 del giorno dopo (calcolando 2 ore già trascorse e 14 ore rimanenti).
+  - Se l'orario attuale rientra nella finestra di alimentazione programmata (es. ore 15:00 per un piano 12:00-20:00), il timer si posiziona in stato di finestra pasto fino alle ore 20:00, orario in cui transiterà automaticamente al digiuno.
+- **Coerenza UI a Timer Fermo (`TimerScreen.kt`)**:
+  - In assenza di sessione attiva (`currentSession == null`), tutti gli indicatori di `TimerScreen` (durata prevista, tempo rimanente, tempo trascorso, frazione di avanzamento e card oraria Inizio/Fine) vengono calcolati in base alla fase oraria corrente determinata da `scheduled.isNowInsideFasting` anziché forzare valori fissi di digiuno.
+- **Suite di Test Unitari**:
+  - Aggiornati i test in `TimerStopRestartTest.kt` per certificare la corretta determinazione della finestra di digiuno e di pasto in base all'ora corrente (`testCurrentTimeAwareFastingWindow`, `testCurrentTimeAwareEatingWindow`, `testStopAndRestartAlwaysAlignsWithCurrentTime`).
+
+---
+
 ## [1.0.62] - 2026-11-12
 
 ### ⏱️ Risoluzione Bug Riavvio Timer & Semplificazione Dialog di Stop
