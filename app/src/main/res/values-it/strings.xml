@@ -12,6 +12,7 @@
     <string name="nav_progress">Io</string>
     <string name="nav_coach">Coach</string>
     <string name="nav_notifications">Notifiche</string>
+    <string name="notifications_title">Notifiche</string>
     <string name="nav_planner">Piani</string>
     <string name="nav_settings">Altro</string>
     <string name="nav_plan_selection">Programmi</string>

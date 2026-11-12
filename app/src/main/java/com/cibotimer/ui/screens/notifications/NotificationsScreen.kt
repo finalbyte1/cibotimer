@@ -58,7 +58,7 @@ fun NotificationsScreen(
         ) {
             Column {
                 Text(
-                    text = stringResource(R.string.nav_notifications),
+                    text = stringResource(R.string.notifications_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = CiboTextPrimary

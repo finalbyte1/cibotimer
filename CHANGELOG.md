@@ -6,6 +6,27 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.60] - 2026-11-12
+
+### 🧭 Ottimizzazione Barra di Navigazione & Prevenzione Wrapping Etichette
+- **Risoluzione Spezzamento Etichetta Notifiche in Inglese**:
+  - Nel file `strings.xml` (lingua inglese di default), modificata l'etichetta del tab da `"Notifications"` a `"Alerts"` (`nav_notifications`), prevenendo lo spezzamento della parola su due righe ("Notificatio / ns") nei 72dp allocati su schermi da 360dp.
+  - Creata la stringa separata `notifications_title` (`"Notifications"` in inglese, `"Notifiche"` in italiano) per il titolo della schermata di archivio notifiche, preservando intatto il titolo della schermata senza impatti visivi.
+  - L'etichetta italiana `"Notifiche"` rimane invariata.
+- **Rete di Sicurezza Tipografica Multi-Lingua & Font Scaling**:
+  - In `Navigation.kt`, sia per `NavigationBarItem` (smartphone) sia per `NavigationRailItem` (tablet), applicati rigorosamente ai testi delle etichette:
+    - `maxLines = 1`
+    - `softWrap = false`
+    - `overflow = TextOverflow.Ellipsis`
+    - `textAlign = TextAlign.Center`
+    - `fontSize = 11.sp` ($\le$ 12sp)
+  - Con scale del font di sistema elevate (fino al massimo consentito da Android), il testo non va mai a capo su più righe e non altera in alcun modo l'altezza o l'allineamento della barra inferiore o laterale.
+  - Tutte le altre etichette dei tab (`Fasting`/`Digiuno`, `Me`/`Io`, `Coach`, `More`/`Altro`) rimangono perfettamente leggibili e centrate sotto le rispettive icone sia su smartphone compatti (360dp) che su tablet con `NavigationRail`.
+- **Suite di Test Unitari (`NavigationLabelsTest.kt`)**:
+  - Aggiunti test per la verifica dell'ordine e corrispondenza dei 5 tab di navigazione, della lunghezza delle stringhe in inglese/italiano e dell'assenza di rischi di wrapping su schermi da 360dp.
+
+---
+
 ## [1.0.59] - 2026-11-12
 
 ### ⚖️ Internazionalizzazione Unità di Misura: Selezione Peso tra kg e lb

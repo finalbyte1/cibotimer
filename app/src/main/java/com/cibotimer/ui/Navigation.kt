@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -43,7 +46,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector,
     data object Settings : Screen("settings", "Altro", Icons.Default.MoreHoriz, R.string.nav_settings)
 
     // Secondary / Deep screens
-    data object PlanSelection : Screen("plan_selection", "Programmi", Icons.Default.FormatListBulleted, R.string.nav_plan_selection)
+    data object PlanSelection : Screen("plan_selection", "Programmi", Icons.AutoMirrored.Filled.FormatListBulleted, R.string.nav_plan_selection)
     data object Chat : Screen("chat", "Chat AI", Icons.Default.AutoAwesome, R.string.nav_chat)
     data object Water : Screen("water", "Acqua", Icons.Default.WaterDrop, R.string.nav_water)
 }
@@ -107,20 +110,25 @@ fun CiboTimerNavigation(
                     ) {
                         bottomNavItems.forEach { screen ->
                             val isSelected = currentRoute == screen.route
+                            val labelText = androidx.compose.ui.res.stringResource(screen.titleRes)
                             NavigationRailItem(
                                 alwaysShowLabel = true,
                                 icon = {
                                     Icon(
                                         imageVector = screen.icon,
-                                        contentDescription = screen.title,
+                                        contentDescription = labelText,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 },
                                 label = {
                                     Text(
-                                        text = androidx.compose.ui.res.stringResource(screen.titleRes),
+                                        text = labelText,
                                         fontSize = 11.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Ellipsis,
+                                        textAlign = TextAlign.Center
                                     )
                                 },
                                 selected = isSelected,
@@ -174,20 +182,25 @@ fun CiboTimerNavigation(
                     ) {
                         bottomNavItems.forEach { screen ->
                             val isSelected = currentRoute == screen.route
+                            val labelText = androidx.compose.ui.res.stringResource(screen.titleRes)
                             NavigationBarItem(
                                 alwaysShowLabel = true,
                                 icon = {
                                     Icon(
                                         imageVector = screen.icon,
-                                        contentDescription = screen.title,
+                                        contentDescription = labelText,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 },
                                 label = {
                                     Text(
-                                        text = androidx.compose.ui.res.stringResource(screen.titleRes),
-                                        fontSize = 12.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        text = labelText,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                        overflow = TextOverflow.Ellipsis,
+                                        textAlign = TextAlign.Center
                                     )
                                 },
                                 selected = isSelected,
