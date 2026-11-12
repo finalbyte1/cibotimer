@@ -6,6 +6,17 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.64] - 2026-11-12
+
+### 📱 Ottimizzazione Layout Widget 2x1 & Risoluzione Troncatura Testo
+- **Risoluzione Troncatura Oraria ("14h 3...")**:
+  - Ridimensionata la dimensione del font del tempo rimanente (`widget_2x1_time_remaining`) da 22dp a 17dp (con fallback a 16dp per durate a 3 cifre), prevenendo il wrapping e l'ellissi ("...") su griglie dense di launcher (es. 5x5 / 5x6 One UI, Pixel Launcher).
+  - Ottimizzati i margini e i padding del widget orizzontale 2x1 (`widget_fasting_2x1.xml` e `widget_cibotimer.xml`): ridotto il padding laterale da 10dp a 8dp e la spaziatura dal pulsante a destra da 6dp a 4dp, guadagnando oltre 12dp di larghezza utile per la colonna dei testi.
+  - Dimensionato il contenitore del pulsante di azione rapida a 38dp con icona da 30dp per massimizzare lo spazio testuale mantenendo un'area di tocco confortevole.
+  - Regolata l'etichetta del prossimo evento a 11.5dp per un perfetto respiro verticale anche su 2 righe.
+
+---
+
 ## [1.0.63] - 2026-11-12
 
 ### ⏰ Sincronizzazione Rigorosa con l'Ora Attuale & Ripristino Logica Oraria Continua

@@ -190,10 +190,11 @@ object FastingWidgetUpdater {
         views.setTextColor(R.id.widget_2x1_time_remaining, state.primaryTextColor)
         views.setTextColor(R.id.widget_2x1_next_period, state.nextEventColor2x1)
 
-        // Blocco scala caratteri di sistema: imposta sempre unità DIP
+        // Blocco scala caratteri di sistema: imposta sempre unità DIP calibrate per non tagliare il testo
         views.setTextViewTextSize(R.id.widget_2x1_status, TypedValue.COMPLEX_UNIT_DIP, 11f)
-        views.setTextViewTextSize(R.id.widget_2x1_time_remaining, TypedValue.COMPLEX_UNIT_DIP, 22f)
-        views.setTextViewTextSize(R.id.widget_2x1_next_period, TypedValue.COMPLEX_UNIT_DIP, 12f)
+        val timeRemainingTextSize = if (state.timeRemaining2x1.length > 7) 16f else 17f
+        views.setTextViewTextSize(R.id.widget_2x1_time_remaining, TypedValue.COMPLEX_UNIT_DIP, timeRemainingTextSize)
+        views.setTextViewTextSize(R.id.widget_2x1_next_period, TypedValue.COMPLEX_UNIT_DIP, 11.5f)
 
         // Icona e contentDescription azione rapida
         views.setImageViewResource(R.id.widget_2x1_action_button, state.actionIconResId)
