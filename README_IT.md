@@ -206,6 +206,7 @@ Puoi configurare la firma in locale in due modi:
 
 ## 🛡️ Privacy & Sicurezza dei Dati
 
+- **Informativa Completa sulla Privacy**: Consulta la [Privacy Policy Ufficiale (Web)](https://finalbyte1.github.io/cibotimer/privacy.html) oppure il documento [PRIVACY.md](PRIVACY.md).
 - **Nessun tracciamento**: L'app non include SDK pubblicitari (Google AdMob, Unity, AppLovin) né librerie di analisi invasiva.
 - **Dati sul dispositivo**: Sessioni di digiuno, peso, misurazioni antropometriche e note personali sono memorizzati nello storage protetto dell'app.
 - **Comunicazioni Cifrate**: Qualsiasi connessione di rete opzionale (Google Drive, OpenAI, DuckDNS) avviene esclusivamente su protocollo crittografato **HTTPS/TLS**.

@@ -131,17 +131,33 @@
     <string name="notif_eating_pre_msg">15 minutes remaining before fasting begins (%1$s). Last chance to finish your meal!</string>
     <string name="notif_stage_title">✨ New Metabolic Stage: %1$s</string>
 
-    <!-- Home Screen Widget -->
+    <!-- Home Screen Widgets -->
     <string name="widget_name">CiboTimer</string>
     <string name="widget_description">Displays the next fasting or eating window</string>
-    <string name="widget_2x1_name">Fasting</string>
-    <string name="widget_2x1_description">Horizontal widget with status, next fasting time and quick action</string>
-    <string name="widget_fast_at">Fast at %1$s %2$s</string>
-    <string name="widget_eat_at">Eat at %1$s %2$s</string>
-    <string name="widget_status_eating">Eating in progress • %1$s</string>
-    <string name="widget_status_fasting">Fasting in progress • %1$s</string>
-    <string name="widget_status_paused">Paused • Tap to start</string>
+    <string name="widget_1x1_name">Fasting 1x1</string>
+    <string name="widget_1x1_description">Compact 1x1 widget with remaining time and quick action</string>
+    <string name="widget_2x1_name">Fasting 2x1</string>
+    <string name="widget_2x1_description">Horizontal 2x1 widget with status, next fasting time and quick action</string>
+
+    <string name="widget_fast_at">Fast at %1$s</string>
+    <string name="widget_fast_at_with_day">Fast at %1$s %2$s</string>
+    <string name="widget_eat_at">Eat at %1$s</string>
+    <string name="widget_eat_at_with_day">Eat at %1$s %2$s</string>
+
+    <string name="widget_fast_short_at">Stop %1$s</string>
+    <string name="widget_fast_short_at_with_day">Stop %1$s %2$s</string>
+    <string name="widget_eat_short_at">Eat %1$s</string>
+    <string name="widget_eat_short_at_with_day">Eat %1$s %2$s</string>
+
+    <string name="widget_status_eating">Eating</string>
+    <string name="widget_status_fasting">In fasting</string>
+    <string name="widget_status_paused">Paused</string>
     <string name="widget_no_active_fast">No active fast</string>
+
+    <string name="widget_label_fasting">In fasting</string>
+    <string name="widget_label_eating">Eating</string>
+    <string name="widget_label_paused">Paused</string>
+
     <string name="widget_action_eat">Eat</string>
     <string name="widget_action_fast">Fast</string>
     <string name="widget_action_start">Start</string>
@@ -558,4 +574,10 @@
     <string name="progress_percent_to_goal">%1$d%% towards goal</string>
     <string name="share_goal_reached">🎉 Goal Reached!</string>
     <string name="share_goal_progress">%1$d%% towards goal • %2$.1f kg to go</string>
+
+    <!-- Privacy Policy (Google Play Policy Compliance) -->
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_desc">CiboTimer respects your privacy: 100% offline-first, no ads, no trackers, and all personal data stays strictly on your device.</string>
+    <string name="privacy_policy_view_button">View Privacy Policy</string>
+    <string name="privacy_policy_url">https://finalbyte1.github.io/cibotimer/privacy.html</string>
 </resources>

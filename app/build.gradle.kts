@@ -9,16 +9,27 @@ android {
     namespace = "com.cibotimer"
     compileSdk = 34
 
+    val enableLiveUpdate = (project.findProperty("enableLiveUpdate") as? String)?.toBoolean() ?: true
+
     defaultConfig {
         applicationId = "com.cibotimer"
         minSdk = 26
         targetSdk = 34
-        versionCode = 51
-        versionName = "1.0.50"
+        versionCode = 57
+        versionName = "1.0.56"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        buildConfigField("Boolean", "ENABLE_LIVE_UPDATE", "$enableLiveUpdate")
+        buildConfigField("Boolean", "IS_PLAY_STORE_BUILD", "${!enableLiveUpdate}")
+    }
+
+    sourceSets {
+        getByName("main") {
+            manifest.srcFile(if (enableLiveUpdate) "src/main/AndroidManifest-liveupdate.xml" else "src/main/AndroidManifest.xml")
         }
     }
 
@@ -57,17 +68,6 @@ android {
         }
     }
 
-    flavorDimensions += "distribution"
-    productFlavors {
-        create("play") {
-            dimension = "distribution"
-            buildConfigField("Boolean", "IS_PLAY_STORE_BUILD", "true")
-        }
-        create("sideload") {
-            dimension = "distribution"
-            buildConfigField("Boolean", "IS_PLAY_STORE_BUILD", "false")
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

@@ -10,7 +10,7 @@ import com.cibotimer.data.remote.OpenAiApiClient
 import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.domain.PlanShiftEngine
-import com.cibotimer.notifications.FastingTimerService
+import com.cibotimer.notifications.FastingForegroundService
 import com.cibotimer.notifications.NotificationHelper
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -160,7 +160,7 @@ class AppRepository(
         )
 
         _currentSession.value = newSession
-        FastingTimerService.start(
+        FastingForegroundService.start(
             context = context,
             startTime = newSession.startTimeEpochMillis,
             plannedEndTime = newSession.plannedEndTimeEpochMillis,
@@ -217,7 +217,7 @@ class AppRepository(
         )
 
         _currentSession.value = newSession
-        FastingTimerService.start(
+        FastingForegroundService.start(
             context = context,
             startTime = newSession.startTimeEpochMillis,
             plannedEndTime = newSession.plannedEndTimeEpochMillis,
@@ -284,7 +284,7 @@ class AppRepository(
         )
 
         _currentSession.value = eatingSession
-        FastingTimerService.start(
+        FastingForegroundService.start(
             context = context,
             startTime = eatingStart,
             plannedEndTime = eatingEnd,
@@ -302,7 +302,8 @@ class AppRepository(
             NotificationHelper.NOTIF_ID_TRANSITION_EATING,
             "🍽️ Finestra di Alimentazione Aperta!",
             "Complimenti! Hai completato il tuo digiuno. Finestra pasto aperta fino alle $eatingEndFormatted.",
-            type = "FASTING_END"
+            type = "FASTING_END",
+            isEating = true
         )
 
         NotificationHelper.scheduleEatingWindowEndAlarm(context, eatingEnd, plan.name)
@@ -334,7 +335,7 @@ class AppRepository(
         )
 
         _currentSession.value = fastingSession
-        FastingTimerService.start(
+        FastingForegroundService.start(
             context = context,
             startTime = fastingStart,
             plannedEndTime = fastingEnd,
@@ -352,7 +353,8 @@ class AppRepository(
             NotificationHelper.NOTIF_ID_TRANSITION_FASTING,
             "🔥 Inizia il Digiuno Intermittente!",
             "Finestra pasto terminata. Inizia il tuo digiuno programmato (${plan.name}) fino alle $fastingEndFormatted.",
-            type = "EATING_END"
+            type = "EATING_END",
+            isEating = false
         )
 
         NotificationHelper.scheduleFastingEndAlarm(context, fastingEnd, plan.name)
@@ -408,7 +410,7 @@ class AppRepository(
         }
 
         _currentSession.value = null
-        FastingTimerService.stop(context)
+        FastingForegroundService.stop(context)
 
         NotificationHelper.cancelFastingAlarms(context)
         NotificationHelper.cancelEatingAlarms(context)
@@ -433,7 +435,7 @@ class AppRepository(
             plannedEndTimeEpochMillis = newPlannedEndTimeEpochMillis,
             targetDurationMinutes = if (diffMinutes > 0) diffMinutes else session.targetDurationMinutes
         )
-        FastingTimerService.start(
+        FastingForegroundService.start(
             context = context,
             startTime = newStartTimeEpochMillis,
             plannedEndTime = newPlannedEndTimeEpochMillis,
@@ -523,7 +525,7 @@ class AppRepository(
             val updatedSession = session.copy(planName = trimmed, planId = planId)
             _currentSession.value = updatedSession
 
-            FastingTimerService.start(
+            FastingForegroundService.start(
                 context = context,
                 startTime = updatedSession.startTimeEpochMillis,
                 plannedEndTime = updatedSession.plannedEndTimeEpochMillis,
@@ -580,7 +582,7 @@ class AppRepository(
                     targetDurationMinutes = newDuration
                 )
                 _currentSession.value = updatedSession
-                FastingTimerService.start(context, newStart, newEnd, plan.name, isEating = false)
+                FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = false)
                 NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
                 saveStateToDisk()
             } else if (session.state == FastingState.EATING) {
@@ -596,7 +598,7 @@ class AppRepository(
                     targetDurationMinutes = newDuration
                 )
                 _currentSession.value = updatedSession
-                FastingTimerService.start(context, newStart, newEnd, plan.name, isEating = true)
+                FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = true)
                 NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
                 saveStateToDisk()
             }
@@ -1006,7 +1008,7 @@ class AppRepository(
                 syncOrAdvanceSession(System.currentTimeMillis())
                 val finalSess = _currentSession.value
                 if (finalSess != null) {
-                    FastingTimerService.start(
+                    FastingForegroundService.start(
                         context = context,
                         startTime = finalSess.startTimeEpochMillis,
                         plannedEndTime = finalSess.plannedEndTimeEpochMillis,
@@ -1102,7 +1104,7 @@ class AppRepository(
         return try {
             // 1. Arresta il servizio di timer in background e cancella gli allarmi
             try {
-                FastingTimerService.stop(context)
+                FastingForegroundService.stop(context)
                 NotificationHelper.cancelFastingAlarms(context)
                 NotificationHelper.cancelEatingAlarms(context)
             } catch (e: Exception) {
@@ -1266,7 +1268,7 @@ class AppRepository(
                 syncOrAdvanceSession(System.currentTimeMillis())
                 val finalSess = _currentSession.value
                 if (finalSess != null) {
-                    FastingTimerService.start(
+                    FastingForegroundService.start(
                         context = context,
                         startTime = finalSess.startTimeEpochMillis,
                         plannedEndTime = finalSess.plannedEndTimeEpochMillis,

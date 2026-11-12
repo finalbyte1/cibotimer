@@ -25,21 +25,68 @@ class FastingAlarmReceiver : BroadcastReceiver() {
                 "EATING_PRE_REMINDER" -> NotificationHelper.NOTIF_ID_PRE_FASTING
                 else -> System.currentTimeMillis().toInt()
             }
-            NotificationHelper.showNotification(context, channelId, notificationId, title, message, type)
+
+            val isEating = when (type) {
+                "FASTING_END", "EATING_PRE_REMINDER" -> true
+                "EATING_END", "STAGE_REACHED" -> false
+                else -> {
+                    try {
+                        (context.applicationContext as? com.cibotimer.CiboTimerApp)?.repository?.currentSession?.value?.state == com.cibotimer.data.models.FastingState.EATING
+                    } catch (t: Throwable) {
+                        false
+                    }
+                }
+            }
+            NotificationHelper.showNotification(context, channelId, notificationId, title, message, type, isEating)
 
             // Avanzamento automatico continuo del timer (il timer non si ferma mai)
             try {
                 if (type == "FASTING_END" || type == "EATING_END") {
-                    com.cibotimer.CiboTimerApp.instance.repository.syncOrAdvanceSession()
+                    val repo = com.cibotimer.CiboTimerApp.instance.repository
+                    repo.syncOrAdvanceSession()
+                    val curr = repo.currentSession.value
+                    if (curr != null) {
+                        FastingForegroundService.start(
+                            context = context,
+                            startTime = curr.startTimeEpochMillis,
+                            plannedEndTime = curr.plannedEndTimeEpochMillis,
+                            planName = curr.planName,
+                            isEating = (curr.state == com.cibotimer.data.models.FastingState.EATING)
+                        )
+                    }
                 }
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
-        } else if (action == Intent.ACTION_BOOT_COMPLETED) {
-            // Ripristino allarmi dopo riavvio
+            try {
+                com.cibotimer.widget.FastingWidgetUpdater.updateAll(context)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+        } else if (action == Intent.ACTION_BOOT_COMPLETED ||
+            action == Intent.ACTION_LOCKED_BOOT_COMPLETED ||
+            action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+
+            // Ripristino allarmi, servizio foreground e widget dopo riavvio o aggiornamento app
             NotificationHelper.createNotificationChannels(context)
             try {
-                com.cibotimer.CiboTimerApp.instance.repository.syncOrAdvanceSession()
+                val repo = com.cibotimer.CiboTimerApp.instance.repository
+                repo.syncOrAdvanceSession()
+                val session = repo.currentSession.value
+                if (session != null) {
+                    FastingForegroundService.start(
+                        context = context,
+                        startTime = session.startTimeEpochMillis,
+                        plannedEndTime = session.plannedEndTimeEpochMillis,
+                        planName = session.planName,
+                        isEating = (session.state == com.cibotimer.data.models.FastingState.EATING)
+                    )
+                }
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+            try {
+                com.cibotimer.widget.FastingWidgetUpdater.updateAll(context)
             } catch (t: Throwable) {
                 t.printStackTrace()
             }

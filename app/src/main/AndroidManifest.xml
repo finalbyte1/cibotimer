@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name=".CiboTimerApp"
@@ -39,10 +40,28 @@
             <intent-filter>
                 <action android:name="com.cibotimer.ACTION_FASTING_ALARM" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
-        <!-- Widget Schermata Home: Digiuno -->
+        <!-- Widget Schermata Home: Digiuno 1x1 -->
+        <receiver
+            android:name=".widget.FastingWidget1x1Receiver"
+            android:label="@string/widget_1x1_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.cibotimer.widget.ACTION_UPDATE_ALL" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_fasting_1x1" />
+        </receiver>
+
+        <!-- Widget Schermata Home: Digiuno 2x1 -->
         <receiver
             android:name=".widget.FastingWidget2x1Receiver"
             android:label="@string/widget_2x1_name"
@@ -50,6 +69,8 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.cibotimer.widget.ACTION_UPDATE_ALL" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -74,6 +95,8 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.cibotimer.widget.ACTION_UPDATE_WIDGET" />
                 <action android:name="com.cibotimer.widget.ACTION_UPDATE_ALL" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -81,12 +104,12 @@
         </receiver>
 
         <service
-            android:name=".notifications.FastingTimerService"
+            android:name=".notifications.FastingForegroundService"
             android:foregroundServiceType="specialUse"
             android:exported="false">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Conto alla rovescia del timer di digiuno intermittente e fasi metaboliche in tempo reale" />
+                android:value="Timer del digiuno in corso" />
         </service>
 
         <provider

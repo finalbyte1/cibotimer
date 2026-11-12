@@ -23,6 +23,7 @@ object NotificationHelper {
     const val CHANNEL_STAGES_ID = "channel_fasting_stages"
     const val CHANNEL_WATER_ID = "channel_water_reminders"
     const val CHANNEL_LIVE_TIMER_ID = "channel_cibotimer_timer_v4"
+    const val CHANNEL_PERSISTENT_TIMER_ID = "channel_cibotimer_persistent_timer"
 
     const val REQUEST_CODE_FASTING_END = 1001
     const val REQUEST_CODE_EATING_END = 1002
@@ -32,6 +33,15 @@ object NotificationHelper {
     const val NOTIF_ID_TRANSITION_EATING = 3001
     const val NOTIF_ID_TRANSITION_FASTING = 3002
     const val NOTIF_ID_PRE_FASTING = 3003
+
+    const val COLOR_FASTING = 0xFF0891B2.toInt() // #0891B2 (ciano scuro) in digiuno
+    const val COLOR_EATING = 0xFF059669.toInt()  // #059669 (verde) quando si può mangiare
+
+    fun getNotificationIcon(isEating: Boolean): Int =
+        if (isEating) R.drawable.ic_stat_eating else R.drawable.ic_stat_fasting
+
+    fun getNotificationColor(isEating: Boolean): Int =
+        if (isEating) COLOR_EATING else COLOR_FASTING
 
     fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -94,7 +104,19 @@ object NotificationHelper {
                 description = context.getString(R.string.water_channel_desc)
             }
 
-            notificationManager.createNotificationChannels(listOf(liveTimerChannel, fastingChannel, stagesChannel, waterChannel))
+            val persistentTimerChannel = NotificationChannel(
+                CHANNEL_PERSISTENT_TIMER_ID,
+                "CiboTimer - Notifica Persistente",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Notifica persistente e silenziosa con timer del digiuno e alimentazione in tempo reale"
+                setShowBadge(true)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                enableVibration(false)
+                setSound(null, null)
+            }
+
+            notificationManager.createNotificationChannels(listOf(persistentTimerChannel, liveTimerChannel, fastingChannel, stagesChannel, waterChannel))
         }
     }
 
@@ -254,7 +276,8 @@ object NotificationHelper {
         notificationId: Int,
         title: String,
         message: String,
-        type: String = "GENERAL"
+        type: String = "GENERAL",
+        isEating: Boolean? = null
     ) {
         // Salva automaticamente nello storico (Tab Notifiche)
         try {
@@ -273,8 +296,24 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val eating = isEating ?: when (type) {
+            "FASTING_END", "EATING_PRE_REMINDER" -> true
+            "EATING_END", "STAGE_REACHED", "FASTING" -> false
+            else -> {
+                try {
+                    (context.applicationContext as? CiboTimerApp)?.repository?.currentSession?.value?.state == FastingState.EATING
+                } catch (t: Throwable) {
+                    false
+                }
+            }
+        }
+
+        val smallIcon = getNotificationIcon(eating)
+        val notifColor = getNotificationColor(eating)
+
         val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_notification_timer)
+            .setSmallIcon(smallIcon)
+            .setColor(notifColor)
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
@@ -312,7 +351,7 @@ object NotificationHelper {
      * consentendo all'utente di verificare/impostare l'importanza ("Alta / Importante")
      * e mantenere la notifica fissa e prioritaria nella tendina.
      */
-    fun openChannelSettings(context: Context, channelId: String = CHANNEL_LIVE_TIMER_ID) {
+    fun openChannelSettings(context: Context, channelId: String = CHANNEL_PERSISTENT_TIMER_ID) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val intent = Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {

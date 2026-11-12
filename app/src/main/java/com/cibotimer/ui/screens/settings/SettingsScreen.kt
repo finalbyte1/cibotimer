@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings as AndroidSettings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -595,6 +596,30 @@ fun SettingsScreen(
                     fontSize = 11.sp,
                     color = TextSecondaryLight,
                     lineHeight = 16.sp
+                )
+            }
+
+            // Section: Norme sulla Privacy (Google Play Compliance)
+            val privacyUrl = stringResource(R.string.privacy_policy_url)
+            SettingsSectionCard(title = stringResource(R.string.privacy_policy_title), icon = Icons.Default.Info) {
+                Text(
+                    text = stringResource(R.string.privacy_policy_desc),
+                    fontSize = 12.sp,
+                    color = TextSecondaryLight,
+                    lineHeight = 17.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                AppSecondaryButton(
+                    text = stringResource(R.string.privacy_policy_view_button),
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(privacyUrl)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

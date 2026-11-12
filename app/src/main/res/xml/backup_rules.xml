@@ -6,6 +6,4 @@
     <include domain="file" path="." />
     <!-- Include preferenze dell'applicazione -->
     <include domain="sharedpref" path="." />
-    <!-- Escludi directory di cache temporanea -->
-    <exclude domain="root" path="cache" />
 </full-backup-content>

@@ -3,8 +3,11 @@
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.cibotimer.notifications.FastingForegroundService
+import com.cibotimer.notifications.FastingPersistence
 import androidx.compose.ui.zIndex
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -109,10 +112,48 @@ fun TimerScreen(
     var showStagesSheet by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    var showPermissionExplanationDialog by remember { mutableStateOf(false) }
+    var showPermissionDeniedWarningDialog by remember { mutableStateOf(false) }
+    var showBatteryOptimizationDialog by remember { mutableStateOf(false) }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { _ -> }
+        onResult = { isGranted ->
+            if (!isGranted) {
+                showPermissionDeniedWarningDialog = true
+            }
+        }
     )
+
+    val onStartFastingTriggered: () -> Unit = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            showPermissionExplanationDialog = true
+        } else {
+            repository.startFasting()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (FastingPersistence.isExpectedRunning(context) && !FastingForegroundService.isRunning) {
+            if (!FastingPersistence.isBatteryHintShown(context)) {
+                showBatteryOptimizationDialog = true
+            }
+            // Ripristina il foreground service
+            val session = repository.currentSession.value
+            if (session != null) {
+                FastingForegroundService.start(
+                    context = context,
+                    startTime = session.startTimeEpochMillis,
+                    plannedEndTime = session.plannedEndTimeEpochMillis,
+                    planName = session.planName,
+                    isEating = (session.state == FastingState.EATING)
+                )
+            }
+        }
+    }
 
     val isFasting = currentSession != null && currentSession?.state == FastingState.FASTING
     val isEating = currentSession != null && currentSession?.state == FastingState.EATING
@@ -193,6 +234,11 @@ fun TimerScreen(
         timeFormat.format(Date(activeEndMillis)).lowercase()
     }
 
+    val currentTimeFraction = remember(currentEpochMillis) {
+        val cal = Calendar.getInstance().apply { timeInMillis = currentEpochMillis }
+        (cal.get(Calendar.HOUR_OF_DAY) * 3600f + cal.get(Calendar.MINUTE) * 60f + cal.get(Calendar.SECOND).toFloat()) / 86400f
+    }
+
     CompactTimerContent(
         isFasting = isFasting,
         isEating = isEating,
@@ -206,6 +252,7 @@ fun TimerScreen(
         planDays = activePlan.days,
         planPeriods = activePlan.periods,
         currentDayOfWeek = currentDayOfWeek,
+        currentTimeFraction = currentTimeFraction,
         onStopClick = { showEndConfirmDialog = true },
         onChangePlanClick = { showPlanPickerModal = true },
         onFastingPhaseClick = { showStagesSheet = true },
@@ -218,16 +265,7 @@ fun TimerScreen(
             showTimeEditorModal = true
         },
         onStartClick = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-            repository.startFasting()
+            onStartFastingTriggered()
         },
         onDaySelected = { dayOfWeek ->
             selectedDayToEdit = dayOfWeek
@@ -504,6 +542,161 @@ fun TimerScreen(
 
         else -> {}
     }
+
+    // Dialog spiegazione permesso notifiche (Android 13+)
+    if (showPermissionExplanationDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showPermissionExplanationDialog = false
+                repository.startFasting()
+            },
+            containerColor = CiboCard,
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Text(
+                    text = "Notifiche del Digiuno",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = CiboTextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Per mostrarti il timer persistente con il conto alla rovescia sempre attivo nella tendina e avvisarti al cambio tra digiuno e alimentazione, CiboTimer necessita del permesso per le notifiche.",
+                    fontSize = 14.sp,
+                    color = CiboTextSecondary
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showPermissionExplanationDialog = false
+                        repository.startFasting()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
+                ) {
+                    Text("Consenti e Avvia", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showPermissionExplanationDialog = false
+                        repository.startFasting()
+                    }
+                ) {
+                    Text("Avvia senza notifica", color = CiboTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Dialog avviso notifica negata
+    if (showPermissionDeniedWarningDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDeniedWarningDialog = false },
+            containerColor = CiboCard,
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Text(
+                    text = "Notifiche Disattivate",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = CiboTextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Il permesso per le notifiche non è stato concesso. Senza questo permesso, la notifica persistente con il timer in tempo reale nella tendina non potrà essere mostrata.",
+                    fontSize = 14.sp,
+                    color = CiboTextSecondary
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showPermissionDeniedWarningDialog = false
+                        NotificationHelper.openChannelSettings(context)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
+                ) {
+                    Text("Apri Impostazioni", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDeniedWarningDialog = false }) {
+                    Text("OK", color = CiboTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Dialog ottimizzazione batteria interrotta dal sistema
+    if (showBatteryOptimizationDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showBatteryOptimizationDialog = false
+                FastingPersistence.setBatteryHintShown(context, true)
+            },
+            containerColor = CiboCard,
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Text(
+                    text = "Ottimizzazione Batteria",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = CiboTextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Il timer del digiuno è stato interrotto in background da Android. Per mantenere il conto alla rovescia sempre attivo e preciso nella tendina e nei widget, escludi CiboTimer dall'ottimizzazione batteria.",
+                    fontSize = 14.sp,
+                    color = CiboTextSecondary
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showBatteryOptimizationDialog = false
+                        FastingPersistence.setBatteryHintShown(context, true)
+                        try {
+                            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            try {
+                                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                context.startActivity(intent)
+                            } catch (e2: Exception) {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                }
+                                context.startActivity(intent)
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CiboTimerBlue)
+                ) {
+                    Text("Disattiva Ottimizzazione", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showBatteryOptimizationDialog = false
+                        FastingPersistence.setBatteryHintShown(context, true)
+                    }
+                ) {
+                    Text("Più tardi", color = CiboTextSecondary)
+                }
+            }
+        )
+    }
 }
 
 /**
@@ -523,6 +716,7 @@ fun CompactTimerContent(
     planDays: List<DayPlan>,
     planPeriods: List<com.cibotimer.data.models.FastingPeriod>? = null,
     currentDayOfWeek: Int,
+    currentTimeFraction: Float? = null,
     onStopClick: () -> Unit,
     onStartClick: () -> Unit,
     onChangePlanClick: () -> Unit = {},
@@ -804,6 +998,7 @@ fun CompactTimerContent(
                 periods = planPeriods,
                 onDaySelected = onDaySelected,
                 fillMaxHeight = false,
+                currentTimeFraction = currentTimeFraction,
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -11,7 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +51,7 @@ fun WeekBarChart(
     periods: List<FastingPeriod>? = null,
     onDaySelected: (Int) -> Unit = {},
     fillMaxHeight: Boolean = false,
+    currentTimeFraction: Float? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -56,15 +59,25 @@ fun WeekBarChart(
         days.sortedBy { if (it.dayOfWeek == 7) 7 else it.dayOfWeek }
     }
 
-    val todayDayOfWeek = remember {
+    // Calcolo dinamico in tempo reale dell'orario corrente (aggiornato ogni secondo con precisione assoluta)
+    val internalTimeFraction = produceState(
+        initialValue = {
+            val cal = Calendar.getInstance()
+            (cal.get(Calendar.HOUR_OF_DAY) * 3600f + cal.get(Calendar.MINUTE) * 60f + cal.get(Calendar.SECOND).toFloat()) / 86400f
+        }()
+    ) {
+        while (true) {
+            delay(1000L)
+            val cal = Calendar.getInstance()
+            value = (cal.get(Calendar.HOUR_OF_DAY) * 3600f + cal.get(Calendar.MINUTE) * 60f + cal.get(Calendar.SECOND).toFloat()) / 86400f
+        }
+    }
+    val effectiveTimeFraction = currentTimeFraction ?: internalTimeFraction.value
+
+    val todayDayOfWeek = run {
         val cal = Calendar.getInstance()
         val calDay = cal.get(Calendar.DAY_OF_WEEK)
         if (calDay == Calendar.SUNDAY) 7 else calDay - 1
-    }
-
-    val currentTimeFraction = remember {
-        val cal = Calendar.getInstance()
-        (cal.get(Calendar.HOUR_OF_DAY) * 60f + cal.get(Calendar.MINUTE).toFloat()) / 1440f
     }
 
     data class RowDayInfo(
@@ -209,7 +222,7 @@ fun WeekBarChart(
                                     segments = segments,
                                     isToday = item.isToday,
                                     isSelected = item.isSelected,
-                                    currentTimeFraction = if (item.isToday) currentTimeFraction else null,
+                                    currentTimeFraction = if (item.isToday) effectiveTimeFraction else null,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }

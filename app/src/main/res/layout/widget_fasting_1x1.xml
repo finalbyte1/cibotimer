@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_1x1_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_fasting"
+    android:orientation="vertical"
+    android:paddingStart="7dp"
+    android:paddingEnd="7dp"
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
+    android:gravity="center">
+
+    <!-- 1. Pulsante circolare 28dp (icona 15dp) in alto al centro, area touch >= 44dp con contenitore trasparente -->
+    <FrameLayout
+        android:id="@+id/widget_1x1_action_container"
+        android:layout_width="44dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/widget_1x1_action_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:background="@drawable/widget_button_circle_fasting"
+            android:padding="6.5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_widget_flame"
+            android:contentDescription="@string/widget_action_eat" />
+    </FrameLayout>
+
+    <!-- 2. Tempo "5h 50m" 16dp, bianco, medium, maxLines=1 (autosize fino a 13dp se serve) -->
+    <TextView
+        android:id="@+id/widget_1x1_time_remaining"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="13dp"
+        android:autoSizeMaxTextSize="16dp"
+        android:autoSizeStepGranularity="1dp" />
+
+    <!-- 3. Stato "In digiuno"/"Pasto" 10dp colore secondario, maxLines=1 -->
+    <TextView
+        android:id="@+id/widget_1x1_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="#8FA3BF"
+        android:textSize="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="9dp"
+        android:autoSizeMaxTextSize="10dp"
+        android:autoSizeStepGranularity="1dp" />
+
+    <!-- 4. Prossimo evento breve ("Mangi 7:00" / "Stop 12:00") 10dp colore secondario, maxLines=1, autosize fino a 9dp -->
+    <TextView
+        android:id="@+id/widget_1x1_bottom_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="#8FA3BF"
+        android:textSize="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="9dp"
+        android:autoSizeMaxTextSize="10dp"
+        android:autoSizeStepGranularity="1dp" />
+
+</LinearLayout>

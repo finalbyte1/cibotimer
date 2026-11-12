@@ -7,14 +7,11 @@
         <include domain="file" path="." />
         <!-- Include preferenze dell'applicazione -->
         <include domain="sharedpref" path="." />
-        <!-- Escludi cache interna ed esterna -->
-        <exclude domain="root" path="cache" />
     </cloud-backup>
     <device-transfer>
         <!-- Include dati completi durante il trasferimento tra dispositivi -->
         <include domain="database" path="." />
         <include domain="file" path="." />
         <include domain="sharedpref" path="." />
-        <exclude domain="root" path="cache" />
     </device-transfer>
 </data-extraction-rules>

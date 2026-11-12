@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        com.cibotimer.widget.FastingWidgetUpdater.updateAll(this)
         askNotificationPermission()
 
         val repository = (application as CiboTimerApp).repository
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        com.cibotimer.widget.FastingWidgetUpdater.updateAll(this)
         val updateMgr = (application as CiboTimerApp).updateManager
         if (updateMgr.autoCheckEnabled) {
             updateMgr.checkForUpdates(manual = false)

@@ -8,6 +8,8 @@
     android:targetCellHeight="1"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_fasting_2x1"
+    android:previewLayout="@layout/widget_fasting_2x1"
+    android:previewImage="@drawable/widget_preview_2x1"
     android:resizeMode="horizontal"
     android:widgetCategory="home_screen"
     android:description="@string/widget_2x1_description" />

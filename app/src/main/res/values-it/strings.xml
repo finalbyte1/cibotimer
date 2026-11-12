@@ -134,14 +134,30 @@
     <!-- Widget Schermata Home -->
     <string name="widget_name">CiboTimer</string>
     <string name="widget_description">Visualizza il prossimo periodo di digiuno o pasto</string>
-    <string name="widget_2x1_name">Digiuno</string>
-    <string name="widget_2x1_description">Widget orizzontale con stato, orario prossimo digiuno e azione rapida</string>
-    <string name="widget_fast_at">Digiuno alle %1$s %2$s</string>
-    <string name="widget_eat_at">Mangiare alle %1$s %2$s</string>
-    <string name="widget_status_eating">Pasto in corso • %1$s</string>
-    <string name="widget_status_fasting">Digiuno in corso • %1$s</string>
-    <string name="widget_status_paused">In pausa • Tocca per avviare</string>
-    <string name="widget_no_active_fast">Nessun digiuno attivo</string>
+    <string name="widget_1x1_name">Digiuno 1x1</string>
+    <string name="widget_1x1_description">Widget compatto 1x1 con tempo rimanente e azione rapida</string>
+    <string name="widget_2x1_name">Digiuno 2x1</string>
+    <string name="widget_2x1_description">Widget orizzontale 2x1 con stato, orario prossimo digiuno e azione rapida</string>
+
+    <string name="widget_fast_at">Digiuno alle %1$s</string>
+    <string name="widget_fast_at_with_day">Digiuno alle %1$s %2$s</string>
+    <string name="widget_eat_at">Mangiare alle %1$s</string>
+    <string name="widget_eat_at_with_day">Mangiare alle %1$s %2$s</string>
+
+    <string name="widget_fast_short_at">Stop %1$s</string>
+    <string name="widget_fast_short_at_with_day">Stop %1$s %2$s</string>
+    <string name="widget_eat_short_at">Mangi %1$s</string>
+    <string name="widget_eat_short_at_with_day">Mangi %1$s %2$s</string>
+
+    <string name="widget_status_eating">Pasto</string>
+    <string name="widget_status_fasting">In digiuno</string>
+    <string name="widget_status_paused">In pausa</string>
+    <string name="widget_no_active_fast">Nessun digiuno</string>
+
+    <string name="widget_label_fasting">In digiuno</string>
+    <string name="widget_label_eating">Pasto</string>
+    <string name="widget_label_paused">In pausa</string>
+
     <string name="widget_action_eat">Mangiare</string>
     <string name="widget_action_fast">Digiunare</string>
     <string name="widget_action_start">Avvia</string>
@@ -558,4 +574,10 @@
     <string name="progress_percent_to_goal">%1$d%% verso l\'obiettivo</string>
     <string name="share_goal_reached">🎉 Obiettivo Raggiunto!</string>
     <string name="share_goal_progress">%1$d%% verso l\'obiettivo • Mancano %2$.1f kg</string>
+
+    <!-- Privacy Policy (Google Play Policy Compliance) -->
+    <string name="privacy_policy_title">Norme sulla Privacy</string>
+    <string name="privacy_policy_desc">CiboTimer rispetta la tua privacy: 100% offline-first, nessun annuncio, nessun tracciamento e dati salvati solo sul tuo dispositivo.</string>
+    <string name="privacy_policy_view_button">Visualizza Norme sulla Privacy</string>
+    <string name="privacy_policy_url">https://finalbyte1.github.io/cibotimer/privacy.html</string>
 </resources>

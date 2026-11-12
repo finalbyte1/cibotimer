@@ -208,6 +208,7 @@ You can configure signing credentials locally:
 
 ## 🛡️ Privacy & Data Security
 
+- **Official Privacy Policy**: Read our [Public Privacy Policy (Web)](https://finalbyte1.github.io/cibotimer/privacy.html) or browse [PRIVACY.md](PRIVACY.md).
 - **No Trackers**: No third-party ad networks (Google AdMob, Unity, AppLovin) or intrusive tracking SDKs.
 - **On-Device Storage**: Fasting logs, body weight, anthropometric measurements, and personal notes are kept locally on device storage.
 - **Encrypted Networking**: All network requests (Google Drive, OpenAI, DuckDNS) strictly use encrypted **HTTPS/TLS**.

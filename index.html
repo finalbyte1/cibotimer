@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - CiboTimer</title>
+    <meta name="description" content="Privacy Policy and User Data Protection Standards for CiboTimer mobile application.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <style>
+        :root {
+            --bg-dark: #060B12;
+            --card-bg: #0C1A2E;
+            --card-border: #1E293B;
+            --accent-blue: #0284C7;
+            --accent-cyan: #00E5FF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --badge-bg: rgba(0, 229, 255, 0.1);
+            --alert-bg: rgba(2, 132, 199, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.65;
+            padding: 32px 16px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 40px 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 24px;
+            margin-bottom: 28px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            font-size: 2rem;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: inline-block;
+        }
+
+        .brand-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-title span {
+            color: var(--accent-cyan);
+        }
+
+        .lang-switch {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 3px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--accent-blue);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: #38BDF8;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            margin-bottom: 14px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 18px;
+        }
+
+        li {
+            color: var(--text-secondary);
+            font-size: 0.94rem;
+            margin-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        li::before {
+            content: "•";
+            color: var(--accent-cyan);
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: absolute;
+            left: 6px;
+            top: -2px;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        .highlight-box {
+            background: var(--alert-bg);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 24px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: var(--text-primary);
+        }
+
+        .code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #38BDF8;
+            font-size: 0.88rem;
+        }
+
+        footer {
+            margin-top: 40px;
+            border-top: 1px solid var(--card-border);
+            padding-top: 24px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .lang-content {
+            display: none;
+        }
+
+        .lang-content.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 18px;
+            }
+            .brand-title {
+                font-size: 1.4rem;
+            }
+            h1 {
+                font-size: 1.35rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="brand">
+                    <span class="brand-icon">🍽️</span>
+                    <div class="brand-title">Cibo<span>Timer</span></div>
+                </div>
+                <div class="lang-switch">
+                    <button class="lang-btn active" id="btn-en" onclick="switchLang('en')">🇬🇧 English</button>
+                    <button class="lang-btn" id="btn-it" onclick="switchLang('it')">🇮🇹 Italiano</button>
+                </div>
+            </div>
+            <div class="meta" id="header-meta">Android Mobile Application • 100% Privacy-First &amp; Offline-First</div>
+        </header>
+
+        <!-- ENGLISH SECTION (DEFAULT) -->
+        <div id="content-en" class="lang-content active">
+            <h1>CiboTimer Privacy Policy</h1>
+            <p class="meta">Last Updated: November 12, 2026</p>
+
+            <div class="highlight-box">
+                <p><strong>Key Summary:</strong> CiboTimer is built upon a strict <em>Offline-First</em> and <em>Privacy-First</em> philosophy. All your personal metrics, fasting session history, body measurements, and hydration records are stored <strong>strictly on your device's local memory</strong>. The app contains zero ads, zero trackers, and never collects, sells, or transfers any user data to third parties.</p>
+            </div>
+
+            <h2>1. Data Processed and Local Storage</h2>
+            <p>All data generated or entered stays exclusively inside the SQLite / Room database within your Android device's private app sandbox:</p>
+            <ul>
+                <li><strong>Fasting Sessions &amp; Timers:</strong> Start and end timestamps, eating window logs, selected schedules (16:8, 18:6, OMAD, or custom fasting intervals).</li>
+                <li><strong>Body &amp; Health Measurements:</strong> Weight records, height, optional body circumferences (waist, hips, neck), and locally calculated BMI.</li>
+                <li><strong>Hydration Log:</strong> Daily glasses of water logged.</li>
+                <li><strong>Notes &amp; Settings:</strong> Optional notes attached to fasting sessions, dark theme preferences, target hours, and notification preferences.</li>
+            </ul>
+
+            <h2>2. Android Permissions Used and Rationale</h2>
+            <p>CiboTimer only requests permissions strictly essential to operate core timer and notification functionality:</p>
+            <ul>
+                <li><span class="code">POST_NOTIFICATIONS</span>: Required on Android 13+ to alert you when your fasting or eating window ends and to display metabolic stage transitions.</li>
+                <li><span class="code">FOREGROUND_SERVICE</span> &amp; <span class="code">FOREGROUND_SERVICE_SPECIAL_USE</span>: Used by the persistent timer service to drive real-time chronometer countdowns with zero battery drain and update 1x1 / 2x1 home screen widgets.</li>
+                <li><span class="code">SCHEDULE_EXACT_ALARM</span>: Allows the system to trigger precise alarms down to the second when fasting intervals open or close.</li>
+                <li><span class="code">RECEIVE_BOOT_COMPLETED</span>: Automatically restores scheduled fasting alarms after device reboot.</li>
+            </ul>
+
+            <h2>3. Optional Integrations (BYO / BYOK)</h2>
+            <p>The app does not communicate with any servers operated by CiboTimer developers. Two strictly optional user-initiated integrations exist:</p>
+            <ul>
+                <li><strong>Google Drive Backup (Optional):</strong> You may optionally link your personal Google account to export or sync a JSON backup file to your own private Google Drive storage. CiboTimer only accesses its own dedicated backup file.</li>
+                <li><strong>AI Coach (BYOK - Bring Your Own Key):</strong> If you choose to enable the optional AI assistant by providing your own API key (compatible with OpenAI, Groq, DeepSeek, or local Ollama), conversation queries are sent directly and exclusively to your configured AI provider. No chat logs ever touch CiboTimer servers.</li>
+            </ul>
+
+            <h2>4. No Ads &amp; No Third-Party Tracking</h2>
+            <p>CiboTimer is 100% free of advertising SDKs, telemetry frameworks, and third-party data brokers:</p>
+            <ul>
+                <li>Zero advertising (no Google AdMob, Unity, AppLovin, etc.).</li>
+                <li>Zero analytics or user tracking (no Firebase Analytics, Facebook SDK, Mixpanel, etc.).</li>
+                <li>Zero commercial profiling or data monetization.</li>
+            </ul>
+
+            <h2>5. Complete User Data Control &amp; Deletion</h2>
+            <p>In accordance with GDPR and Google Play User Data standards, you retain total ownership over your data:</p>
+            <ul>
+                <li><strong>Full Export:</strong> You can export a full JSON dump of your data anytime from <em>Settings ➔ Backup &amp; Data</em>.</li>
+                <li><strong>Instant Erasure:</strong> Using the <em>"Delete All Data"</em> button in Settings permanently wipes all local database records.</li>
+                <li><strong>Uninstallation:</strong> Uninstalling the application immediately and completely removes all internal application data from your device.</li>
+            </ul>
+
+            <h2>6. Health &amp; Wellness Disclaimer</h2>
+            <p>CiboTimer is a wellness tracking tool and does not provide medical advice, diagnostic services, or medical treatment plans. Information regarding metabolic phases and AI coach responses are purely educational. Consult a licensed healthcare professional before starting intermittent fasting or making significant lifestyle changes.</p>
+
+            <h2>7. Contact Information &amp; Source Code</h2>
+            <p>CiboTimer is an open-source project. If you have questions or inquiries regarding this Privacy Policy, please open an Issue on the official repository:</p>
+            <p>GitHub Repository: <a href="https://github.com/finalbyte1/cibotimer" target="_blank" rel="noopener noreferrer">https://github.com/finalbyte1/cibotimer</a></p>
+        </div>
+
+        <!-- SEZIONE ITALIANO -->
+        <div id="content-it" class="lang-content">
+            <h1>Informativa sulla Privacy di CiboTimer</h1>
+            <p class="meta">Ultimo aggiornamento: 12 Novembre 2026</p>
+
+            <div class="highlight-box">
+                <p><strong>Sintesi Essenziale:</strong> CiboTimer è progettata secondo una filosofia rigorosamente <em>Offline-First</em> e <em>Privacy-First</em>. Tutti i tuoi dati personali, il registro dei digiuni, le misurazioni corporee e l'idratazione sono salvati <strong>esclusivamente nella memoria locale del tuo dispositivo</strong>. L'app non include annunci pubblicitari, né tracciatori e non raccoglie né vende alcun dato a terze parti.</p>
+            </div>
+
+            <h2>1. Dati Trattati e Conservazione Locale</h2>
+            <p>Tutte le informazioni generate o inserite rimangono confinate nel database SQLite / Room protetto nella sandbox privata del tuo dispositivo Android:</p>
+            <ul>
+                <li><strong>Sessioni e Timer di Digiuno:</strong> Timestamp di avvio e conclusione del digiuno, cronologia delle finestre alimentari, piani selezionati (16:8, 18:6, OMAD o personalizzati).</li>
+                <li><strong>Salute e Misurazioni Corporee:</strong> Peso corporeo, altezza, misurazioni anatomiche opzionali (circonferenza vita, fianchi, collo) e indice BMI calcolato localmente.</li>
+                <li><strong>Registro Idratazione:</strong> Tracciamento giornaliero dei bicchieri d'acqua bevuti.</li>
+                <li><strong>Note e Preferenze:</strong> Note opzionali relative al digiuno, impostazioni del tema scuro, orari e notifiche preferite.</li>
+            </ul>
+
+            <h2>2. Permessi Android Richiesti e Finalità</h2>
+            <p>CiboTimer richiede esclusivamente i permessi strettamente necessari all'erogazione delle funzioni primarie del timer:</p>
+            <ul>
+                <li><span class="code">POST_NOTIFICATIONS</span>: Richiesto su Android 13 e successivi per avvisarti quando termina la finestra di digiuno o di alimentazione e per mostrare i progressi delle fasi metaboliche.</li>
+                <li><span class="code">FOREGROUND_SERVICE</span> &amp; <span class="code">FOREGROUND_SERVICE_SPECIAL_USE</span>: Utilizzato dal Foreground Service dedicato al cronometro per garantire un conteggio in tempo reale a zero consumo di batteria e per mantenere aggiornati i widget 1x1 e 2x1 della schermata Home.</li>
+                <li><span class="code">SCHEDULE_EXACT_ALARM</span>: Consente la programmazione di sveglie di sistema puntuali al secondo per la chiusura o l'apertura delle finestre alimentari.</li>
+                <li><span class="code">RECEIVE_BOOT_COMPLETED</span>: Consente di ripristinare automaticamente i promemoria del digiuno programmato dopo il riavvio dello smartphone.</li>
+            </ul>
+
+            <h2>3. Integrazioni Esterne Opzionali (BYO / BYOK)</h2>
+            <p>L'app non comunica con server remoti di proprietà degli sviluppatori di CiboTimer. L'utente ha tuttavia a disposizione due integrazioni facoltative:</p>
+            <ul>
+                <li><strong>Backup su Google Drive (Facoltativo):</strong> L'utente può facoltativamente collegare il proprio account Google personale per esportare o sincronizzare una copia di backup in formato JSON sul proprio spazio privato Google Drive. CiboTimer accede esclusivamente al file di backup da essa stessa creato.</li>
+                <li><strong>AI Coach (BYOK - Bring Your Own Key):</strong> Se l'utente decide liberamente di attivare l'assistente IA integrato inserendo una propria chiave API privata (compatibile con OpenAI, Groq, DeepSeek o endpoint locali Ollama), le richieste di testo vengono inoltrate direttamente e unicamente al fornitore configurato dall'utente per la generazione della risposta. Nessun dato di chat transita su server intermediari.</li>
+            </ul>
+
+            <h2>4. Assoluta Assenza di Pubblicità e Tracciamento</h2>
+            <p>CiboTimer non contiene alcun SDK di profilazione, broker di dati o pubblicità di terze parti:</p>
+            <ul>
+                <li>Nessun annuncio pubblicitario (niente Google AdMob, Unity, AppLovin, ecc.).</li>
+                <li>Nessun tracciatore comportamentale o di telemetria (niente Firebase Analytics, Facebook Pixel, Mixpanel, ecc.).</li>
+                <li>Nessuna vendita, scambio o profilazione commerciale dei dati personali dell'utente.</li>
+            </ul>
+
+            <h2>5. Controllo Totale e Cancellazione dei Dati</h2>
+            <p>In pieno ossequio al principio di sovranità sui dati dell'utente (GDPR):</p>
+            <ul>
+                <li><strong>Esportazione Completa:</strong> Puoi esportare l'intero archivio dei dati in formato JSON standard in qualsiasi momento dalla sezione <em>Impostazioni ➔ Backup e Dati</em>.</li>
+                <li><strong>Cancellazione Immediata:</strong> Tramite il pulsante <em>"Elimina tutti i dati"</em> nelle Impostazioni, puoi cancellare irrevocabilmente ogni tabella e record dal database locale.</li>
+                <li><strong>Disinstallazione:</strong> La disinstallazione dell'applicazione da Android elimina automaticamente ed istantaneamente tutti i dati residenti nella memoria interna dell'app.</li>
+            </ul>
+
+            <h2>6. Avvertenza Sanitaria (Disclaimer Medico)</h2>
+            <p>CiboTimer è un'applicazione software per il monitoraggio delle abitudini e non costituisce né sostituisce un dispositivo medico, una diagnosi clinica o una consulenza medica personalizzata. Prima di intraprendere protocolli di digiuno intermittente prolungato o modifiche dietetiche sostanziali, si raccomanda di consultare un medico o un nutrizionista qualificato.</p>
+
+            <h2>7. Informazioni di Contatto e Codice Sorgente</h2>
+            <p>CiboTimer è un progetto trasparente e open-source. Per domande, chiarimenti sulle norme di tutela della privacy o segnalazioni, puoi aprire un'Issue sulla repository ufficiale:</p>
+            <p>GitHub Repository: <a href="https://github.com/finalbyte1/cibotimer" target="_blank" rel="noopener noreferrer">https://github.com/finalbyte1/cibotimer</a></p>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 CiboTimer Open Source Project • Licensed under Apache-2.0 • Hosted with GitHub Pages</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+
+            const contentEl = document.getElementById('content-' + lang);
+            const btnEl = document.getElementById('btn-' + lang);
+
+            if (contentEl) contentEl.classList.add('active');
+            if (btnEl) btnEl.classList.add('active');
+
+            const metaEl = document.getElementById('header-meta');
+            if (metaEl) {
+                metaEl.textContent = (lang === 'it') 
+                    ? 'Applicazione mobile per Android • 100% Privacy-First & Offline-First'
+                    : 'Android Mobile Application • 100% Privacy-First & Offline-First';
+            }
+
+            try {
+                localStorage.setItem('cibotimer_lang', lang);
+            } catch (e) {}
+        }
+
+        // Default to English as requested
+        (function() {
+            let preferred = 'en';
+            try {
+                const saved = localStorage.getItem('cibotimer_lang');
+                if (saved) preferred = saved;
+            } catch (e) {}
+
+            switchLang(preferred);
+        })();
+    </script>
+</body>
+</html>
