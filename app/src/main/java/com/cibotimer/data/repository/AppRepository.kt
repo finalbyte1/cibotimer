@@ -41,6 +41,7 @@ class AppRepository(
         ignoreUnknownKeys = true
         prettyPrint = true
         encodeDefaults = true
+        coerceInputValues = true
     }
 
     private val mutex = Mutex()
@@ -48,7 +49,9 @@ class AppRepository(
     private val legacyStateFile = File(context.filesDir, "bodyfast_app_state.json")
 
     // Reactive StateFlows
-    private val _userProfile = MutableStateFlow(UserProfile())
+    private val _userProfile = MutableStateFlow(
+        UserProfile(weightUnit = com.cibotimer.domain.WeightUnitConverter.getDefaultWeightUnitForLocale())
+    )
     val userProfile: StateFlow<UserProfile> = _userProfile.asStateFlow()
 
     private val _activePlan = MutableStateFlow(FastingPlanTemplates.PLAN_LUIGI_1)
@@ -856,7 +859,9 @@ class AppRepository(
                 appendLine("- Stato Sessione: $stateStr (Inizio: $startFormatted, Fine prevista: $endFormatted)")
             }
 
-            appendLine("- Profilo Utente: Nome: ${profile.name}, Peso: ${profile.currentWeightKg} kg (Target: ${profile.targetWeightKg} kg), Acqua target: ${profile.waterTargetMl} ml/giorno")
+            val currentWeightFormatted = com.cibotimer.domain.WeightUnitConverter.formatWeight(profile.currentWeightKg, profile.weightUnit)
+            val targetWeightFormatted = com.cibotimer.domain.WeightUnitConverter.formatWeight(profile.targetWeightKg, profile.weightUnit)
+            appendLine("- Profilo Utente: Nome: ${profile.name}, Peso: $currentWeightFormatted (Target: $targetWeightFormatted), Acqua target: ${profile.waterTargetMl} ml/giorno")
         }
 
         val operationalRules = """

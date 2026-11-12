@@ -23,10 +23,12 @@ import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.models.Trophy
 import com.cibotimer.data.models.WeightEntry
+import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.data.repository.AppRepository
 import com.cibotimer.domain.BmiCalculator
 import com.cibotimer.domain.BodyStatsCalculator
 import com.cibotimer.domain.FastingCalculator
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.components.*
 import com.cibotimer.ui.theme.*
 import androidx.compose.ui.res.stringResource
@@ -213,7 +215,7 @@ fun ProgressScreen(
                     totalFastingHours = totalFastingHours,
                     longestFastingHours = longestFastingHours
                 )
-                2 -> TrophiesTab(trophies = trophies)
+                2 -> TrophiesTab(trophies = trophies, weightUnit = userProfile.weightUnit)
             }
         }
     }
@@ -222,6 +224,7 @@ fun ProgressScreen(
     if (showAddWeightDialog) {
         MeasurementEntryDialog(
             defaultWeight = currentEffectiveWeight,
+            weightUnit = userProfile.weightUnit,
             onDismiss = { showAddWeightDialog = false },
             onSave = { weight, waist, hips, chest, thighs, arms, notes, epoch ->
                 repository.addWeightEntry(
@@ -243,6 +246,7 @@ fun ProgressScreen(
     if (entryToEdit != null) {
         MeasurementEntryDialog(
             initialEntry = entryToEdit,
+            weightUnit = userProfile.weightUnit,
             onDismiss = { entryToEdit = null },
             onSave = { weight, waist, hips, chest, thighs, arms, notes, epoch ->
                 repository.updateWeightEntry(
@@ -273,7 +277,15 @@ fun ProgressScreen(
             titleContentColor = CiboTextPrimary,
             textContentColor = CiboTextSecondary,
             title = { Text(stringResource(R.string.dialog_delete_measurement_title)) },
-            text = { Text(stringResource(R.string.dialog_delete_measurement_message, entryToDelete!!.weightKg)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.dialog_delete_measurement_message,
+                        WeightUnitConverter.formatWeight(entryToDelete!!.weightKg, userProfile.weightUnit, showUnit = false),
+                        userProfile.weightUnit.symbol
+                    )
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
@@ -299,6 +311,7 @@ fun ProgressScreen(
             initialStartingWeightKg = userProfile.startingWeightKg,
             initialTargetWeightKg = userProfile.targetWeightKg,
             initialHeightCm = userProfile.heightCm,
+            weightUnit = userProfile.weightUnit,
             onDismiss = { showGoalEditorDialog = false },
             onSave = { starting, target, height ->
                 repository.updateGoals(starting, target, height)
@@ -314,6 +327,7 @@ fun ProgressScreen(
             totalFastingHours = totalFastingHours,
             completedSessionsCount = sessionsHistory.size,
             circumferenceInfo = totalCircumferenceInfo,
+            weightUnit = userProfile.weightUnit,
             onDismiss = { showShareModal = false }
         )
     }
@@ -395,7 +409,7 @@ fun WeightAndMeasurementsTab(
                             Text(stringResource(R.string.progress_initial_label), fontSize = 11.sp, color = CiboTextSecondary)
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "%.1f kg".format(Locale.US, weightProgress.startingWeightKg),
+                                text = WeightUnitConverter.formatWeight(weightProgress.startingWeightKg, userProfile.weightUnit),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp,
                                 color = CiboTextPrimary
@@ -416,7 +430,7 @@ fun WeightAndMeasurementsTab(
                                 Text(stringResource(R.string.progress_current_label), fontSize = 11.sp, color = CiboTimerAzureLight)
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "%.1f kg".format(Locale.US, weightProgress.currentWeightKg),
+                                    text = WeightUnitConverter.formatWeight(weightProgress.currentWeightKg, userProfile.weightUnit),
                                     fontWeight = FontWeight.Black,
                                     fontSize = 20.sp,
                                     color = CiboTimerAzureGlow
@@ -428,7 +442,7 @@ fun WeightAndMeasurementsTab(
                             Text(stringResource(R.string.progress_target_label), fontSize = 11.sp, color = CiboTextSecondary)
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "%.1f kg".format(Locale.US, weightProgress.targetWeightKg),
+                                text = WeightUnitConverter.formatWeight(weightProgress.targetWeightKg, userProfile.weightUnit),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp,
                                 color = CiboTimerAzure
@@ -466,7 +480,7 @@ fun WeightAndMeasurementsTab(
                                         color = CiboTextSecondary
                                     )
                                     Text(
-                                        text = "%+.1f kg".format(Locale.US, -weightProgress.lostKg),
+                                        text = WeightUnitConverter.formatDelta(-weightProgress.lostKg, userProfile.weightUnit),
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (weightProgress.lostKg >= 0) CiboTimerAzureGlow else CiboTimerOrange
@@ -499,7 +513,7 @@ fun WeightAndMeasurementsTab(
                                     )
                                     Text(
                                         text = if (weightProgress.isGoalReached) stringResource(R.string.progress_goal_reached)
-                                        else "%.1f kg".format(Locale.US, weightProgress.remainingKg),
+                                        else WeightUnitConverter.formatWeight(weightProgress.remainingKg, userProfile.weightUnit),
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (weightProgress.isGoalReached) CiboTimerAzureGlow else CiboTextPrimary
@@ -537,7 +551,11 @@ fun WeightAndMeasurementsTab(
                         )
 
                         Text(
-                            text = stringResource(R.string.share_target_format, weightProgress.targetWeightKg),
+                            text = stringResource(
+                                R.string.share_target_format,
+                                WeightUnitConverter.kgToDisplay(weightProgress.targetWeightKg, userProfile.weightUnit),
+                                userProfile.weightUnit.symbol
+                            ),
                             fontSize = 11.sp,
                             color = CiboTextSecondary
                         )
@@ -550,7 +568,8 @@ fun WeightAndMeasurementsTab(
         item {
             WeightProgressChart(
                 entries = weightEntries,
-                targetWeightKg = userProfile.targetWeightKg
+                targetWeightKg = userProfile.targetWeightKg,
+                weightUnit = userProfile.weightUnit
             )
         }
 
@@ -829,7 +848,7 @@ fun WeightAndMeasurementsTab(
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "%.1f kg".format(Locale.US, entry.weightKg),
+                                    text = WeightUnitConverter.formatWeight(entry.weightKg, userProfile.weightUnit),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 17.sp,
                                     color = CiboTextPrimary
@@ -838,7 +857,7 @@ fun WeightAndMeasurementsTab(
                                 if (weightDelta != null) {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "%+.1f kg".format(Locale.US, weightDelta),
+                                        text = WeightUnitConverter.formatDelta(weightDelta, userProfile.weightUnit),
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (weightDelta <= 0) CiboTimerAzureGlow else CiboTimerOrange
@@ -1040,7 +1059,10 @@ fun StatCard(
 }
 
 @Composable
-fun TrophiesTab(trophies: List<Trophy>) {
+fun TrophiesTab(
+    trophies: List<Trophy>,
+    weightUnit: WeightUnit = WeightUnit.KG
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -1120,7 +1142,7 @@ fun TrophiesTab(trophies: List<Trophy>) {
 
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = trophy.localizedDescription,
+                            text = trophy.getLocalizedDescription(weightUnit),
                             fontSize = 12.sp,
                             color = CiboTextSecondary
                         )

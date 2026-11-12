@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
+import com.cibotimer.data.models.WeightUnit
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import androidx.compose.ui.res.stringResource
 import java.text.SimpleDateFormat
@@ -39,13 +41,15 @@ enum class ChartTimeRange(val labelResId: Int, val days: Int) {
     ALL_TIME(R.string.chart_range_all, 0)
 }
 
-enum class ChartMetric(val labelResId: Int, val unit: String) {
-    WEIGHT(R.string.metric_weight, "kg"),
-    WAIST(R.string.metric_waist, "cm"),
-    HIPS(R.string.metric_hips, "cm"),
-    CHEST(R.string.metric_chest, "cm"),
-    THIGHS(R.string.metric_thighs, "cm"),
-    ARMS(R.string.metric_arms, "cm")
+enum class ChartMetric(val labelResId: Int, val isWeight: Boolean = false, val fallbackUnit: String = "cm") {
+    WEIGHT(R.string.metric_weight, isWeight = true, fallbackUnit = "kg"),
+    WAIST(R.string.metric_waist, fallbackUnit = "cm"),
+    HIPS(R.string.metric_hips, fallbackUnit = "cm"),
+    CHEST(R.string.metric_chest, fallbackUnit = "cm"),
+    THIGHS(R.string.metric_thighs, fallbackUnit = "cm"),
+    ARMS(R.string.metric_arms, fallbackUnit = "cm");
+
+    fun getUnit(weightUnit: WeightUnit): String = if (isWeight) weightUnit.symbol else fallbackUnit
 }
 
 data class ChartPoint(
@@ -59,6 +63,7 @@ data class ChartPoint(
 fun WeightProgressChart(
     entries: List<WeightEntry>,
     targetWeightKg: Double?,
+    weightUnit: WeightUnit = WeightUnit.KG,
     modifier: Modifier = Modifier
 ) {
     var selectedRange by remember { mutableStateOf(ChartTimeRange.ONE_MONTH) }
@@ -76,7 +81,7 @@ fun WeightProgressChart(
         } else 0L
     }
 
-    val chartPoints = remember(entries, selectedMetric, minEpoch) {
+    val chartPoints = remember(entries, selectedMetric, minEpoch, weightUnit) {
         val filtered = entries.filter { entry ->
             val value = when (selectedMetric) {
                 ChartMetric.WEIGHT -> entry.weightKg
@@ -91,7 +96,7 @@ fun WeightProgressChart(
 
         filtered.map { entry ->
             val v = when (selectedMetric) {
-                ChartMetric.WEIGHT -> entry.weightKg
+                ChartMetric.WEIGHT -> WeightUnitConverter.kgToDisplay(entry.weightKg, weightUnit)
                 ChartMetric.WAIST -> entry.waistCm ?: 0.0
                 ChartMetric.HIPS -> entry.hipsCm ?: 0.0
                 ChartMetric.CHEST -> entry.chestCm ?: 0.0
@@ -252,7 +257,7 @@ fun WeightProgressChart(
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
-                            text = selectedMetric.unit,
+                            text = selectedMetric.getUnit(weightUnit),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = CiboTextSecondary,
@@ -290,7 +295,9 @@ fun WeightProgressChart(
             } else {
                 // Determine min and max for chart Y scale
                 val values = chartPoints.map { it.value }
-                val target = if (selectedMetric == ChartMetric.WEIGHT) targetWeightKg else null
+                val target = if (selectedMetric == ChartMetric.WEIGHT && targetWeightKg != null) {
+                    WeightUnitConverter.kgToDisplay(targetWeightKg, weightUnit)
+                } else null
 
                 val rawMin = min(values.minOrNull() ?: 0.0, target ?: Double.MAX_VALUE)
                 val rawMax = max(values.maxOrNull() ?: 100.0, target ?: Double.MIN_VALUE)
@@ -500,7 +507,7 @@ fun WeightProgressChart(
                                 border = BorderStroke(1.dp, CiboTimerOrange.copy(alpha = 0.5f))
                             ) {
                                 Text(
-                                    text = stringResource(R.string.share_target_format, target),
+                                    text = stringResource(R.string.share_target_format, target, selectedMetric.getUnit(weightUnit)),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = CiboTimerOrange,
@@ -530,8 +537,8 @@ fun WeightProgressChart(
                         )
 
                         Text(
-                            text = if (isLoss) stringResource(R.string.chart_variation_format, delta, selectedMetric.unit)
-                            else stringResource(R.string.chart_variation_plus_format, delta, selectedMetric.unit),
+                            text = if (isLoss) stringResource(R.string.chart_variation_format, delta, selectedMetric.getUnit(weightUnit))
+                            else stringResource(R.string.chart_variation_plus_format, delta, selectedMetric.getUnit(weightUnit)),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isLoss) CiboTimerAzureGlow else CiboTimerOrange

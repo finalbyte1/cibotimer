@@ -6,6 +6,43 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.59] - 2026-11-12
+
+### ⚖️ Internazionalizzazione Unità di Misura: Selezione Peso tra kg e lb
+- **Modello Dati & Retrocompatibilità Assoluta (`BackupData.kt`)**:
+  - Introdotto l'enum serializzabile `@Serializable enum class WeightUnit(val symbol: String, val labelResId: Int) { KG, LB }`.
+  - Aggiunto il campo `weightUnit: WeightUnit = WeightUnit.KG` a `UserProfile`.
+  - **Zero migrazione dati**: tutti i valori di peso nel database, nei file JSON di stato e nei backup Google Drive restano canonicamente memorizzati in `kg` (`Double`).
+  - Retrocompatibilità garantita al 100%: i backup e i dati esistenti privi del campo vengono deserializzati con default `KG`.
+  - Nelle nuove installazioni (nessun file di stato pregresso) il default viene impostato automaticamente in base al Paese del Locale del dispositivo (`LB` per Stati Uniti, Liberia e Myanmar; `KG` per tutti gli altri Paesi).
+- **Utility Centralizzata (`WeightUnitConverter.kt`)**:
+  - Metodi `kgToDisplay(kg, unit)` e `displayToKg(value, unit)` basati sulla costante di conversione internazionale esatta `2.20462262`, preservando la massima precisione numerica dei kg salvati senza arrotondamenti preventivi.
+  - Metodi `formatWeight` e `formatDelta` con rispetto del separatore decimale del `Locale`, arrotondamento a 1 cifra decimale solo in fase di visualizzazione e gestione formattata del segno esplicito (`+/-`).
+  - Metodo `isValidWeight` con limiti fisiologici unificati tra 25.0 e 350.0 kg (o equivalente in lb).
+- **Impostazioni (`SettingsScreen.kt`)**:
+  - Aggiunto selettore a due posizioni (Segmented Button) "Unità di peso: kg / lb" che aggiorna in tempo reale tutte le schermate e i componenti dell'applicazione.
+  - Campo di inserimento del peso obiettivo formattato e convertito nell'unità scelta, con validazione dei limiti e messaggio di errore.
+- **Campi di Input & Dialog (`GoalEditorDialog.kt`, `MeasurementEntryDialog.kt`)**:
+  - Visualizzazione e inserimento nell'unità attiva dell'utente.
+  - All'apertura il valore iniziale è convertito e formattato a 1 cifra decimale.
+  - Al salvataggio i dati vengono convertiti e memorizzati internamente in `kg`.
+  - Etichette con simbolo dinamico dell'unità e validazione del range 25–350 kg (o equivalente lb).
+- **Dashboard Progressi & Modal di Condivisione (`ProgressScreen.kt`, `ShareProgressModal.kt`)**:
+  - Sostituite tutte le stringhe con "kg" hardcoded con i metodi di formattazione centralizzati.
+  - Parametrizzate con l'unità di misura le stringhe di risorsa in `strings.xml` e `values-it/strings.xml` (`share_text_weight_lost`, `share_text_current_weight`, `share_text_goal`, `share_target_format`, `share_starting_format`, `share_goal_progress`, `chart_variation_format`, `dialog_delete_measurement_message`).
+  - Aggiunte le risorse `unit_kg` ("kg") e `unit_lb` ("lb").
+- **Grafico Evoluzione Peso (`WeightProgressChart.kt`)**:
+  - `ChartMetric.WEIGHT` scala dinamicamente in base all'unità scelta (valori asse Y, tooltip e linea dell'obiettivo tracciati nell'unità attiva). Le metriche in centimetri restano invariate.
+- **Trofei & AI Coach (`Trophy.kt`, `AppRepository.kt`)**:
+  - Trofeo `weight_loss_1kg`: soglia interna conservata a 1.0 kg; descrizione localizzata resa dinamica in base all'unità (`1.0 kg` o `~2.2 lb`).
+  - Prompt di sistema per l'AI Coach in `AppRepository.kt`: peso attuale e obiettivo comunicati all'assistente nell'unità scelta con il simbolo corretto.
+- **Suite di Test Unitari (`WeightUnitConverterTest.kt`, `BackupSerializationTest.kt`)**:
+  - Test di conversione andata e ritorno con stabilità matematica senza oscillazioni né drift (es. 175.2 lb).
+  - Test di deserializzazione retrocompatibile per file JSON legacy privi di `weightUnit`.
+  - Test di validazione range, formattazione con segno e rilevamento automatico del Locale.
+
+---
+
 ## [1.0.58] - 2026-11-12
 
 ### 🎯 Misuratori a Segmenti Dimagrimento/Salute & Rinnovamento Schermata Coach Adattiva

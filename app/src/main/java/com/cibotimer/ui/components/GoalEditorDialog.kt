@@ -18,7 +18,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
+import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.domain.BmiCalculator
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import java.util.Locale
 
@@ -27,17 +29,36 @@ fun GoalEditorDialog(
     initialStartingWeightKg: Double,
     initialTargetWeightKg: Double,
     initialHeightCm: Double,
+    weightUnit: WeightUnit = WeightUnit.KG,
     onDismiss: () -> Unit,
     onSave: (startingWeight: Double, targetWeight: Double, height: Double) -> Unit
 ) {
-    var startingWeightText by remember { mutableStateOf(initialStartingWeightKg.toString()) }
-    var targetWeightText by remember { mutableStateOf(initialTargetWeightKg.toString()) }
+    var startingWeightText by remember {
+        mutableStateOf(WeightUnitConverter.formatWeight(initialStartingWeightKg, weightUnit, showUnit = false))
+    }
+    var targetWeightText by remember {
+        mutableStateOf(WeightUnitConverter.formatWeight(initialTargetWeightKg, weightUnit, showUnit = false))
+    }
     var heightText by remember { mutableStateOf(initialHeightCm.toInt().toString()) }
 
-    val targetWeight = targetWeightText.toDoubleOrNull() ?: initialTargetWeightKg
-    val height = heightText.toDoubleOrNull() ?: initialHeightCm
-    val targetBmi = remember(targetWeight, height) {
-        BmiCalculator.calculate(targetWeight, height)
+    var startingError by remember { mutableStateOf(false) }
+    var targetError by remember { mutableStateOf(false) }
+    var heightError by remember { mutableStateOf(false) }
+
+    val (minBound, maxBound) = remember(weightUnit) {
+        WeightUnitConverter.getFormattedBounds(weightUnit)
+    }
+    val weightErrorMessage = stringResource(R.string.weight_validation_error, minBound, maxBound)
+
+    val targetDisplay = targetWeightText.replace(',', '.').toDoubleOrNull()
+    val targetKg = if (targetDisplay != null && WeightUnitConverter.isValidWeight(targetDisplay, weightUnit)) {
+        WeightUnitConverter.displayToKg(targetDisplay, weightUnit)
+    } else {
+        initialTargetWeightKg
+    }
+    val height = heightText.replace(',', '.').toDoubleOrNull() ?: initialHeightCm
+    val targetBmi = remember(targetKg, height) {
+        BmiCalculator.calculate(targetKg, height)
     }
 
     AlertDialog(
@@ -65,7 +86,7 @@ fun GoalEditorDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
                     text = stringResource(R.string.goal_editor_desc),
@@ -75,45 +96,66 @@ fun GoalEditorDialog(
 
                 OutlinedTextField(
                     value = startingWeightText,
-                    onValueChange = { startingWeightText = it },
-                    label = { Text(stringResource(R.string.goal_editor_starting_weight)) },
+                    onValueChange = {
+                        startingWeightText = it
+                        startingError = false
+                    },
+                    label = { Text(stringResource(R.string.goal_editor_starting_weight, weightUnit.symbol)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
+                    isError = startingError,
+                    supportingText = if (startingError) {
+                        { Text(weightErrorMessage, color = MaterialTheme.colorScheme.error, fontSize = 11.sp) }
+                    } else null,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CiboTimerAzure,
                         unfocusedBorderColor = CiboCardBorder,
                         focusedTextColor = CiboTextPrimary,
-                        unfocusedTextColor = CiboTextPrimary
+                        unfocusedTextColor = CiboTextPrimary,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 OutlinedTextField(
                     value = targetWeightText,
-                    onValueChange = { targetWeightText = it },
-                    label = { Text(stringResource(R.string.goal_editor_target_weight)) },
+                    onValueChange = {
+                        targetWeightText = it
+                        targetError = false
+                    },
+                    label = { Text(stringResource(R.string.goal_editor_target_weight, weightUnit.symbol)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
+                    isError = targetError,
+                    supportingText = if (targetError) {
+                        { Text(weightErrorMessage, color = MaterialTheme.colorScheme.error, fontSize = 11.sp) }
+                    } else null,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CiboTimerAzure,
                         unfocusedBorderColor = CiboCardBorder,
                         focusedTextColor = CiboTextPrimary,
-                        unfocusedTextColor = CiboTextPrimary
+                        unfocusedTextColor = CiboTextPrimary,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 OutlinedTextField(
                     value = heightText,
-                    onValueChange = { heightText = it },
+                    onValueChange = {
+                        heightText = it
+                        heightError = false
+                    },
                     label = { Text(stringResource(R.string.goal_editor_height)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    isError = heightError,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CiboTimerAzure,
                         unfocusedBorderColor = CiboCardBorder,
                         focusedTextColor = CiboTextPrimary,
-                        unfocusedTextColor = CiboTextPrimary
+                        unfocusedTextColor = CiboTextPrimary,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -149,11 +191,22 @@ fun GoalEditorDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val sW = startingWeightText.toDoubleOrNull()
-                    val tW = targetWeightText.toDoubleOrNull()
-                    val h = heightText.toDoubleOrNull()
-                    if (sW != null && sW > 0 && tW != null && tW > 0 && h != null && h > 0) {
-                        onSave(sW, tW, h)
+                    val sWVal = startingWeightText.replace(',', '.').toDoubleOrNull()
+                    val tWVal = targetWeightText.replace(',', '.').toDoubleOrNull()
+                    val hVal = heightText.replace(',', '.').toDoubleOrNull()
+
+                    val isStartingValid = sWVal != null && WeightUnitConverter.isValidWeight(sWVal, weightUnit)
+                    val isTargetValid = tWVal != null && WeightUnitConverter.isValidWeight(tWVal, weightUnit)
+                    val isHeightValid = hVal != null && hVal in 50.0..280.0
+
+                    startingError = !isStartingValid
+                    targetError = !isTargetValid
+                    heightError = !isHeightValid
+
+                    if (isStartingValid && isTargetValid && isHeightValid) {
+                        val sWKg = WeightUnitConverter.displayToKg(sWVal!!, weightUnit)
+                        val tWKg = WeightUnitConverter.displayToKg(tWVal!!, weightUnit)
+                        onSave(sWKg, tWKg, hVal!!)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

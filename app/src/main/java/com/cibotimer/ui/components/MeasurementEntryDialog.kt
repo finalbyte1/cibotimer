@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
 import com.cibotimer.data.models.WeightEntry
+import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.domain.BodyStatsCalculator
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +33,7 @@ import java.util.*
 fun MeasurementEntryDialog(
     initialEntry: WeightEntry? = null,
     defaultWeight: Double = 75.0,
+    weightUnit: WeightUnit = WeightUnit.KG,
     onDismiss: () -> Unit,
     onSave: (
         weightKg: Double,
@@ -44,7 +47,17 @@ fun MeasurementEntryDialog(
     ) -> Unit,
     onDelete: (() -> Unit)? = null
 ) {
-    var weightText by remember { mutableStateOf(initialEntry?.weightKg?.toString() ?: defaultWeight.toString()) }
+    val initialKg = initialEntry?.weightKg ?: defaultWeight
+    var weightText by remember {
+        mutableStateOf(WeightUnitConverter.formatWeight(initialKg, weightUnit, showUnit = false))
+    }
+    var weightError by remember { mutableStateOf(false) }
+
+    val (minBound, maxBound) = remember(weightUnit) {
+        WeightUnitConverter.getFormattedBounds(weightUnit)
+    }
+    val weightErrorMessage = stringResource(R.string.weight_validation_error, minBound, maxBound)
+
     var waistText by remember { mutableStateOf(initialEntry?.waistCm?.toString() ?: "") }
     var hipsText by remember { mutableStateOf(initialEntry?.hipsCm?.toString() ?: "") }
     var chestText by remember { mutableStateOf(initialEntry?.chestCm?.toString() ?: "") }
@@ -118,15 +131,23 @@ fun MeasurementEntryDialog(
                 // Peso (Obbligatorio)
                 OutlinedTextField(
                     value = weightText,
-                    onValueChange = { weightText = it },
-                    label = { Text(stringResource(R.string.measurement_weight_label)) },
+                    onValueChange = {
+                        weightText = it
+                        weightError = false
+                    },
+                    label = { Text(stringResource(R.string.measurement_weight_label, weightUnit.symbol)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
+                    isError = weightError,
+                    supportingText = if (weightError) {
+                        { Text(weightErrorMessage, color = MaterialTheme.colorScheme.error, fontSize = 11.sp) }
+                    } else null,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CiboTimerAzure,
                         unfocusedBorderColor = CiboCardBorder,
                         focusedTextColor = CiboTextPrimary,
-                        unfocusedTextColor = CiboTextPrimary
+                        unfocusedTextColor = CiboTextPrimary,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -273,15 +294,18 @@ fun MeasurementEntryDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val w = weightText.toDoubleOrNull()
-                    if (w != null && w > 0.0) {
+                    val wVal = weightText.replace(',', '.').toDoubleOrNull()
+                    val isValid = wVal != null && WeightUnitConverter.isValidWeight(wVal, weightUnit)
+                    weightError = !isValid
+                    if (isValid) {
+                        val wKg = WeightUnitConverter.displayToKg(wVal!!, weightUnit)
                         onSave(
-                            w,
-                            waistText.toDoubleOrNull(),
-                            hipsText.toDoubleOrNull(),
-                            chestText.toDoubleOrNull(),
-                            thighsText.toDoubleOrNull(),
-                            armsText.toDoubleOrNull(),
+                            wKg,
+                            waistText.replace(',', '.').toDoubleOrNull(),
+                            hipsText.replace(',', '.').toDoubleOrNull(),
+                            chestText.replace(',', '.').toDoubleOrNull(),
+                            thighsText.replace(',', '.').toDoubleOrNull(),
+                            armsText.replace(',', '.').toDoubleOrNull(),
                             notesText,
                             epochMillis
                         )

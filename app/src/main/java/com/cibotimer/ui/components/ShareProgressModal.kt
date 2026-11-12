@@ -23,8 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cibotimer.R
+import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.domain.TotalCircumferenceInfo
 import com.cibotimer.domain.WeightProgressInfo
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.ui.theme.*
 import androidx.compose.ui.res.stringResource
 import java.util.Locale
@@ -36,18 +38,26 @@ fun ShareProgressModal(
     totalFastingHours: Int,
     completedSessionsCount: Int,
     circumferenceInfo: TotalCircumferenceInfo?,
+    weightUnit: WeightUnit = WeightUnit.KG,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
 
+    val displayLost = WeightUnitConverter.kgToDisplay(progressInfo.lostKg, weightUnit)
+    val displayStarting = WeightUnitConverter.kgToDisplay(progressInfo.startingWeightKg, weightUnit)
+    val displayCurrent = WeightUnitConverter.kgToDisplay(progressInfo.currentWeightKg, weightUnit)
+    val displayTarget = WeightUnitConverter.kgToDisplay(progressInfo.targetWeightKg, weightUnit)
+    val displayRemaining = WeightUnitConverter.kgToDisplay(progressInfo.remainingKg, weightUnit)
+    val unitSymbol = weightUnit.symbol
+
     val shareText = buildString {
         append(context.getString(R.string.share_text_header))
         if (progressInfo.lostKg > 0) {
-            append(context.getString(R.string.share_text_weight_lost, progressInfo.lostKg, progressInfo.startingWeightKg, progressInfo.currentWeightKg))
+            append(context.getString(R.string.share_text_weight_lost, displayLost, displayStarting, displayCurrent, unitSymbol))
         } else {
-            append(context.getString(R.string.share_text_current_weight, progressInfo.currentWeightKg, progressInfo.startingWeightKg))
+            append(context.getString(R.string.share_text_current_weight, displayCurrent, displayStarting, unitSymbol))
         }
-        append(context.getString(R.string.share_text_goal, progressInfo.targetWeightKg, progressInfo.progressPercent, progressInfo.remainingKg))
+        append(context.getString(R.string.share_text_goal, displayTarget, progressInfo.progressPercent, displayRemaining, unitSymbol))
         append(context.getString(R.string.share_text_fasting_hours, totalFastingHours, completedSessionsCount))
         if (circumferenceInfo?.totalDiffCm != null) {
             append(context.getString(R.string.share_text_circumference, circumferenceInfo.totalDiffCm))
@@ -132,7 +142,7 @@ fun ShareProgressModal(
                     // Hero Stat
                     if (progressInfo.lostKg > 0) {
                         Text(
-                            text = "-%.1f kg".format(Locale.US, progressInfo.lostKg),
+                            text = "-${WeightUnitConverter.formatWeight(progressInfo.lostKg, weightUnit)}",
                             fontSize = 38.sp,
                             fontWeight = FontWeight.Black,
                             color = CiboTimerAzureGlow
@@ -146,7 +156,7 @@ fun ShareProgressModal(
                         )
                     } else {
                         Text(
-                            text = "%.1f kg".format(Locale.US, progressInfo.currentWeightKg),
+                            text = WeightUnitConverter.formatWeight(progressInfo.currentWeightKg, weightUnit),
                             fontSize = 38.sp,
                             fontWeight = FontWeight.Black,
                             color = CiboTimerAzureGlow
@@ -169,12 +179,20 @@ fun ShareProgressModal(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = stringResource(R.string.share_starting_format, progressInfo.startingWeightKg),
+                                text = stringResource(
+                                    R.string.share_starting_format,
+                                    WeightUnitConverter.kgToDisplay(progressInfo.startingWeightKg, weightUnit),
+                                    weightUnit.symbol
+                                ),
                                 fontSize = 11.sp,
                                 color = CiboTextSecondary
                             )
                             Text(
-                                text = stringResource(R.string.share_target_format, progressInfo.targetWeightKg),
+                                text = stringResource(
+                                    R.string.share_target_format,
+                                    WeightUnitConverter.kgToDisplay(progressInfo.targetWeightKg, weightUnit),
+                                    weightUnit.symbol
+                                ),
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = CiboTimerAzure
@@ -197,7 +215,12 @@ fun ShareProgressModal(
 
                         Text(
                             text = if (progressInfo.isGoalReached) stringResource(R.string.share_goal_reached)
-                            else stringResource(R.string.share_goal_progress, progressInfo.progressPercent, progressInfo.remainingKg),
+                            else stringResource(
+                                R.string.share_goal_progress,
+                                progressInfo.progressPercent,
+                                WeightUnitConverter.kgToDisplay(progressInfo.remainingKg, weightUnit),
+                                weightUnit.symbol
+                            ),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (progressInfo.isGoalReached) CiboTimerAzureGlow else CiboTextSecondary,

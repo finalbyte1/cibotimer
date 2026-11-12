@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings as AndroidSettings
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,7 +32,9 @@ import com.cibotimer.BuildConfig
 import com.cibotimer.R
 import com.cibotimer.data.models.AiConfig
 import com.cibotimer.data.models.UserProfile
+import com.cibotimer.data.models.WeightUnit
 import com.cibotimer.data.repository.AppRepository
+import com.cibotimer.domain.WeightUnitConverter
 import com.cibotimer.notifications.NotificationHelper
 import com.cibotimer.ui.components.*
 import com.cibotimer.ui.theme.*
@@ -59,7 +62,10 @@ fun SettingsScreen(
     // Local mutable state for forms
     var name by remember(userProfile.name) { mutableStateOf(userProfile.name) }
     var heightCm by remember(userProfile.heightCm) { mutableStateOf(userProfile.heightCm.toInt().toString()) }
-    var targetWeightKg by remember(userProfile.targetWeightKg) { mutableStateOf(userProfile.targetWeightKg.toString()) }
+    var targetWeightText by remember(userProfile.targetWeightKg, userProfile.weightUnit) {
+        mutableStateOf(WeightUnitConverter.formatWeight(userProfile.targetWeightKg, userProfile.weightUnit, showUnit = false))
+    }
+    var targetWeightError by remember { mutableStateOf(false) }
     var waterTargetMl by remember(userProfile.waterTargetMl) { mutableStateOf(userProfile.waterTargetMl.toString()) }
 
     var isAiEnabled by remember(aiConfig.isEnabled) { mutableStateOf(aiConfig.isEnabled) }
@@ -170,8 +176,8 @@ fun SettingsScreen(
                         value = heightCm,
                         onValueChange = {
                             heightCm = it
-                            val h = it.toDoubleOrNull()
-                            if (h != null && h > 0) repository.updateUserProfile(userProfile.copy(heightCm = h))
+                            val h = it.replace(',', '.').toDoubleOrNull()
+                            if (h != null && h in 50.0..280.0) repository.updateUserProfile(userProfile.copy(heightCm = h))
                         },
                         label = { Text(stringResource(R.string.settings_profile_height)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -179,18 +185,98 @@ fun SettingsScreen(
                         modifier = Modifier.weight(1f)
                     )
 
-                    AppOutlinedTextField(
-                        value = targetWeightKg,
+                    OutlinedTextField(
+                        value = targetWeightText,
                         onValueChange = {
-                            targetWeightKg = it
-                            val w = it.toDoubleOrNull()
-                            if (w != null && w > 0) repository.updateUserProfile(userProfile.copy(targetWeightKg = w))
+                            targetWeightText = it
+                            val wDisplay = it.replace(',', '.').toDoubleOrNull()
+                            val isValid = wDisplay != null && WeightUnitConverter.isValidWeight(wDisplay, userProfile.weightUnit)
+                            targetWeightError = !isValid
+                            if (isValid) {
+                                val wKg = WeightUnitConverter.displayToKg(wDisplay!!, userProfile.weightUnit)
+                                repository.updateUserProfile(userProfile.copy(targetWeightKg = wKg))
+                            }
                         },
-                        label = { Text(stringResource(R.string.settings_profile_target_weight)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        label = { Text(stringResource(R.string.settings_profile_target_weight, userProfile.weightUnit.symbol)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
+                        isError = targetWeightError,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CiboTimerAzure,
+                            unfocusedBorderColor = BorderDark,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            errorBorderColor = MaterialTheme.colorScheme.error
+                        ),
                         modifier = Modifier.weight(1f)
                     )
+                }
+
+                if (targetWeightError) {
+                    val (minB, maxB) = remember(userProfile.weightUnit) {
+                        WeightUnitConverter.getFormattedBounds(userProfile.weightUnit)
+                    }
+                    Text(
+                        text = stringResource(R.string.weight_validation_error, minB, maxB),
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Selettore Unità di Peso (Segmented Button: kg / lb)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.settings_weight_unit),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextSecondary
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = BackgroundDark,
+                        border = BorderStroke(1.dp, BorderDark)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            listOf(
+                                WeightUnit.KG to R.string.settings_weight_unit_kg,
+                                WeightUnit.LB to R.string.settings_weight_unit_lb
+                            ).forEach { (unit, labelRes) ->
+                                val isSelected = userProfile.weightUnit == unit
+                                Surface(
+                                    onClick = {
+                                        if (!isSelected) {
+                                            repository.updateUserProfile(userProfile.copy(weightUnit = unit))
+                                        }
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSelected) CiboTimerAzure else Color.Transparent,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Box(
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = stringResource(labelRes),
+                                            fontSize = 12.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) Color(0xFF031019) else TextSecondary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

@@ -110,4 +110,48 @@ class BackupSerializationTest {
         assertEquals(0, decoded.waterEntries.size)
         assertEquals(0, decoded.weightEntries.size)
     }
+
+    @Test
+    fun testLegacyBackupWithoutWeightUnitDefaultsToKG() {
+        val legacyProfileJson = """
+            {
+              "name": "Legacy User",
+              "startingWeightKg": 80.0,
+              "currentWeightKg": 75.0,
+              "targetWeightKg": 70.0,
+              "heightCm": 175.0
+            }
+        """.trimIndent()
+
+        val decodedProfile = json.decodeFromString<UserProfile>(legacyProfileJson)
+        assertEquals("Legacy User", decodedProfile.name)
+        assertEquals(WeightUnit.KG, decodedProfile.weightUnit)
+
+        // Test in full BackupData by stripping weightUnit field
+        val fullBackup = BackupData(
+            profile = UserProfile(name = "Legacy Full User"),
+            activePlan = FastingPlanTemplates.PLAN_16_8
+        )
+        val fullJson = json.encodeToString(fullBackup)
+        val legacyFullJson = fullJson.replace("\"weightUnit\": \"KG\",", "")
+        val restored = json.decodeFromString<BackupData>(legacyFullJson)
+        assertEquals("Legacy Full User", restored.profile.name)
+        assertEquals(WeightUnit.KG, restored.profile.weightUnit)
+    }
+
+    @Test
+    fun testBackupWithWeightUnitLB() {
+        val profileLb = UserProfile(
+            name = "US User",
+            startingWeightKg = 80.0,
+            weightUnit = WeightUnit.LB
+        )
+        val backup = BackupData(
+            profile = profileLb,
+            activePlan = FastingPlanTemplates.PLAN_16_8
+        )
+        val jsonString = json.encodeToString(backup)
+        val decoded = json.decodeFromString<BackupData>(jsonString)
+        assertEquals(WeightUnit.LB, decoded.profile.weightUnit)
+    }
 }

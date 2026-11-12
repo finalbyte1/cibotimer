@@ -1,6 +1,13 @@
 ﻿package com.cibotimer.data.models
 
+import com.cibotimer.R
 import kotlinx.serialization.Serializable
+
+@Serializable
+enum class WeightUnit(val symbol: String, val labelResId: Int) {
+    KG("kg", R.string.unit_kg),
+    LB("lb", R.string.unit_lb)
+}
 
 @Serializable
 data class UserProfile(
@@ -9,6 +16,7 @@ data class UserProfile(
     val currentWeightKg: Double = 75.0,
     val targetWeightKg: Double = 70.0,
     val heightCm: Double = 175.0,
+    val weightUnit: WeightUnit = WeightUnit.KG,
     val waterTargetMl: Int = 2000,
     val notificationsFastingEnabled: Boolean = true,
     val notificationsStagesEnabled: Boolean = true,

@@ -178,8 +178,8 @@
     <!-- Goal Editor Dialog -->
     <string name="goal_editor_title">Edit Goals &amp; Weight</string>
     <string name="goal_editor_desc">Configure your starting weight, target weight, and height to track your progress.</string>
-    <string name="goal_editor_starting_weight">Starting Weight (kg)</string>
-    <string name="goal_editor_target_weight">Target Weight (kg)</string>
+    <string name="goal_editor_starting_weight">Starting Weight (%1$s)</string>
+    <string name="goal_editor_target_weight">Target Weight (%1$s)</string>
     <string name="goal_editor_height">Height (cm)</string>
     <string name="goal_editor_target_bmi">BMI at target: %.1f</string>
 
@@ -187,7 +187,7 @@
     <string name="measurement_dialog_title_new">Record Measurement &amp; Weight</string>
     <string name="measurement_dialog_title_edit">Edit Measurement</string>
     <string name="measurement_date_prefix">Date: %1$s</string>
-    <string name="measurement_weight_label">Weight (kg) *</string>
+    <string name="measurement_weight_label">Weight (%1$s) *</string>
     <string name="measurement_circumferences_header">Body Measurements (cm, optional):</string>
     <string name="measurement_waist_label">Waist (cm)</string>
     <string name="measurement_hips_label">Hips (cm)</string>
@@ -232,8 +232,14 @@
     <string name="settings_section_profile">Personal Profile</string>
     <string name="settings_profile_name">Name</string>
     <string name="settings_profile_height">Height (cm)</string>
-    <string name="settings_profile_target_weight">Target weight (kg)</string>
+    <string name="settings_profile_target_weight">Target weight (%1$s)</string>
     <string name="settings_profile_water_target">Water Target (ml)</string>
+    <string name="settings_weight_unit">Weight unit</string>
+    <string name="settings_weight_unit_kg">Kilograms (kg)</string>
+    <string name="settings_weight_unit_lb">Pounds (lb)</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="weight_validation_error">Weight must be between %1$s and %2$s</string>
     <string name="settings_section_ai">AI Coach (ChatGPT API)</string>
     <string name="settings_ai_enable">Enable AI Coach</string>
     <string name="settings_ai_desc">Disabled by default for privacy. Enable it to create custom plans with AI.</string>
@@ -321,8 +327,8 @@
     <string name="plan_overwrite">Overwrite</string>
     <string name="plan_time_start_label">Start: </string>
     <string name="plan_time_end_label">End: </string>
-    <string name="plan_time_bound_anterior">You cannot exceed the previous period (ends at %02d:%02d)</string>
-    <string name="plan_time_bound_posterior">You cannot exceed the next period (starts at %02d:%02d)</string>
+    <string name="plan_time_bound_anterior">You cannot exceed the previous period (ends at %1$02d:%2$02d)</string>
+    <string name="plan_time_bound_posterior">You cannot exceed the next period (starts at %1$02d:%2$02d)</string>
     <string name="content_desc_edit_start_time">Edit start time</string>
     <string name="content_desc_edit_end_time">Edit end time</string>
 
@@ -337,7 +343,7 @@
 
     <!-- Progress Screen & Chart Additional -->
     <string name="dialog_delete_measurement_title">Delete measurement?</string>
-    <string name="dialog_delete_measurement_message">Are you sure you want to delete the measurement of %1$s kg?</string>
+    <string name="dialog_delete_measurement_message">Are you sure you want to delete the measurement of %1$s %2$s?</string>
     <string name="progress_initial_label">Initial</string>
     <string name="progress_current_label">Current</string>
     <string name="progress_target_label">Target</string>
@@ -348,8 +354,8 @@
     <string name="chart_evolution_title">Evolution Chart</string>
     <string name="chart_empty_measurement">No measurements recorded for %1$s</string>
     <string name="chart_tap_to_record">Tap \'Record Measurement\' to track the first data point</string>
-    <string name="chart_variation_format">Variation: %.1f %s</string>
-    <string name="chart_variation_plus_format">Variation: +%.1f %s</string>
+    <string name="chart_variation_format">Variation: %1$.1f %2$s</string>
+    <string name="chart_variation_plus_format">Variation: +%1$.1f %2$s</string>
     <string name="chart_range_1_month">1 Month</string>
     <string name="chart_range_3_months">3 Months</string>
     <string name="chart_range_all">All Time</string>
@@ -385,8 +391,8 @@
     <string name="share_progress_brand">CiboTimer</string>
     <string name="share_weight_lost">WEIGHT LOST</string>
     <string name="share_current_weight">CURRENT WEIGHT</string>
-    <string name="share_starting_format">Starting: %.1f kg</string>
-    <string name="share_target_format">Target: %.1f kg</string>
+    <string name="share_starting_format">Starting: %1$.1f %2$s</string>
+    <string name="share_target_format">Target: %1$.1f %2$s</string>
     <string name="share_total_fast">Total fast</string>
     <string name="share_body_measurements">Body measurements</string>
     <string name="share_chooser_title">Share your progress</string>
@@ -543,9 +549,9 @@
 
     <!-- Share Progress Text -->
     <string name="share_text_header">🎉 My progress with CiboTimer!\n\n</string>
-    <string name="share_text_weight_lost">⚖️ Weight lost: -%1$.1f kg (from %2$.1f kg to %3$.1f kg)\n</string>
-    <string name="share_text_current_weight">⚖️ Current weight: %1$.1f kg (starting: %2$.1f kg)\n</string>
-    <string name="share_text_goal">🎯 Goal: %1$.1f kg (%2$d%% reached, %3$.1f kg to go)\n</string>
+    <string name="share_text_weight_lost">⚖️ Weight lost: -%1$.1f %4$s (from %2$.1f %4$s to %3$.1f %4$s)\n</string>
+    <string name="share_text_current_weight">⚖️ Current weight: %1$.1f %3$s (starting: %2$.1f %3$s)\n</string>
+    <string name="share_text_goal">🎯 Goal: %1$.1f %4$s (%2$d%% reached, %3$.1f %4$s to go)\n</string>
     <string name="share_text_fasting_hours">⏱️ Total fasting time: %1$d hours (%2$d sessions completed)\n</string>
     <string name="share_text_circumference">📏 Body measurements: %1$+.1f cm\n</string>
     <string name="share_text_footer">\n🚀 Track your fasts and health with CiboTimer!</string>
@@ -568,7 +574,7 @@
     <string name="trophy_warrior_20_title">20-Hour Warrior</string>
     <string name="trophy_warrior_20_desc">Complete a fast of at least 20 consecutive hours.</string>
     <string name="trophy_weight_loss_1kg_title">Weight Goal</string>
-    <string name="trophy_weight_loss_1kg_desc">Reduce your weight by at least 1 kg from your starting point.</string>
+    <string name="trophy_weight_loss_1kg_desc">Reduce your weight by at least %1$s from your starting point.</string>
     <string name="trophy_water_goal_title">Perfect Hydration</string>
     <string name="trophy_water_goal_desc">Drink at least 2 liters of water in a day.</string>
 
@@ -584,7 +590,7 @@
     <string name="progress_tab_trophies_format">Trophies (%1$d/%2$d)</string>
     <string name="progress_percent_to_goal">%1$d%% towards goal</string>
     <string name="share_goal_reached">🎉 Goal Reached!</string>
-    <string name="share_goal_progress">%1$d%% towards goal • %2$.1f kg to go</string>
+    <string name="share_goal_progress">%1$d%% towards goal • %2$.1f %3$s to go</string>
 
     <!-- Privacy Policy (Google Play Policy Compliance) -->
     <string name="privacy_policy_title">Privacy Policy</string>
