@@ -288,7 +288,7 @@ fun TimerScreen(
         )
     }
 
-    // Dialog conferma Stop / Gestione ciclo
+    // Dialog conferma Stop
     if (showEndConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showEndConfirmDialog = false },
@@ -296,7 +296,7 @@ fun TimerScreen(
             shape = RoundedCornerShape(16.dp),
             title = {
                 Text(
-                    text = if (isFasting) stringResource(R.string.dialog_stop_title) else "Finestra Pasto in corso",
+                    text = if (isFasting) stringResource(R.string.dialog_stop_title) else stringResource(R.string.dialog_stop_eating_title),
                     color = CiboTextPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -304,47 +304,24 @@ fun TimerScreen(
             },
             text = {
                 Text(
-                    text = if (isFasting) {
-                        stringResource(R.string.timer_dialog_switch_fasting_msg)
-                    } else {
-                        stringResource(R.string.timer_dialog_switch_eating_msg)
-                    },
+                    text = if (isFasting) stringResource(R.string.dialog_stop_message) else stringResource(R.string.dialog_stop_eating_message),
                     color = CiboTextSecondary,
                     fontSize = 14.sp
                 )
             },
             confirmButton = {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (isFasting) {
-                        Button(
-                            onClick = {
-                                repository.transitionToEating()
-                                showEndConfirmDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = CiboAccent)
-                        ) {
-                            Text(text = stringResource(R.string.timer_button_switch_eating), color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
-                        }
-                    } else if (isEating) {
-                        Button(
-                            onClick = {
-                                repository.startFastingNow()
-                                showEndConfirmDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = CiboAccent)
-                        ) {
-                            Text(text = stringResource(R.string.timer_button_start_fast), color = CiboButtonDarkText, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                    Button(
-                        onClick = {
-                            repository.stopTimer()
-                            showEndConfirmDialog = false
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = CiboStopRed)
-                    ) {
-                        Text(text = stringResource(R.string.timer_button_stop_timer), color = Color.White, fontWeight = FontWeight.Bold)
-                    }
+                Button(
+                    onClick = {
+                        repository.stopTimer()
+                        showEndConfirmDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = CiboStopRed)
+                ) {
+                    Text(
+                        text = stringResource(R.string.timer_button_stop_timer),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             dismissButton = {
@@ -937,6 +914,14 @@ fun TabletLandscapeTimerContent(
                     modifier = Modifier
                         .size(maxTimerSize)
                         .aspectRatio(1f)
+                        .let {
+                            if (!isRunning) it.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                role = Role.Button,
+                                onClick = onStartClick
+                            ) else it
+                        }
                 )
             }
 
@@ -1217,7 +1202,16 @@ fun CompactTimerContent(
                     elapsedSeconds = elapsedSeconds,
                     progressFraction = progressFraction,
                     state = if (isFasting) FastingState.FASTING else if (isEating) FastingState.EATING else FastingState.NOT_STARTED,
-                    modifier = Modifier.size(ringSize)
+                    modifier = Modifier
+                        .size(ringSize)
+                        .let {
+                            if (!isRunning) it.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                role = Role.Button,
+                                onClick = onStartClick
+                            ) else it
+                        }
                 )
 
                 // A DESTRA: "Adesso: Digiunare" allineato verticalmente in alto

@@ -44,6 +44,8 @@
     <!-- Stop Confirmation Dialog -->
     <string name="dialog_stop_title">End fasting session?</string>
     <string name="dialog_stop_message">Are you sure you want to end your ongoing fasting session?</string>
+    <string name="dialog_stop_eating_title">Stop timer?</string>
+    <string name="dialog_stop_eating_message">Are you sure you want to stop the timer?</string>
     <string name="dialog_stop_confirm">End fast</string>
     <string name="dialog_stop_cancel">Cancel</string>
 

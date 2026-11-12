@@ -44,6 +44,8 @@
     <!-- Dialog Conferma Stop -->
     <string name="dialog_stop_title">Concludere il digiuno?</string>
     <string name="dialog_stop_message">Sei sicuro di voler terminare la sessione di digiuno in corso?</string>
+    <string name="dialog_stop_eating_title">Interrompere il timer?</string>
+    <string name="dialog_stop_eating_message">Sei sicuro di voler fermare il timer?</string>
     <string name="dialog_stop_confirm">Interrompi</string>
     <string name="dialog_stop_cancel">Annulla</string>
 

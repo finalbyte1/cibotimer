@@ -6,6 +6,22 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.62] - 2026-11-12
+
+### ⏱️ Risoluzione Bug Riavvio Timer & Semplificazione Dialog di Stop
+- **Correzione Riavvio Timer dopo Stop**:
+  - Risolta la race condition nella chiusura e riavvio del foreground service: `FastingForegroundService.stop(context)` ora arresta direttamente il servizio tramite `stopService` anziché inviare un intent asincrono `ACTION_STOP_FASTING`, prevenendo la cancellazione accidentale di una nuova sessione avviata immediatamente dopo lo stop.
+  - In `stopForegroundTimer()`, aggiunto il controllo sullo stato di `_currentSession.value` per evitare doppie invocazioni di stop.
+  - Centralizzato `startFasting(customStartTime)` per delegare direttamente a `startFastingNow(customStartTime)`, garantendo che la pressione del pulsante "Avvia" (Start) o il tocco sul quadrante circolare avvii sempre una sessione di digiuno attiva calcolata dal momento esatto del tap con la piena durata prevista dal piano.
+  - Abilitato il tocco interattivo diretto sul quadrante circolare `FastingCircularProgress` quando il timer è fermo (`!isRunning`) per avviare istantaneamente la sessione.
+- **Semplificazione Dialog Conferma Stop**:
+  - Rimossa l'opzione intermedia "Switch a finestra pasto / digiuno" dal dialog di conferma stop: il dialog ora presenta una scelta pulita e diretta con solo il pulsante rosso "Ferma timer" e il pulsante "Annulla", sia durante il digiuno che durante la finestra di pasto.
+  - Aggiunte stringhe dedicate e localizzate per lo stop della finestra pasto (`dialog_stop_eating_title` e `dialog_stop_eating_message`).
+- **Suite di Test Unitari**:
+  - Aggiunti test in `TimerStopRestartTest.kt` per verificare la corretta sequenza di stop e riavvio immediato con calcolo esatto dei tempi rimanenti e trascorsi.
+
+---
+
 ## [1.0.61] - 2026-11-12
 
 ### 🌍 Internazionalizzazione Completa Date, Giorni e Orari (12h/24h & Locale-Aware)

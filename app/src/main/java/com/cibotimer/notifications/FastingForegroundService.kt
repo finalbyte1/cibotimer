@@ -167,7 +167,9 @@ class FastingForegroundService : Service() {
 
         try {
             val app = applicationContext as? CiboTimerApp
-            app?.repository?.stopTimer()
+            if (app?.repository?.currentSession?.value != null) {
+                app.repository.stopTimer()
+            }
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -398,10 +400,7 @@ class FastingForegroundService : Service() {
             }
 
             try {
-                val intent = Intent(context, FastingForegroundService::class.java).apply {
-                    action = ACTION_STOP_FASTING
-                }
-                context.startService(intent)
+                context.stopService(Intent(context, FastingForegroundService::class.java))
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
