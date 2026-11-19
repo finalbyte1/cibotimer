@@ -143,6 +143,7 @@ fun FastingStagesCard(
 
     val phasePrefix = stringResource(R.string.stage_phase_prefix)
     val eatingWindowLabel = stringResource(R.string.header_subtitle_eating)
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
     val (stageTitle, stageDesc) = if (!isFasting) {
         Pair(
             if (elapHours > 0 || elapMinsRemainder > 0) "$eatingWindowLabel ($elapsedHoursFormatted)" else stringResource(R.string.stage_eating_title),
@@ -150,8 +151,8 @@ fun FastingStagesCard(
         )
     } else {
         Pair(
-            "$phasePrefix ${currentStage.stageIndex}: ${currentStage.localizedTitle} ($elapsedHoursFormatted)",
-            "${currentStage.localizedSubtitle}. ${currentStage.localizedDescription}"
+            "$phasePrefix ${currentStage.stageIndex}: ${currentStage.getLocalizedTitle(locale)} ($elapsedHoursFormatted)",
+            "${currentStage.getLocalizedSubtitle(locale)}. ${currentStage.getLocalizedDescription(locale)}"
         )
     }
 

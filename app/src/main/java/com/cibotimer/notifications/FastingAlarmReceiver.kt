@@ -37,7 +37,24 @@ class FastingAlarmReceiver : BroadcastReceiver() {
                     }
                 }
             }
-            NotificationHelper.showNotification(context, channelId, notificationId, title, message, type, isEating)
+
+            val repo = try { (context.applicationContext as? com.cibotimer.CiboTimerApp)?.repository ?: com.cibotimer.CiboTimerApp.instance.repository } catch (e: Throwable) { null }
+            val profile = repo?.userProfile?.value
+
+            if (type == "STAGE_REACHED" && profile != null && !profile.notificationsStagesEnabled) {
+                // Notifiche fasi metaboliche disattivate: scarta l'allarme
+                return
+            }
+
+            val shouldNotify = when (type) {
+                "FASTING_END", "EATING_END", "EATING_PRE_REMINDER" -> profile?.notificationsFastingEnabled != false
+                "STAGE_REACHED" -> profile?.notificationsStagesEnabled == true
+                else -> true
+            }
+
+            if (shouldNotify) {
+                NotificationHelper.showNotification(context, channelId, notificationId, title, message, type, isEating)
+            }
 
             // Avanzamento automatico continuo del timer (il timer non si ferma mai)
             try {

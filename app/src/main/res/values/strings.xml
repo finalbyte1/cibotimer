@@ -262,6 +262,7 @@
     <string name="settings_ai_baseurl_label">API Base URL</string>
     <string name="settings_ai_model_label">Model Name (e.g. gpt-4o-mini, gpt-3.5-turbo)</string>
     <string name="settings_section_notifications">Notifications &amp; Reminders</string>
+    <string name="settings_notif_persistent">Ongoing timer notification</string>
     <string name="settings_notif_fasting">Start and end of fast</string>
     <string name="settings_notif_stages">Reaching metabolic stages</string>
     <string name="settings_notif_water">Hydration reminders</string>
@@ -272,9 +273,15 @@
     <string name="settings_cloud_auto_backup">Automatic Drive Backup</string>
     <string name="settings_cloud_auto_backup_desc">Leverages native Android Auto Backup to automatically save and sync the database and settings to Google Drive.</string>
     <string name="settings_cloud_backup_now">Backup now</string>
-    <string name="settings_cloud_restore">Restore</string>
+    <string name="settings_cloud_restore">Restore from File</string>
     <string name="settings_cloud_share_started">Backup sharing started to Google Drive / external apps</string>
     <string name="settings_cloud_share_error">Sharing open error: %1$s</string>
+    <string name="settings_dialog_confirm_restore_title">Confirm Backup Restore</string>
+    <string name="settings_dialog_confirm_restore_desc">Do you want to restore application data from the selected JSON file? Current sessions, profile, and history will be replaced with the backup data.</string>
+    <string name="settings_dialog_confirm_restore_file">Selected file: %1$s</string>
+    <string name="settings_dialog_confirm_restore_btn">Restore Data</string>
+    <string name="settings_local_import_read_error">Unable to open the selected backup file</string>
+    <string name="settings_local_import_empty_error">The selected backup file is empty</string>
     <string name="settings_section_local_backup">Local Export &amp; Restore</string>
     <string name="settings_local_backup_desc">You can export your entire app database (weigh-in history, fasts, water glasses, plans) to a JSON file or import it.</string>
     <string name="settings_local_export">Export and Share</string>
@@ -294,8 +301,11 @@
     <string name="settings_update_check_now">Check for Updates Now</string>
     <string name="update_state_checking">Checking for updates...</string>
     <string name="update_state_uptodate">✅ You are using the latest version!</string>
-    <string name="update_state_available_format">🚀 Version %1$s available (%2$s)s!</string>
+    <string name="update_state_available_format">🚀 Version %1$s available (%2$s)!</string>
     <string name="update_state_downloading_format">Downloading: %1$d%%</string>
+    <string name="update_play_store_available_desc">An official update is available on Google Play with new features and improvements.</string>
+    <string name="update_play_store_check_error">Google Play update check failed (%1$s)</string>
+    <string name="update_play_store_flow_failed">Could not complete update via Google Play. Please try again or visit Google Play directly.</string>
     <string name="health_disclaimer_text_full">CiboTimer is a tool dedicated to personal wellness and tracking eating habits. Content, metabolic stage estimates, and AI assistant responses are provided solely for informational and educational purposes and do not in any way replace the advice, diagnosis, or treatment of a qualified physician or healthcare professional. Always consult your doctor before starting fasting regimens or significant dietary changes.</string>
     <string name="settings_footer_version_format">CiboTimer Native App v%1$s (Build %2$d)</string>
     <string name="settings_footer_subtitle">Dark Theme • Blue &amp; Cyan • Real-time Notifications</string>
@@ -332,18 +342,28 @@
 
     <!-- Time Editor Modal Additional -->
     <string name="plan_save_as_title">Save As</string>
+    <string name="plan_save_active_title">Save Changes to Plan</string>
     <string name="plan_save_as_message">Assign a new name to this plan to save it in your custom plans:</string>
+    <string name="plan_save_active_message">You are editing the active plan (%1$s). Changes will be saved to your custom plans and applied immediately to your active fast.</string>
+    <string name="plan_save_active_custom_message">You are editing the active plan \"%1$s\". Changes will be applied directly to your active fast.</string>
     <string name="plan_save_as_name_label">Plan Name</string>
     <string name="plan_save_as_name_placeholder">e.g. 16-8 Custom</string>
     <string name="plan_save_as_desc_label">Description (optional)</string>
     <string name="plan_save_as_desc_placeholder">Custom notes or schedule</string>
     <string name="plan_save_and_activate">Save and Activate</string>
+    <string name="plan_save_and_apply">Save and Apply</string>
+    <string name="plan_save_changes">Save Changes</string>
+    <string name="plan_save_as_new">Save as New Plan</string>
     <string name="plan_save_only">Save Only</string>
     <string name="plan_overwrite">Overwrite</string>
+    <string name="plan_custom_name_format">%1$s Custom</string>
+    <string name="plan_toast_saved_and_activated">Plan \"%1$s\" saved and applied!</string>
+    <string name="plan_toast_saved">Plan \"%1$s\" saved!</string>
     <string name="plan_time_start_label">Start: </string>
     <string name="plan_time_end_label">End: </string>
     <string name="plan_time_bound_anterior">You cannot exceed the previous period (ends at %1$02d:%2$02d)</string>
     <string name="plan_time_bound_posterior">You cannot exceed the next period (starts at %1$02d:%2$02d)</string>
+    <string name="plan_conflict_auto_repaired">Schedule conflict automatically resolved</string>
     <string name="content_desc_edit_start_time">Edit start time</string>
     <string name="content_desc_edit_end_time">Edit end time</string>
 
@@ -444,8 +464,8 @@
     <string name="planner_hours_per_week">%1$d hrs/week</string>
     <string name="planner_edit_day_button">EDIT PLAN (%1$s)</string>
     <string name="planner_days_detail_title">Days of the week detail</string>
-    <string name="planner_day_fasting_detail">Fasting: %1$s - %2$s (%3$dh)</string>
-    <string name="planner_day_eating_detail">Eating: %1$s - %2$s (%3$dh)</string>
+    <string name="planner_day_fasting_detail">Fasting: %1$s - %2$s (%3$s)</string>
+    <string name="planner_day_eating_detail">Eating: %1$s - %2$s (%3$s)</string>
     <string name="content_desc_edit_day">Edit day</string>
     <string name="dialog_delete_plan_active_message">Are you sure you want to permanently delete the plan \"%1$s\"? The default 16-8 Classic plan will be restored automatically.</string>
 
@@ -625,4 +645,32 @@
     <string name="privacy_policy_desc">CiboTimer respects your privacy: 100% offline-first, no ads, no trackers, and all personal data stays strictly on your device.</string>
     <string name="privacy_policy_view_button">View Privacy Policy</string>
     <string name="privacy_policy_url">https://finalbyte1.github.io/cibotimer/privacy.html</string>
+
+    <!-- Additional Localized Action Strings -->
+    <string name="notif_action_stop_fasting">Stop fasting</string>
+    <string name="notif_stage_item_title">Stage %1$d: %2$s (%3$dh elapsed)</string>
+    <string name="plan_editor_scope_period">Period %1$d</string>
+    <string name="plan_editor_prev_period">Previous period</string>
+    <string name="plan_editor_next_period">Next period</string>
+    <string name="week_chart_continues"> ↪ continues</string>
+
+    <!-- Settings Language -->
+    <string name="settings_section_language">Language</string>
+    <string name="settings_language_desc">Choose application display language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_it">Italiano (Italian)</string>
+    <string name="settings_language_en">English</string>
+    <string name="dialog_language_changed_title">Language Changed</string>
+    <string name="dialog_language_changed_message">To fully apply the new language across all screens, timer, and descriptions, restarting the app now is recommended.</string>
+    <string name="dialog_language_restart_now">Restart now</string>
+    <string name="dialog_language_restart_later">Later</string>
+
+    <!-- Timer and Stages Localization -->
+    <string name="timer_label_plan_prefix">Plan: </string>
+    <string name="stage_status_completed">Completed</string>
+    <string name="stage_status_completed_overdue">Completed • Passed by %1$dh</string>
+    <string name="stage_status_ongoing_hours">In progress • %1$dh elapsed</string>
+    <string name="stage_status_ongoing_full">In progress • %1$dh %2$dm elapsed (%3$dh remaining)</string>
+    <string name="stage_status_upcoming_hours">In %1$dh</string>
+    <string name="stage_status_upcoming_next">Next</string>
 </resources>

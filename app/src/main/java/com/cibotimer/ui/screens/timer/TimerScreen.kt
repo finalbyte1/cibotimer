@@ -262,7 +262,7 @@ fun TimerScreen(
         progressFraction = progressFraction,
         startTimeFormatted = startTimeFormatted,
         endTimeFormatted = endTimeFormatted,
-        planName = activePlan.name,
+        planName = activePlan.getLocalizedName(locale),
         planDays = activePlan.days,
         planPeriods = activePlan.periods,
         currentDayOfWeek = currentDayOfWeek,
@@ -352,14 +352,20 @@ fun TimerScreen(
         TimeEditorModal(
             dayPlan = todayPlan,
             plan = activePlan,
+            isActive = true,
             initialDayOfWeek = selectedDayToEdit,
             onSavePlan = { updatedPlan ->
                 repository.updateActivePlan(updatedPlan)
                 android.widget.Toast.makeText(context, context.getString(R.string.planner_plan_saved_toast), android.widget.Toast.LENGTH_SHORT).show()
             },
             onSaveCustomPlan = { newPlan, activate ->
-                repository.saveCustomPlan(newPlan, activate = activate)
-                val msg = if (activate) "Piano \"${newPlan.name}\" salvato e attivato!" else "Piano \"${newPlan.name}\" salvato!"
+                val shouldActivate = if (activePlan.id == newPlan.id || activate) true else activate
+                repository.saveCustomPlan(newPlan, activate = shouldActivate)
+                val msg = if (shouldActivate) {
+                    context.getString(R.string.plan_toast_saved_and_activated, newPlan.name)
+                } else {
+                    context.getString(R.string.plan_toast_saved, newPlan.name)
+                }
                 android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
             },
             onDismiss = {
@@ -1068,10 +1074,11 @@ fun TabletLandscapeTimerContent(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+                    val planPrefix = stringResource(R.string.timer_label_plan_prefix)
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(color = CiboTextSecondary, fontWeight = FontWeight.Normal)) {
-                                append("Piano: ")
+                                append(planPrefix)
                             }
                             withStyle(SpanStyle(color = CiboTextPrimary, fontWeight = FontWeight.SemiBold)) {
                                 append(planName)
@@ -1389,10 +1396,11 @@ fun CompactTimerContent(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+                    val planPrefix = stringResource(R.string.timer_label_plan_prefix)
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(color = CiboTextSecondary, fontWeight = FontWeight.Normal)) {
-                                append("Piano: ")
+                                append(planPrefix)
                             }
                             withStyle(SpanStyle(color = CiboTextPrimary, fontWeight = FontWeight.SemiBold)) {
                                 append(planName)

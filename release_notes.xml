@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<releases>
+    <release>
+        <recentChanges lang="it-IT">
+• Controllo notifiche per fasi metaboliche e preferenza lingua istantanea.
+• Traduzioni complete per piani, consigli coach e fasi metaboliche con riavvio guidato.
+• Ottimizzazioni per Android 15 / API 36 e riorganizzazione impostazioni.
+        </recentChanges>
+        <recentChanges lang="en-US">
+• Granular metabolic stage notification toggle and instant in-app language selection.
+• Complete translations for plans, coach articles, and fasting stages with restart prompt.
+• Android 15 / API 36 optimizations and refined settings layout.
+        </recentChanges>
+    </release>
+</releases>

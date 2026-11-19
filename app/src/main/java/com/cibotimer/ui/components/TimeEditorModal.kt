@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
@@ -59,6 +60,8 @@ import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.domain.PlanShiftEngine
 import com.cibotimer.domain.TimelineSegment
+import com.cibotimer.domain.WeekSpanModel
+import com.cibotimer.domain.toSpan
 import com.cibotimer.ui.theme.*
 
 private const val MIN_DURATION_MINUTES = 60 // 1 ora minimo
@@ -76,6 +79,7 @@ private const val MAX_DURATION_MINUTES = 24 * 60 // 24 ore massimo
 fun TimeEditorModal(
     dayPlan: DayPlan,
     plan: FastingPlan? = null,
+    isActive: Boolean = true,
     initialDayOfWeek: Int? = null,
     onSavePlan: ((FastingPlan) -> Unit)? = null,
     onSaveCustomPlan: ((FastingPlan, Boolean) -> Unit)? = null,
@@ -84,6 +88,7 @@ fun TimeEditorModal(
     onAdjustDuration: (Int) -> Unit = {},
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
     val originalPlan = remember(plan, dayPlan) {
         plan ?: FastingPlan(
             id = "custom_plan",
@@ -94,13 +99,30 @@ fun TimeEditorModal(
         )
     }
 
-    var workingPlan by remember(originalPlan) { mutableStateOf(originalPlan) }
+    val repairedPlan = remember(originalPlan) { PlanShiftEngine.repairPlan(originalPlan) }
+    val needsRepair = repairedPlan != originalPlan
+    var workingPlan by remember(originalPlan) { mutableStateOf(repairedPlan) }
     val effectivePeriods = workingPlan.getEffectivePeriods()
+
+    LaunchedEffect(needsRepair) {
+        if (needsRepair) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.plan_conflict_auto_repaired),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     // Indice periodo selezionato: default = 1 (oppure matching del giorno iniziale)
     var selectedPeriodNumber by remember {
         val initialMatch = if (initialDayOfWeek != null) {
-            effectivePeriods.find { it.startDayOfWeek == initialDayOfWeek }?.periodNumber ?: 1
+            val d = ((initialDayOfWeek - 1) % 7 + 7) % 7
+            val spansWithPeriods = effectivePeriods.map { Pair(it, it.toSpan()) }
+            val starting = spansWithPeriods.filter { (_, s) -> ((s.start / 1440) % 7 + 7) % 7 == d }.map { it.first }
+            starting.firstOrNull()?.periodNumber
+                ?: spansWithPeriods.filter { (_, s) -> WeekSpanModel.fastsInDay(listOf(s), d).isNotEmpty() }.map { it.first }.firstOrNull()?.periodNumber
+                ?: 1
         } else {
             1
         }
@@ -113,7 +135,7 @@ fun TimeEditorModal(
         if (originalPlan.isCustom) {
             originalPlan.name
         } else {
-            "${originalPlan.name} Personalizzato"
+            context.getString(R.string.plan_custom_name_format, originalPlan.name)
         }
     }
     var saveAsName by remember(workingPlan, originalPlan) { mutableStateOf(defaultSaveAsName) }
@@ -211,7 +233,11 @@ fun TimeEditorModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.plan_save_as_title),
+                        text = if (isActive) {
+                            stringResource(R.string.plan_save_active_title)
+                        } else {
+                            stringResource(R.string.plan_save_as_title)
+                        },
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = CiboTextPrimary
@@ -223,8 +249,19 @@ fun TimeEditorModal(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    val messageText = when {
+                        isActive && originalPlan.isCustom -> {
+                            stringResource(R.string.plan_save_active_custom_message, originalPlan.name)
+                        }
+                        isActive -> {
+                            stringResource(R.string.plan_save_active_message, originalPlan.name)
+                        }
+                        else -> {
+                            stringResource(R.string.plan_save_as_message)
+                        }
+                    }
                     Text(
-                        text = stringResource(R.string.plan_save_as_message),
+                        text = messageText,
                         fontSize = 13.sp,
                         color = CiboTextSecondary,
                         lineHeight = 18.sp
@@ -268,43 +305,142 @@ fun TimeEditorModal(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            val uniqueId = "custom-${java.util.UUID.randomUUID().toString().take(8)}"
-                            val finalName = saveAsName.trim().ifBlank { defaultSaveAsName }
-                            val newPlan = workingPlan.copy(
-                                id = uniqueId,
-                                name = finalName,
-                                description = saveAsDescription.trim(),
-                                category = PlanCategory.CUSTOM,
-                                isCustom = true
-                            )
-                            if (onSaveCustomPlan != null) {
-                                onSaveCustomPlan(newPlan, true)
-                            } else {
-                                onSavePlan?.invoke(newPlan)
+                    if (isActive) {
+                        if (originalPlan.isCustom) {
+                            // 1. Piano personalizzato già attivo: "Salva modifiche" in primo piano
+                            Button(
+                                onClick = {
+                                    val finalName = saveAsName.trim().ifBlank { originalPlan.name }
+                                    val updated = workingPlan.copy(
+                                        id = originalPlan.id,
+                                        name = finalName,
+                                        description = saveAsDescription.trim(),
+                                        category = PlanCategory.CUSTOM,
+                                        isCustom = true
+                                    )
+                                    if (onSaveCustomPlan != null) {
+                                        onSaveCustomPlan(updated, true)
+                                    } else {
+                                        onSavePlan?.invoke(updated)
+                                    }
+                                    showSaveAsDialog = false
+                                    onDismiss()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = CiboAccent,
+                                    contentColor = CiboButtonDarkText
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(44.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.plan_save_changes),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
                             }
-                            showSaveAsDialog = false
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CiboAccent,
-                            contentColor = CiboButtonDarkText
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth().height(44.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.plan_save_and_activate),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                    }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                            // 2. Opzione per salvare come NUOVO piano personalizzato attivo
+                            OutlinedButton(
+                                onClick = {
+                                    val uniqueId = "custom-${java.util.UUID.randomUUID().toString().take(8)}"
+                                    val finalName = saveAsName.trim().ifBlank { "${originalPlan.name} Copia" }
+                                    val newPlan = workingPlan.copy(
+                                        id = uniqueId,
+                                        name = finalName,
+                                        description = saveAsDescription.trim(),
+                                        category = PlanCategory.CUSTOM,
+                                        isCustom = true
+                                    )
+                                    if (onSaveCustomPlan != null) {
+                                        onSaveCustomPlan(newPlan, true)
+                                    } else {
+                                        onSavePlan?.invoke(newPlan)
+                                    }
+                                    showSaveAsDialog = false
+                                    onDismiss()
+                                },
+                                border = BorderStroke(1.dp, CiboAccent),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(40.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.plan_save_as_new),
+                                    color = CiboAccent,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        } else {
+                            // Piano predefinito attivo (es. 16-8): salva come piano personalizzato e applica subito
+                            Button(
+                                onClick = {
+                                    val uniqueId = "custom-${java.util.UUID.randomUUID().toString().take(8)}"
+                                    val finalName = saveAsName.trim().ifBlank { defaultSaveAsName }
+                                    val newPlan = workingPlan.copy(
+                                        id = uniqueId,
+                                        name = finalName,
+                                        description = saveAsDescription.trim(),
+                                        category = PlanCategory.CUSTOM,
+                                        isCustom = true
+                                    )
+                                    if (onSaveCustomPlan != null) {
+                                        onSaveCustomPlan(newPlan, true)
+                                    } else {
+                                        onSavePlan?.invoke(newPlan)
+                                    }
+                                    showSaveAsDialog = false
+                                    onDismiss()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = CiboAccent,
+                                    contentColor = CiboButtonDarkText
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(44.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.plan_save_and_apply),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    } else {
+                        // Piano NON attivo: pulsante per salvare e attivare, oppure salvare solo
+                        Button(
+                            onClick = {
+                                val uniqueId = "custom-${java.util.UUID.randomUUID().toString().take(8)}"
+                                val finalName = saveAsName.trim().ifBlank { defaultSaveAsName }
+                                val newPlan = workingPlan.copy(
+                                    id = uniqueId,
+                                    name = finalName,
+                                    description = saveAsDescription.trim(),
+                                    category = PlanCategory.CUSTOM,
+                                    isCustom = true
+                                )
+                                if (onSaveCustomPlan != null) {
+                                    onSaveCustomPlan(newPlan, true)
+                                } else {
+                                    onSavePlan?.invoke(newPlan)
+                                }
+                                showSaveAsDialog = false
+                                onDismiss()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CiboAccent,
+                                contentColor = CiboButtonDarkText
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth().height(44.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.plan_save_and_activate),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+
                         OutlinedButton(
                             onClick = {
                                 val uniqueId = "custom-${java.util.UUID.randomUUID().toString().take(8)}"
@@ -326,7 +462,7 @@ fun TimeEditorModal(
                             },
                             border = BorderStroke(1.dp, CiboAccent),
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f).height(40.dp)
+                            modifier = Modifier.fillMaxWidth().height(40.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.plan_save_only),
@@ -350,7 +486,7 @@ fun TimeEditorModal(
                                     showSaveAsDialog = false
                                     onDismiss()
                                 },
-                                modifier = Modifier.weight(1f).height(40.dp)
+                                modifier = Modifier.fillMaxWidth().height(40.dp)
                             ) {
                                 Text(
                                     text = stringResource(R.string.plan_overwrite),
@@ -420,7 +556,7 @@ fun TimeEditorModal(
                         }
                     ) {
                         Text(
-                            text = stringResource(R.string.plan_save_as_title),
+                            text = stringResource(R.string.plan_editor_save),
                             color = CiboAccent,
                             fontWeight = FontWeight.Bold
                         )
@@ -504,35 +640,66 @@ fun TimeEditorSheetContent(
                 modifier = Modifier.height(36.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
+                    imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = CiboButtonDarkText,
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = stringResource(R.string.plan_save_as_title),
-                    fontSize = 12.sp,
+                    text = stringResource(R.string.plan_editor_save),
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = CiboButtonDarkText
                 )
             }
         }
 
+        val selectedDayForChart = remember(selectedPeriodNumber, previewPeriod) {
+            if (selectedPeriodNumber == null) {
+                -1 // Nessun giorno evidenziato quando lo scope è "Tutti i periodi"
+            } else {
+                previewPeriod.startDayOfWeek
+            }
+        }
+
         // 2. PIANO SETTIMANALE A BARRE ORIZZONTALI (Lun..Dom) 0-24h con diciture orari sotto (es: Lun 20:00 → Mar 12:00)
         WeekBarChart(
             days = workingPlan.days,
-            selectedDayOfWeek = selectedPeriodNumber ?: 1,
+            selectedDayOfWeek = selectedDayForChart,
             periods = effectivePeriods,
             onDaySelected = { dayIndex ->
-                val matching = effectivePeriods.find { it.startDayOfWeek == dayIndex }
-                    ?: effectivePeriods.find { it.endDayOfWeek == dayIndex }
-                    ?: effectivePeriods.firstOrNull()
-                if (matching != null) {
-                    if (selectedPeriodNumber == matching.periodNumber) {
-                        onSelectPeriod(null) // Tocco di nuovo sul selezionato = Tutti i periodi
+                val d = dayIndex - 1
+                val spansWithPeriods = effectivePeriods.map { Pair(it, it.toSpan()) }
+                val dayPeriods = spansWithPeriods.filter { (_, span) ->
+                    ((span.start / 1440) % 7 + 7) % 7 == d
+                }.map { it.first }
+
+                if (dayPeriods.isNotEmpty()) {
+                    val currentIndex = dayPeriods.indexOfFirst { it.periodNumber == selectedPeriodNumber }
+                    if (currentIndex != -1) {
+                        if (currentIndex + 1 < dayPeriods.size) {
+                            onSelectPeriod(dayPeriods[currentIndex + 1].periodNumber)
+                        } else {
+                            onSelectPeriod(null) // Tocco di nuovo sull'ultimo periodo = Tutti i periodi
+                        }
                     } else {
-                        onSelectPeriod(matching.periodNumber)
+                        onSelectPeriod(dayPeriods.first().periodNumber)
+                    }
+                } else {
+                    val traversing = spansWithPeriods.filter { (_, span) ->
+                        WeekSpanModel.fastsInDay(listOf(span), d).isNotEmpty()
+                    }.map { it.first }
+
+                    if (traversing.isNotEmpty()) {
+                        val fallback = traversing.first()
+                        if (selectedPeriodNumber == fallback.periodNumber) {
+                            onSelectPeriod(null)
+                        } else {
+                            onSelectPeriod(fallback.periodNumber)
+                        }
+                    } else {
+                        onSelectPeriod(null)
                     }
                 }
             },
@@ -550,6 +717,7 @@ fun TimeEditorSheetContent(
 
         // 3. SCHEDA INFERIORE CONTROLLI & STEPPERS (ancorata sotto, perfettamente visibile)
         BottomEditorControlCard(
+            workingPlan = workingPlan,
             previewPeriod = previewPeriod,
             selectedPeriodNumber = selectedPeriodNumber,
             totalPeriodsCount = effectivePeriods.size,
@@ -570,6 +738,7 @@ fun TimeEditorSheetContent(
  */
 @Composable
 fun BottomEditorControlCard(
+    workingPlan: FastingPlan = FastingPlanTemplates.PLAN_16_8,
     previewPeriod: FastingPeriod,
     selectedPeriodNumber: Int?,
     totalPeriodsCount: Int,
@@ -582,28 +751,22 @@ fun BottomEditorControlCard(
 ) {
     val context = LocalContext.current
 
-    val timePickerDialogStart = remember(previewPeriod, periodBounds) {
+    val timePickerDialogStart = remember(previewPeriod, periodBounds, workingPlan, selectedPeriodNumber) {
         TimePickerDialog(
             context,
             { _, hour, minute ->
-                var targetH = hour
-                var targetM = minute
-                if (selectedPeriodNumber != null && periodBounds.hasAnterior && periodBounds.anteriorEndHour != null && periodBounds.anteriorEndMinute != null) {
-                    if (previewPeriod.startDayOfWeek == periodBounds.anteriorEndDayOfWeek) {
-                        val minTotal = periodBounds.anteriorEndHour * 60 + periodBounds.anteriorEndMinute
-                        val chosenTotal = hour * 60 + minute
-                        if (chosenTotal < minTotal) {
-                            targetH = periodBounds.anteriorEndHour
-                            targetM = periodBounds.anteriorEndMinute
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.plan_time_bound_anterior, targetH, targetM),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                if (selectedPeriodNumber != null && PlanShiftEngine.checkStartTimeClamped(workingPlan, selectedPeriodNumber, hour, minute)) {
+                    Toast.makeText(
+                        context,
+                        context.getString(
+                            R.string.plan_time_bound_anterior,
+                            periodBounds.anteriorEndHour ?: 0,
+                            periodBounds.anteriorEndMinute ?: 0
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                onUpdateStartOrEndTime(targetH, targetM, true)
+                onUpdateStartOrEndTime(hour, minute, true)
             },
             previewPeriod.startHour,
             previewPeriod.startMinute,
@@ -611,28 +774,22 @@ fun BottomEditorControlCard(
         )
     }
 
-    val timePickerDialogEnd = remember(previewPeriod, periodBounds) {
+    val timePickerDialogEnd = remember(previewPeriod, periodBounds, workingPlan, selectedPeriodNumber) {
         TimePickerDialog(
             context,
             { _, hour, minute ->
-                var targetH = hour
-                var targetM = minute
-                if (selectedPeriodNumber != null && periodBounds.hasNext && periodBounds.nextStartHour != null && periodBounds.nextStartMinute != null) {
-                    if (previewPeriod.endDayOfWeek == periodBounds.nextStartDayOfWeek) {
-                        val maxTotal = periodBounds.nextStartHour * 60 + periodBounds.nextStartMinute
-                        val chosenTotal = hour * 60 + minute
-                        if (chosenTotal > maxTotal) {
-                            targetH = periodBounds.nextStartHour
-                            targetM = periodBounds.nextStartMinute
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.plan_time_bound_posterior, targetH, targetM),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                if (selectedPeriodNumber != null && PlanShiftEngine.checkEndTimeClamped(workingPlan, selectedPeriodNumber, hour, minute)) {
+                    Toast.makeText(
+                        context,
+                        context.getString(
+                            R.string.plan_time_bound_posterior,
+                            periodBounds.nextStartHour ?: 0,
+                            periodBounds.nextStartMinute ?: 0
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                onUpdateStartOrEndTime(targetH, targetM, false)
+                onUpdateStartOrEndTime(hour, minute, false)
             },
             previewPeriod.endHour,
             previewPeriod.endMinute,
@@ -674,9 +831,15 @@ fun BottomEditorControlCard(
 
             // Riga Inizio & Fine con matita (cliccabili)
             val locale = LocalConfiguration.current.locales[0]
-            val startDayStr = DateTimeFormatters.formatShortDay(previewPeriod.startDayOfWeek, locale, capitalize = true)
+            val span = previewPeriod.toSpan()
+            val startDay0 = (((span.start / 1440) % 7 + 7) % 7)
+            val startDayIndex = startDay0 + 1
+            val startDayStr = DateTimeFormatters.formatShortDay(startDayIndex, locale, capitalize = true)
             val startTimeStr = DateTimeFormatters.formatTime(previewPeriod.startHour, previewPeriod.startMinute, context, locale)
-            val endDayStr = DateTimeFormatters.formatShortDay(previewPeriod.endDayOfWeek, locale, capitalize = true)
+
+            val endDay0 = (((span.end / 1440) % 7 + 7) % 7)
+            val endDayIndex = endDay0 + 1
+            val endDayStr = DateTimeFormatters.formatShortDay(endDayIndex, locale, capitalize = true)
             val endTimeStr = DateTimeFormatters.formatTime(previewPeriod.endHour, previewPeriod.endMinute, context, locale)
 
             val anteriorEndDayStr = periodBounds.anteriorEndDayOfWeek?.let { DateTimeFormatters.formatShortDay(it, locale, capitalize = true) } ?: (periodBounds.anteriorEndDayShort ?: "")
@@ -794,7 +957,7 @@ fun BottomEditorControlCard(
                     )
 
                     // Stepper 1: Scope (Tutti / Periodo X)
-                    val scopeLabel = if (selectedPeriodNumber == null) "Tutti i" else "Periodo ${previewPeriod.periodNumber}"
+                    val scopeLabel = if (selectedPeriodNumber == null) stringResource(R.string.plan_editor_scope_all) else stringResource(R.string.plan_editor_scope_period, previewPeriod.periodNumber)
                     PlanStepperControl(
                         label = scopeLabel,
                         onMinus = {
@@ -815,8 +978,8 @@ fun BottomEditorControlCard(
                                 onSelectPeriod(selectedPeriodNumber + 1)
                             }
                         },
-                        contentDescriptionMinus = "Periodo precedente",
-                        contentDescriptionPlus = "Periodo successivo",
+                        contentDescriptionMinus = stringResource(R.string.plan_editor_prev_period),
+                        contentDescriptionPlus = stringResource(R.string.plan_editor_next_period),
                         modifier = Modifier.fillMaxWidth()
                     )
 

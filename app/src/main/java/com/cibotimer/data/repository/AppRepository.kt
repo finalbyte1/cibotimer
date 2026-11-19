@@ -3,6 +3,7 @@
 import android.app.backup.BackupManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.content.FileProvider
 import com.cibotimer.R
 import com.cibotimer.data.models.*
@@ -13,6 +14,7 @@ import com.cibotimer.domain.FastingCalculator
 import com.cibotimer.domain.FastingPlanTemplates
 import com.cibotimer.domain.PlanShiftEngine
 import com.cibotimer.notifications.FastingForegroundService
+import com.cibotimer.notifications.FastingPersistence
 import com.cibotimer.notifications.NotificationHelper
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -175,24 +178,16 @@ class AppRepository(
 
         if (fastingState == FastingState.FASTING) {
             NotificationHelper.cancelEatingAlarms(context)
-            NotificationHelper.scheduleFastingEndAlarm(context, newSession.plannedEndTimeEpochMillis, newSession.planName)
-            for (stage in FastingCalculator.STAGES) {
-                if (stage.startMinutes > 0 && stage.startMinutes < newSession.targetDurationMinutes) {
-                    val triggerMillis = newSession.startTimeEpochMillis + (stage.startMinutes * 60_000L)
-                    val hoursPassed = stage.startMinutes / 60
-                    NotificationHelper.scheduleStageAlarm(
-                        context,
-                        triggerMillis,
-                        "Fase ${stage.stageIndex}: ${stage.title} (${hoursPassed}h passate)",
-                        stage.subtitle,
-                        NotificationHelper.REQUEST_CODE_STAGE_BASE + stage.stageIndex
-                    )
-                }
+            if (_userProfile.value.notificationsFastingEnabled) {
+                NotificationHelper.scheduleFastingEndAlarm(context, newSession.plannedEndTimeEpochMillis, newSession.planName)
             }
+            scheduleStageAlarmsForSession(newSession)
         } else {
             NotificationHelper.cancelFastingAlarms(context)
-            NotificationHelper.scheduleEatingWindowEndAlarm(context, newSession.plannedEndTimeEpochMillis, plan.name)
-            NotificationHelper.scheduleEatingWindowPreAlarm(context, newSession.plannedEndTimeEpochMillis - 15 * 60_000L, plan.name)
+            if (_userProfile.value.notificationsFastingEnabled) {
+                NotificationHelper.scheduleEatingWindowEndAlarm(context, newSession.plannedEndTimeEpochMillis, plan.name)
+                NotificationHelper.scheduleEatingWindowPreAlarm(context, newSession.plannedEndTimeEpochMillis - 15 * 60_000L, plan.name)
+            }
         }
 
         saveStateToDisk()
@@ -231,20 +226,10 @@ class AppRepository(
         )
 
         NotificationHelper.cancelEatingAlarms(context)
-        NotificationHelper.scheduleFastingEndAlarm(context, newSession.plannedEndTimeEpochMillis, newSession.planName)
-        for (stage in FastingCalculator.STAGES) {
-            if (stage.startMinutes > 0 && stage.startMinutes < newSession.targetDurationMinutes) {
-                val triggerMillis = newSession.startTimeEpochMillis + (stage.startMinutes * 60_000L)
-                val hoursPassed = stage.startMinutes / 60
-                NotificationHelper.scheduleStageAlarm(
-                    context,
-                    triggerMillis,
-                    "Fase ${stage.stageIndex}: ${stage.title} (${hoursPassed}h passate)",
-                    stage.subtitle,
-                    NotificationHelper.REQUEST_CODE_STAGE_BASE + stage.stageIndex
-                )
-            }
+        if (_userProfile.value.notificationsFastingEnabled) {
+            NotificationHelper.scheduleFastingEndAlarm(context, newSession.plannedEndTimeEpochMillis, newSession.planName)
         }
+        scheduleStageAlarmsForSession(newSession)
 
         saveStateToDisk()
         triggerAutoBackupIfEnabled()
@@ -256,11 +241,18 @@ class AppRepository(
     fun transitionToEating(now: Long = System.currentTimeMillis()) {
         val session = _currentSession.value
         val plan = _activePlan.value
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
+
+        // Se l'orario reale attuale è già dentro una nuova finestra di digiuno programmata, reindirizza al digiuno
+        if (scheduled.isNowInsideFasting) {
+            transitionToFasting(now)
+            return
+        }
 
         // 1. Archivia la sessione di digiuno terminata
-        if (session != null && session.state == FastingState.FASTING) {
+        if (session != null && session.state == FastingState.FASTING && session.startTimeEpochMillis <= now) {
             val completedSession = session.copy(
-                actualEndTimeEpochMillis = now,
+                actualEndTimeEpochMillis = minOf(now, session.plannedEndTimeEpochMillis),
                 state = FastingState.FASTING
             )
             _sessionsHistory.value = listOf(completedSession) + _sessionsHistory.value
@@ -268,13 +260,12 @@ class AppRepository(
         }
 
         // 2. Calcola la finestra di alimentazione
-        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
-        val eatingStart = if (session != null && session.plannedEndTimeEpochMillis <= now) {
+        val eatingStart = if (session != null && session.plannedEndTimeEpochMillis <= now && session.plannedEndTimeEpochMillis >= scheduled.eatingWindowStartMillis) {
             session.plannedEndTimeEpochMillis
         } else {
             scheduled.eatingWindowStartMillis
         }
-        val eatingEnd = scheduled.periodStartEpochMillis
+        val eatingEnd = scheduled.eatingWindowEndMillis
         val diffSec = maxOf(60L, (eatingEnd - eatingStart) / 1000L)
         val durationMinutes = (diffSec / 60L).toInt()
 
@@ -325,6 +316,12 @@ class AppRepository(
         val plan = _activePlan.value
         val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
 
+        // Se l'orario reale attuale non è ancora dentro il digiuno programmato, reindirizza alla finestra pasto
+        if (!scheduled.isNowInsideFasting) {
+            transitionToEating(now)
+            return
+        }
+
         val fastingStart = scheduled.periodStartEpochMillis
         val fastingEnd = scheduled.periodEndEpochMillis
         val durationMinutes = (scheduled.durationSeconds / 60L).toInt()
@@ -362,37 +359,35 @@ class AppRepository(
             isEating = false
         )
 
-        NotificationHelper.scheduleFastingEndAlarm(context, fastingEnd, plan.name)
-
-        for (stage in FastingCalculator.STAGES) {
-            if (stage.startMinutes > 0 && stage.startMinutes < fastingSession.targetDurationMinutes) {
-                val triggerMillis = fastingSession.startTimeEpochMillis + (stage.startMinutes * 60_000L)
-                val hoursPassed = stage.startMinutes / 60
-                NotificationHelper.scheduleStageAlarm(
-                    context,
-                    triggerMillis,
-                    "Fase ${stage.stageIndex}: ${stage.title} (${hoursPassed}h passate)",
-                    stage.subtitle,
-                    NotificationHelper.REQUEST_CODE_STAGE_BASE + stage.stageIndex
-                )
-            }
+        if (_userProfile.value.notificationsFastingEnabled) {
+            NotificationHelper.scheduleFastingEndAlarm(context, fastingEnd, plan.name)
         }
+        scheduleStageAlarmsForSession(fastingSession)
 
         saveStateToDisk()
         triggerAutoBackupIfEnabled()
     }
 
     /**
-     * Verifica e avanza automaticamente il ciclo del timer se la finestra corrente è giunta al termine.
+     * Verifica e avanza automaticamente il ciclo del timer se la finestra corrente è giunta al termine,
+     * oppure corregge istantaneamente qualsiasi disallineamento dello stato rispetto alla realtà wall-clock
+     * (es. sessione creata erroneamente nel futuro o mancata transizione dopo standby prolungato).
      * Garantisce che il timer non si fermi mai e sia sempre allineato al minuto esatto.
      */
     fun syncOrAdvanceSession(now: Long = System.currentTimeMillis()) {
         val session = _currentSession.value ?: return
-        if (now >= session.plannedEndTimeEpochMillis) {
-            if (session.state == FastingState.FASTING) {
-                transitionToEating(now)
-            } else if (session.state == FastingState.EATING) {
+        val plan = _activePlan.value
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
+
+        val isExpired = now >= session.plannedEndTimeEpochMillis
+        val isFutureStart = session.startTimeEpochMillis > now
+        val isMismatchedFuture = !scheduled.isNowInsideFasting && session.state == FastingState.FASTING && session.startTimeEpochMillis >= scheduled.periodStartEpochMillis
+
+        if (isExpired || isFutureStart || isMismatchedFuture) {
+            if (scheduled.isNowInsideFasting) {
                 transitionToFasting(now)
+            } else {
+                transitionToEating(now)
             }
         }
     }
@@ -455,8 +450,9 @@ class AppRepository(
     // ==========================================
 
     fun setActivePlan(plan: FastingPlan) {
-        _activePlan.value = plan
-        syncActiveSessionWithPlan(plan)
+        val repaired = PlanShiftEngine.repairPlan(plan)
+        _activePlan.value = repaired
+        syncActiveSessionWithPlan(repaired)
         saveStateToDisk()
         triggerAutoBackupIfEnabled()
     }
@@ -487,23 +483,28 @@ class AppRepository(
     }
 
     fun updateActivePlan(plan: FastingPlan) {
-        _activePlan.value = plan
-        if (plan.isCustom || _customPlans.value.any { it.id == plan.id }) {
-            _customPlans.value = _customPlans.value.map {
-                if (it.id == plan.id) plan else it
+        val repaired = PlanShiftEngine.repairPlan(plan)
+        _activePlan.value = repaired
+        if (repaired.isCustom || _customPlans.value.any { it.id == repaired.id }) {
+            val exists = _customPlans.value.any { it.id == repaired.id }
+            _customPlans.value = if (exists) {
+                _customPlans.value.map { if (it.id == repaired.id) repaired else it }
+            } else {
+                _customPlans.value + repaired
             }
         }
-        syncActiveSessionWithPlan(plan)
+        syncActiveSessionWithPlan(repaired)
         saveStateToDisk()
         triggerAutoBackupIfEnabled()
     }
 
     fun saveCustomPlan(plan: FastingPlan, activate: Boolean = true) {
-        val list = _customPlans.value.filter { it.id != plan.id } + plan
+        val repaired = PlanShiftEngine.repairPlan(plan)
+        val list = _customPlans.value.filter { it.id != repaired.id } + repaired
         _customPlans.value = list
-        if (activate || _activePlan.value.id == plan.id) {
-            _activePlan.value = plan
-            syncActiveSessionWithPlan(plan)
+        if (activate || _activePlan.value.id == repaired.id) {
+            _activePlan.value = repaired
+            syncActiveSessionWithPlan(repaired)
         }
         saveStateToDisk()
         triggerAutoBackupIfEnabled()
@@ -570,43 +571,62 @@ class AppRepository(
     }
 
     private fun syncActiveSessionWithPlan(plan: FastingPlan) {
-        val session = _currentSession.value
-        if (session != null) {
-            val now = System.currentTimeMillis()
-            val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
-            if (session.state == FastingState.FASTING) {
-                val newStart = scheduled.periodStartEpochMillis
-                val newEnd = scheduled.periodEndEpochMillis
-                val newDuration = (scheduled.durationSeconds / 60L).toInt()
+        val session = _currentSession.value ?: return
+        val now = System.currentTimeMillis()
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
 
-                val updatedSession = session.copy(
-                    planId = plan.id,
-                    planName = plan.name,
-                    startTimeEpochMillis = newStart,
-                    plannedEndTimeEpochMillis = newEnd,
-                    targetDurationMinutes = newDuration
-                )
-                _currentSession.value = updatedSession
-                FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = false)
-                NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
-                saveStateToDisk()
-            } else if (session.state == FastingState.EATING) {
-                val newStart = scheduled.eatingWindowStartMillis
-                val newEnd = scheduled.eatingWindowEndMillis
-                val newDuration = (scheduled.eatingDurationSeconds / 60L).toInt()
+        if (scheduled.isNowInsideFasting) {
+            val newStart = scheduled.periodStartEpochMillis
+            val newEnd = scheduled.periodEndEpochMillis
+            val newDuration = (scheduled.durationSeconds / 60L).toInt()
 
-                val updatedSession = session.copy(
-                    planId = plan.id,
-                    planName = plan.name,
-                    startTimeEpochMillis = newStart,
-                    plannedEndTimeEpochMillis = newEnd,
-                    targetDurationMinutes = newDuration
-                )
-                _currentSession.value = updatedSession
-                FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = true)
-                NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
-                saveStateToDisk()
+            val updatedSession = session.copy(
+                planId = plan.id,
+                planName = plan.name,
+                startTimeEpochMillis = newStart,
+                plannedEndTimeEpochMillis = newEnd,
+                targetDurationMinutes = newDuration,
+                state = FastingState.FASTING
+            )
+            _currentSession.value = updatedSession
+            FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = false)
+            NotificationHelper.cancelEatingAlarms(context)
+            NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
+            if (_userProfile.value.notificationsFastingEnabled) {
+                NotificationHelper.scheduleFastingEndAlarm(context, newEnd, plan.name)
             }
+            scheduleStageAlarmsForSession(updatedSession)
+            saveStateToDisk()
+        } else {
+            // Se la sessione precedente era un digiuno attivo valido, salvalo nello storico
+            if (session.state == FastingState.FASTING && session.startTimeEpochMillis <= now) {
+                val completedSession = session.copy(
+                    actualEndTimeEpochMillis = now,
+                    state = FastingState.FASTING
+                )
+                _sessionsHistory.value = listOf(completedSession) + _sessionsHistory.value
+                evaluateTrophies()
+            }
+
+            val newStart = scheduled.eatingWindowStartMillis
+            val newEnd = scheduled.eatingWindowEndMillis
+            val newDuration = (scheduled.eatingDurationSeconds / 60L).toInt()
+
+            val updatedSession = session.copy(
+                planId = plan.id,
+                planName = plan.name,
+                startTimeEpochMillis = newStart,
+                plannedEndTimeEpochMillis = newEnd,
+                targetDurationMinutes = newDuration,
+                state = FastingState.EATING
+            )
+            _currentSession.value = updatedSession
+            FastingForegroundService.start(context, newStart, newEnd, plan.name, isEating = true)
+            NotificationHelper.cancelFastingAlarms(context)
+            NotificationHelper.rescheduleAlarmsWithNewPlanName(context, updatedSession, plan.name)
+            NotificationHelper.scheduleEatingWindowEndAlarm(context, newEnd, plan.name)
+            NotificationHelper.scheduleEatingWindowPreAlarm(context, newEnd - 15 * 60_000L, plan.name)
+            saveStateToDisk()
         }
     }
 
@@ -738,8 +758,90 @@ class AppRepository(
     // USER PROFILE & SETTINGS
     // ==========================================
 
+    fun scheduleStageAlarmsForSession(session: FastingSession) {
+        if (!_userProfile.value.notificationsStagesEnabled) return
+        if (session.state != FastingState.FASTING) return
+        val locale = com.cibotimer.util.AppLanguageManager.getEffectiveLocale(context)
+        for (stage in FastingCalculator.STAGES) {
+            if (stage.startMinutes > 0 && stage.startMinutes < session.targetDurationMinutes) {
+                val triggerMillis = session.startTimeEpochMillis + (stage.startMinutes * 60_000L)
+                val hoursPassed = stage.startMinutes / 60
+                val localizedTitle = stage.getLocalizedTitle(locale)
+                val localizedDesc = stage.getLocalizedSubtitle(locale)
+                val title = if (locale.language == "it") {
+                    "Fase ${stage.stageIndex}: $localizedTitle (${hoursPassed}h passate)"
+                } else {
+                    "Stage ${stage.stageIndex}: $localizedTitle (${hoursPassed}h elapsed)"
+                }
+                NotificationHelper.scheduleStageAlarm(
+                    context,
+                    triggerMillis,
+                    title,
+                    localizedDesc,
+                    NotificationHelper.REQUEST_CODE_STAGE_BASE + stage.stageIndex
+                )
+            }
+        }
+    }
+
     fun updateUserProfile(profile: UserProfile) {
+        val oldPersistent = _userProfile.value.notificationsPersistentEnabled
+        val oldStages = _userProfile.value.notificationsStagesEnabled
+        val oldFasting = _userProfile.value.notificationsFastingEnabled
+        val oldLanguage = _userProfile.value.appLanguage
+
         _userProfile.value = profile
+        FastingPersistence.setPersistentNotificationEnabled(context, profile.notificationsPersistentEnabled)
+
+        if (oldPersistent != profile.notificationsPersistentEnabled) {
+            val session = _currentSession.value
+            if (profile.notificationsPersistentEnabled) {
+                if (session != null) {
+                    FastingForegroundService.start(
+                        context = context,
+                        startTime = session.startTimeEpochMillis,
+                        plannedEndTime = session.plannedEndTimeEpochMillis,
+                        planName = session.planName,
+                        isEating = (session.state == FastingState.EATING)
+                    )
+                }
+            } else {
+                FastingForegroundService.stop(context)
+            }
+        }
+
+        if (oldStages != profile.notificationsStagesEnabled) {
+            if (!profile.notificationsStagesEnabled) {
+                NotificationHelper.cancelStageAlarms(context)
+            } else {
+                val session = _currentSession.value
+                if (session != null && session.state == FastingState.FASTING) {
+                    scheduleStageAlarmsForSession(session)
+                }
+            }
+        }
+
+        if (oldFasting != profile.notificationsFastingEnabled) {
+            if (!profile.notificationsFastingEnabled) {
+                NotificationHelper.cancelFastingAlarms(context)
+                NotificationHelper.cancelEatingAlarms(context)
+            } else {
+                val session = _currentSession.value
+                if (session != null) {
+                    if (session.state == FastingState.FASTING) {
+                        NotificationHelper.scheduleFastingEndAlarm(context, session.plannedEndTimeEpochMillis, session.planName)
+                    } else if (session.state == FastingState.EATING) {
+                        NotificationHelper.scheduleEatingWindowEndAlarm(context, session.plannedEndTimeEpochMillis, session.planName)
+                        NotificationHelper.scheduleEatingWindowPreAlarm(context, session.plannedEndTimeEpochMillis - 15 * 60_000L, session.planName)
+                    }
+                }
+            }
+        }
+
+        if (oldLanguage != profile.appLanguage) {
+            com.cibotimer.util.AppLanguageManager.setLanguage(context, profile.appLanguage)
+        }
+
         saveStateToDisk()
     }
 
@@ -818,122 +920,29 @@ class AppRepository(
 
     /**
      * Costruisce il system prompt completo per il Coach AI integrando in tempo reale:
+     * - Il profilo corporeo completo (peso iniziale, peso attuale, peso target, altezza, BMI, progressi)
+     * - Lo storico delle ultime pesate registrate e le misurazioni corporee
+     * - L'idratazione odierna dell'utente
+     * - Lo stato della sessione di digiuno in corso e la fase metabolica attuale
      * - Il piano di digiuno attualmente scelto dall'utente e tutti i suoi orari/periodi
-     * - Lo stato della sessione di digiuno in corso
-     * - Il profilo e gli obiettivi dell'utente
+     * - Lo storico generale e le statistiche dei digiuni
+     * - I trofei sbloccati
      * - Le istruzioni per modificare il piano o salvarlo con un altro nome su richiesta dell'utente
      */
     fun buildCurrentAiCoachPrompt(basePrompt: String? = null): String {
         val base = basePrompt ?: _aiConfig.value.systemPrompt
-        val plan = _activePlan.value
-        val profile = _userProfile.value
-        val session = _currentSession.value
-
-        val planContext = buildString {
-            appendLine("=== CONTESTO UTENTE: PIANO DI DIGIUNO ATTUALMENTE ATTIVO NELL'APP ===")
-            appendLine("- Nome Piano: \"${plan.name}\"")
-            appendLine("- Categoria: ${plan.category.name}")
-            if (plan.description.isNotBlank()) {
-                appendLine("- Descrizione: ${plan.description}")
-            }
-            val periods = plan.getEffectivePeriods()
-            if (!plan.periods.isNullOrEmpty()) {
-                appendLine("- Orari a Periodi (${periods.size} periodi settimanali):")
-                periods.forEach { p ->
-                    appendLine("  • Periodo ${p.periodNumber}: ${p.startDayShort.uppercase()} ${p.startTimeFormatted} → ${p.endDayShort.uppercase()} ${p.endTimeFormatted} (${p.durationHoursString} digiuno)")
-                }
-            } else {
-                appendLine("- Orari Settimanali:")
-                plan.days.forEach { d ->
-                    if (d.isFastingDay) {
-                        val eatingMins = (24 * 60 - d.fastingDurationMinutes).coerceAtLeast(0)
-                        appendLine("  • ${d.dayName}: Digiuno ${d.startTimeFormatted} → ${d.endTimeFormatted} (${d.durationHoursString}) | Finestra Pasto: ${eatingMins / 60}h")
-                    } else {
-                        appendLine("  • ${d.dayName}: Giorno Libero / Riposo")
-                    }
-                }
-            }
-
-            if (session != null) {
-                val stateStr = if (session.state == FastingState.FASTING) "DIGIUNO ATTIVO" else "FINESTRA PASTO ATTIVA"
-                val locale = DateTimeFormatters.getActiveLocale(context)
-                val startFormatted = DateTimeFormatters.formatFullDateTime(session.startTimeEpochMillis, context, locale)
-                val endFormatted = DateTimeFormatters.formatFullDateTime(session.plannedEndTimeEpochMillis, context, locale)
-                appendLine("- Stato Sessione: $stateStr (Inizio: $startFormatted, Fine prevista: $endFormatted)")
-            }
-
-            val currentWeightFormatted = com.cibotimer.domain.WeightUnitConverter.formatWeight(profile.currentWeightKg, profile.weightUnit)
-            val targetWeightFormatted = com.cibotimer.domain.WeightUnitConverter.formatWeight(profile.targetWeightKg, profile.weightUnit)
-            appendLine("- Profilo Utente: Nome: ${profile.name}, Peso: $currentWeightFormatted (Target: $targetWeightFormatted), Acqua target: ${profile.waterTargetMl} ml/giorno")
-        }
-
-        val operationalRules = """
-            === ISTRUZIONI OPERATIVE PER IL COACH AI ===
-            1. Conosci alla perfezione il piano che l'utente sta seguendo ("${plan.name}"). Quando rispondi a domande su cosa fare o a che ora mangiare/digiunare, fai sempre riferimento a questo piano e ai suoi orari esatti.
-            2. REGOLA MANDATORIA PRIMA DI CREARE UN PIANO (CHIEDI SEMPRE L'ORARIO DI INIZIO DIGIUNO):
-               Quando l'utente ti chiede di CREARE un nuovo piano, impostare un piano personalizzato o trovare una routine di digiuno:
-               - SE L'UTENTE NON HA ANCORA INDICATO A CHE ORA VUOLE INIZIARE IL DIGIUNO (o a che ora consuma l'ultimo pasto/cena):
-                 NON generare subito il blocco JSON del piano!
-                 CHIEDIGLI SEMPRE PRIMA in modo chiaro e cordiale a che ora preferisce far partire il digiuno ogni giorno (ad es. 'A che ora preferisci iniziare il digiuno la sera? Di solito verso le 20:00 o le 21:00 dopo cena, oppure preferisci un altro orario?').
-               - PROCEDI A GENERARE il blocco JSON racchiuso tra ```fasting_plan ... ``` SOLO se:
-                 a) L'utente ha risposto indicando a che ora vuole iniziare il digiuno; OPPURE
-                 b) L'utente ha già indicato chiaramente l'orario di inizio (o di fine cena/pasto) direttamente nella sua richiesta iniziale (es. "crea un piano 16:8 a partire dalle 20:00" o "mangio dalle 12 alle 20").
-            3. Se l'utente ti chiede di MODIFICARE il piano attuale (ad es. allungare a 18 ore, anticipare/posticipare orari, cambiare giorni di digiuno) oppure di SALVARLO CON UN ALTRO NOME (es. "salvalo come 'Piano Relax'", "chiamalo 'Digiuno Lavoro'"):
-               - Se l'orario di inizio è noto o implicito, applica la modifica e genera il blocco JSON racchiuso tra ```fasting_plan ... ```.
-            4. REGOLE CRUCIALI SULLA STRUTTURA DEL BLOCCO JSON (```fasting_plan ... ```):
-               - REGOLA DEL NOME: Se l'utente ti ha indicato un nome specifico, assegna ESATTAMENTE quel nome nel campo "name" del JSON. Se l'utente non ha specificato un nome, assegna un nome esplicativo (es. "${plan.name} Modificato" o "18:6 Personalizzato").
-               - REGOLA CRUCIALE SUGLI ORARI (NON CONFONDERE FINESTRA DIGIUNO E FINESTRA PASTO):
-                 * "startHour" e "startMinute": ORARIO IN CUI INIZIA IL DIGIUNO (cioè quando l'utente finisce l'ultimo pasto/cena, es. 20:00 o 21:00).
-                 * "endHour" e "endMinute": ORARIO IN CUI TERMINA IL DIGIUNO (cioè quando si apre la finestra del pasto/colazione/pranzo, es. 12:00 del giorno dopo).
-                 * ATTENZIONE: Se l'utente dice "voglio mangiare dalle 12 alle 20", la finestra del pasto è 12-20, quindi il DIGIUNO È DALLE 20:00 ALLE 12:00 del giorno successivo! NON inserire 12 in startHour!
-               - VERIFICA MATEMATICA OBBLIGATORIA PRIMA DI EMETTERE IL JSON:
-                 * Verifica sempre che per ogni giorno di digiuno valga:
-                   (endHour * 60 + endMinute - startHour * 60 - startMinute + 1440) % 1440 == fastingDurationMinutes.
-                 * Esempio: Inizio digiuno ore 20:00, Fine digiuno ore 12:00 del giorno dopo -> (12*60 - 20*60 + 1440) = 960 minuti = 16 ore esatte.
-               - REGOLA SUI GIORNI DI RIPOSO / PASTI LIBERI:
-                 * Se l'utente richiede giorni liberi (es. "sabato e domenica liberi", "fine settimana libero", "venerdì riposo"):
-                   imposta per quei giorni "isFastingDay": false, "startHour": 0, "startMinute": 0, "endHour": 0, "endMinute": 0, "fastingDurationMinutes": 0.
-               - REGOLA OBBLIGATORIA SUI GIORNI DELLA SETTIMANA (ISO 8601):
-                 La settimana ha ESATTAMENTE 7 giorni (da 1 a 7) e termina SEMPRE con la Domenica (7):
-                 1 = Lunedì, 2 = Martedì, 3 = Mercoledì, 4 = Giovedì, 5 = Venerdì, 6 = Sabato, 7 = Domenica.
-                 NON USARE IL CALENDARIO AMERICANO DOVE 1 È DOMENICA!
-               - REGOLA OBBLIGATORIA SULLA DURATA ("fastingDurationMinutes"):
-                 "fastingDurationMinutes" DEVE ESSERE ESPRESSO IN MINUTI TOTALI (ore * 60). NON scrivere MAI il numero di ore (es. NON scrivere 18, ma 1080)!
-                 NON impostare MAI a 0 per i giorni di digiuno!
-                 Tabella di conversione:
-                 * 12 ore = 720
-                 * 14 ore = 840
-                 * 16 ore = 960
-                 * 18 ore = 1080 (es. inizio ore 18:00 e fine ore 12:00 del giorno dopo, oppure 20:00 -> 14:00)
-                 * 20 ore = 1200 (es. inizio ore 20:00 e fine ore 16:00 del giorno dopo)
-                 * 23 ore = 1380
-                 * 24 ore = 1440
-               - SINTASSI JSON RIGOROSA (RFC 8259):
-                 * Non inserire MAI virgole prima delle parentesi graffe o quadre chiuse.
-                 * Non inserire commenti (niente // o /*) dentro il blocco JSON.
-                 * Includi sempre tutti i 7 giorni (da 1 a 7) nell'array 'days'.
-               - Esempio di blocco JSON per un piano da 18 ore tutti i giorni:
-            ```fasting_plan
-            {
-              "id": "custom-ai-${UUID.randomUUID().toString().take(6)}",
-              "name": "Piano 18:6 Personalizzato",
-              "category": "CUSTOM",
-              "description": "Piano con 18 ore di digiuno giornaliero dalle 18:00 alle 12:00.",
-              "days": [
-                { "dayOfWeek": 1, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 2, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 3, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 4, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 5, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 6, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 },
-                { "dayOfWeek": 7, "isFastingDay": true, "startHour": 18, "startMinute": 0, "endHour": 12, "endMinute": 0, "fastingDurationMinutes": 1080 }
-              ]
-            }
-            ```
-            5. L'applicazione rileverà questo blocco JSON, ne verificherà e sanificherà matematicamente la coerenza oraria e mostrerà all'utente una card con cui potrà applicare il piano o personalizzarne il nome e salvarlo con un tocco.
-        """.trimIndent()
-
-        return "$base\n\n$planContext\n\n$operationalRules"
+        return com.cibotimer.domain.AiCoachPromptBuilder.buildPrompt(
+            basePrompt = base,
+            profile = _userProfile.value,
+            activePlan = _activePlan.value,
+            currentSession = _currentSession.value,
+            weightEntries = _weightEntries.value,
+            todayWaterMl = getTodayWaterTotalMl(),
+            sessionsHistory = _sessionsHistory.value,
+            trophies = _trophies.value,
+            context = context,
+            locale = DateTimeFormatters.getActiveLocale(context)
+        )
     }
 
     /**
@@ -996,12 +1005,14 @@ class AppRepository(
         return try {
             val backup = json.decodeFromString<BackupData>(backupJson)
             _userProfile.value = backup.profile
-            _activePlan.value = if (backup.activePlan.id == FastingPlanTemplates.PLAN_LUIGI_1.id && backup.activePlan.periods?.size != 9) {
+            FastingPersistence.setPersistentNotificationEnabled(context, backup.profile.notificationsPersistentEnabled)
+            val activeRepaired = if (backup.activePlan.id == FastingPlanTemplates.PLAN_LUIGI_1.id) {
                 FastingPlanTemplates.PLAN_LUIGI_1
             } else {
-                backup.activePlan
+                PlanShiftEngine.repairPlan(backup.activePlan)
             }
-            _customPlans.value = backup.customPlans
+            _activePlan.value = activeRepaired
+            _customPlans.value = backup.customPlans.map { PlanShiftEngine.repairPlan(it) }
             _sessionsHistory.value = backup.sessions.filter { it.isCompleted }
             _currentSession.value = backup.sessions.firstOrNull { !it.isCompleted }
             _waterEntries.value = backup.waterEntries
@@ -1028,6 +1039,28 @@ class AppRepository(
 
             saveStateToDisk()
             Result.success(Unit)
+        } catch (e: SerializationException) {
+            Result.failure(Exception("Formato file non valido. Assicurati che sia un backup JSON valido di CiboTimer.", e))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Ripristina il backup caricando direttamente un file JSON selezionato dall'utente
+     * tramite il selettore file di sistema (Storage Access Framework / SAF).
+     */
+    fun importBackupFromUri(context: Context, uri: Uri): Result<Unit> {
+        return try {
+            val jsonString = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            } ?: return Result.failure(Exception(context.getString(R.string.settings_local_import_read_error)))
+
+            if (jsonString.isBlank()) {
+                return Result.failure(Exception(context.getString(R.string.settings_local_import_empty_error)))
+            }
+
+            importBackupJson(jsonString)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -1170,6 +1203,7 @@ class AppRepository(
 
             // 6. Resetta lo stato in memoria ai valori predefiniti
             _userProfile.value = UserProfile()
+            FastingPersistence.setPersistentNotificationEnabled(context, true)
             _activePlan.value = FastingPlanTemplates.PLAN_LUIGI_1
             _customPlans.value = emptyList()
             _currentSession.value = null
@@ -1256,12 +1290,14 @@ class AppRepository(
             val content = stateFile.readText(Charsets.UTF_8)
             val backup = json.decodeFromString<BackupData>(content)
             _userProfile.value = backup.profile
-            _activePlan.value = if (backup.activePlan.id == FastingPlanTemplates.PLAN_LUIGI_1.id && backup.activePlan.periods?.size != 9) {
+            FastingPersistence.setPersistentNotificationEnabled(context, backup.profile.notificationsPersistentEnabled)
+            val activeRepaired = if (backup.activePlan.id == FastingPlanTemplates.PLAN_LUIGI_1.id) {
                 FastingPlanTemplates.PLAN_LUIGI_1
             } else {
-                backup.activePlan
+                PlanShiftEngine.repairPlan(backup.activePlan)
             }
-            _customPlans.value = backup.customPlans
+            _activePlan.value = activeRepaired
+            _customPlans.value = backup.customPlans.map { PlanShiftEngine.repairPlan(it) }
             _sessionsHistory.value = backup.sessions.filter { it.isCompleted }
             _currentSession.value = backup.sessions.firstOrNull { !it.isCompleted }
             _waterEntries.value = backup.waterEntries

@@ -152,8 +152,6 @@ object FastingCalculator {
      */
     fun compute24hSegments(day: com.cibotimer.data.models.DayPlan, prevDay: com.cibotimer.data.models.DayPlan): List<TimelineSegment> {
         val totalMinutesInDay = 1440f
-        val segments = mutableListOf<TimelineSegment>()
-
         if (day.fastingDurationMinutes >= 1440 && day.isFastingDay) {
             return listOf(TimelineSegment(0f, totalMinutesInDay, true))
         }
@@ -161,128 +159,67 @@ object FastingCalculator {
             return listOf(TimelineSegment(0f, totalMinutesInDay, false))
         }
 
-        // 1. Prolungamento mattutino dal giorno precedente
-        val morningFastEnd = if (prevDay.isFastingDay) {
-            val prevStart = prevDay.startHour * 60 + prevDay.startMinute
-            val prevEnd = prevStart + prevDay.fastingDurationMinutes
-            if (prevEnd > 1440) {
-                (prevEnd - 1440).coerceAtMost(1440).toFloat()
-            } else 0f
-        } else 0f
-
-        // 2. Digiuno iniziato oggi
-        val todayFastStart = if (day.isFastingDay) {
-            (day.startHour * 60 + day.startMinute).toFloat()
-        } else totalMinutesInDay
-
-        val todayFastEnd = if (day.isFastingDay) {
-            (todayFastStart + day.fastingDurationMinutes).coerceAtMost(totalMinutesInDay)
-        } else totalMinutesInDay
-
-        // Caso unione digiuno mattutino e serale
-        if (morningFastEnd >= todayFastStart) {
-            val end = maxOf(morningFastEnd, todayFastEnd)
-            segments.add(TimelineSegment(0f, end, true))
-            if (end < totalMinutesInDay) {
-                segments.add(TimelineSegment(end, totalMinutesInDay, false))
-            }
-            return segments
+        val d = ((day.dayOfWeek - 1) % 7 + 7) % 7
+        val prevD = ((prevDay.dayOfWeek - 1) % 7 + 7) % 7
+        val spans = mutableListOf<Span>()
+        if (prevDay.isFastingDay && prevDay.fastingDurationMinutes > 0) {
+            val prevStart = prevD * 1440 + prevDay.startHour * 60 + prevDay.startMinute
+            spans.add(Span(prevStart, prevStart + prevDay.fastingDurationMinutes))
+        }
+        if (day.isFastingDay && day.fastingDurationMinutes > 0) {
+            val curStart = d * 1440 + day.startHour * 60 + day.startMinute
+            spans.add(Span(curStart, curStart + day.fastingDurationMinutes))
         }
 
-        var cur = 0f
-
-        // Mattina: digiuno dalla notte precedente
-        if (morningFastEnd > 0f) {
-            segments.add(TimelineSegment(0f, morningFastEnd, true))
-            cur = morningFastEnd
-        }
-
-        // Finestra pasto tra digiuno mattutino e inizio digiuno serale
-        if (todayFastStart > cur) {
-            segments.add(TimelineSegment(cur, todayFastStart, false))
-            cur = todayFastStart
-        }
-
-        // Digiuno iniziato oggi
-        if (todayFastEnd > cur) {
-            segments.add(TimelineSegment(cur, todayFastEnd, true))
-            cur = todayFastEnd
-        }
-
-        // Finestra pasto serale residua
-        if (totalMinutesInDay > cur) {
-            segments.add(TimelineSegment(cur, totalMinutesInDay, false))
-        }
-
-        return segments
-    }
-
-    /**
-     * Calcola i segmenti a 24 ore (Digiuno / Pasto) per un singolo giorno (1..7, Lunedì..Domenica)
-     * basandosi su una lista arbitraria di periodi di digiuno (FastingPeriod).
-     * Gestisce perfettamente il wrapping ciclico della settimana (da Domenica sera a Lunedì mattina).
-     */
-    fun computePeriods24hSegments(
-        periods: List<com.cibotimer.data.models.FastingPeriod>,
-        dayIndex: Int
-    ): List<TimelineSegment> {
-        val totalMinutesInDay = 1440
-        val dayStartMin = ((dayIndex - 1).coerceIn(0, 6)) * totalMinutesInDay
-        val dayEndMin = dayStartMin + totalMinutesInDay
-        val weekTotalMinutes = 7 * totalMinutesInDay
-
-        val fastingIntervals = mutableListOf<Pair<Int, Int>>()
-        for (p in periods) {
-            if (!p.isFasting) continue
-            val startDay = ((p.startDayOfWeek - 1).coerceIn(0, 6))
-            val pStart = startDay * totalMinutesInDay + p.startHour * 60 + p.startMinute
-            val duration = p.fastingDurationMinutes.coerceAtLeast(0)
-            if (duration <= 0) continue
-            val pEnd = pStart + duration
-
-            // Proietta il periodo nei cicli settimanali precedente (-1), corrente (0) e successivo (+1)
-            for (weekOffset in listOf(-1, 0, 1)) {
-                val startWithOffset = pStart + weekOffset * weekTotalMinutes
-                val endWithOffset = pEnd + weekOffset * weekTotalMinutes
-
-                val overlapStart = maxOf(dayStartMin, startWithOffset)
-                val overlapEnd = minOf(dayEndMin, endWithOffset)
-                if (overlapStart < overlapEnd) {
-                    fastingIntervals.add(Pair(overlapStart - dayStartMin, overlapEnd - dayStartMin))
-                }
-            }
-        }
-
-        fastingIntervals.sortBy { it.first }
-
-        // Fonde eventuali intervalli di digiuno contigui o sovrapposti
-        val mergedIntervals = mutableListOf<Pair<Int, Int>>()
-        for (interval in fastingIntervals) {
-            if (mergedIntervals.isEmpty()) {
-                mergedIntervals.add(interval)
-            } else {
-                val last = mergedIntervals.last()
-                if (interval.first <= last.second) {
-                    mergedIntervals[mergedIntervals.lastIndex] = Pair(last.first, maxOf(last.second, interval.second))
-                } else {
-                    mergedIntervals.add(interval)
-                }
-            }
-        }
-
+        val fastingIntervals = WeekSpanModel.fastsInDay(spans, d)
         val segments = mutableListOf<TimelineSegment>()
         var cur = 0
-        for ((fStart, fEnd) in mergedIntervals) {
+        for ((fStart, fEnd) in fastingIntervals) {
             if (fStart > cur) {
                 segments.add(TimelineSegment(cur.toFloat(), fStart.toFloat(), isFasting = false))
             }
             segments.add(TimelineSegment(fStart.toFloat(), fEnd.toFloat(), isFasting = true))
             cur = fEnd
         }
-        if (cur < totalMinutesInDay) {
-            segments.add(TimelineSegment(cur.toFloat(), totalMinutesInDay.toFloat(), isFasting = false))
+        if (cur < 1440) {
+            segments.add(TimelineSegment(cur.toFloat(), totalMinutesInDay, isFasting = false))
         }
+        if (segments.isEmpty()) {
+            return listOf(TimelineSegment(0f, totalMinutesInDay, false))
+        }
+        return segments
+    }
 
+    /**
+     * Calcola i segmenti a 24 ore (Digiuno / Pasto) per un singolo giorno (1..7, Lunedì..Domenica)
+     * basandosi su una lista di periodi di digiuno (FastingPeriod).
+     * Utilizza il modello lineare Span e fastsInDay per garantire coerenza totale.
+     */
+    fun computePeriods24hSegments(
+        periods: List<com.cibotimer.data.models.FastingPeriod>,
+        dayIndex: Int
+    ): List<TimelineSegment> {
+        val totalMinutesInDay = 1440f
+        val d = ((dayIndex - 1) % 7 + 7) % 7
+        val spans = periods.filter { it.isFasting }.map { it.toSpan() }
+        val normalizedSpans = WeekSpanModel.normalize(spans)
+        val fastingIntervals = WeekSpanModel.fastsInDay(normalizedSpans, d)
+
+        val segments = mutableListOf<TimelineSegment>()
+        var cur = 0
+        for ((fStart, fEnd) in fastingIntervals) {
+            if (fStart > cur) {
+                segments.add(TimelineSegment(cur.toFloat(), fStart.toFloat(), isFasting = false))
+            }
+            segments.add(TimelineSegment(fStart.toFloat(), fEnd.toFloat(), isFasting = true))
+            cur = fEnd
+        }
+        if (cur < 1440) {
+            segments.add(TimelineSegment(cur.toFloat(), totalMinutesInDay, isFasting = false))
+        }
+        if (segments.isEmpty()) {
+            return listOf(TimelineSegment(0f, totalMinutesInDay, false))
+        }
         return segments
     }
 
@@ -375,7 +312,8 @@ object FastingCalculator {
         instances.sortBy { it.startMillis }
 
         // 1. Verifica se adesso siamo all'interno di una finestra di digiuno attiva
-        val activeInstance = instances.find { it.startMillis <= nowMillis && nowMillis < it.endMillis }
+        val activeInstance = instances.filter { it.startMillis <= nowMillis && nowMillis < it.endMillis }
+            .maxByOrNull { it.startMillis }
         if (activeInstance != null) {
             val totalSec = maxOf(1L, (activeInstance.endMillis - activeInstance.startMillis) / 1000L)
             val elapsedSec = maxOf(0L, (nowMillis - activeInstance.startMillis) / 1000L)

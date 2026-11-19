@@ -3,7 +3,10 @@
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.provider.Settings as AndroidSettings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -74,13 +77,33 @@ fun SettingsScreen(
     var aiModelName by remember(aiConfig.modelName) { mutableStateOf(aiConfig.modelName) }
     var showApiKey by remember { mutableStateOf(false) }
 
-    var driveStatusMessage by remember { mutableStateOf<String?>(null) }
-    var showJsonImportDialog by remember { mutableStateOf(false) }
-    var jsonImportText by remember { mutableStateOf("") }
-    var importStatusMessage by remember { mutableStateOf<String?>(null) }
+    var backupStatusMessage by remember { mutableStateOf<String?>(null) }
+    var selectedRestoreUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedRestoreFileName by remember { mutableStateOf<String?>(null) }
+
+    val jsonFilePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            var fileName: String? = null
+            try {
+                if (uri.scheme == "content") {
+                    context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        if (nameIndex != -1 && cursor.moveToFirst()) {
+                            fileName = cursor.getString(nameIndex)
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+            selectedRestoreFileName = fileName ?: uri.lastPathSegment ?: "backup.json"
+            selectedRestoreUri = uri
+        }
+    }
 
     var showResetConfirmDialog by remember { mutableStateOf(false) }
     var resetStatusMessage by remember { mutableStateOf<String?>(null) }
+    var showRestartDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -151,6 +174,72 @@ fun SettingsScreen(
                     fontSize = 14.sp,
                     color = TextSecondaryLight
                 )
+            }
+
+            // Section: Lingua dell'Applicazione (Prima del Profilo)
+            SettingsSectionCard(title = stringResource(R.string.settings_section_language), icon = Icons.Default.Language) {
+                Text(
+                    text = stringResource(R.string.settings_language_desc),
+                    fontSize = 12.sp,
+                    color = CiboTextSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val currentLang = remember(userProfile.appLanguage) {
+                    userProfile.appLanguage.ifBlank {
+                        com.cibotimer.util.AppLanguageManager.getStoredLanguage(context)
+                    }
+                }
+
+                val languages = listOf(
+                    com.cibotimer.util.AppLanguageManager.LANGUAGE_SYSTEM to stringResource(R.string.settings_language_system),
+                    com.cibotimer.util.AppLanguageManager.LANGUAGE_IT to stringResource(R.string.settings_language_it),
+                    com.cibotimer.util.AppLanguageManager.LANGUAGE_EN to stringResource(R.string.settings_language_en)
+                )
+
+                languages.forEach { (code, label) ->
+                    val isSelected = currentLang == code
+                    Surface(
+                        onClick = {
+                            if (currentLang != code) {
+                                com.cibotimer.util.AppLanguageManager.setLanguage(context, code)
+                                repository.updateUserProfile(userProfile.copy(appLanguage = code))
+                                showRestartDialog = true
+                            }
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (isSelected) CiboAccent.copy(alpha = 0.12f) else Color.Transparent,
+                        border = if (isSelected) BorderStroke(1.dp, CiboAccent.copy(alpha = 0.5f)) else null,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            RadioButton(
+                                selected = isSelected,
+                                onClick = {
+                                    if (currentLang != code) {
+                                        com.cibotimer.util.AppLanguageManager.setLanguage(context, code)
+                                        repository.updateUserProfile(userProfile.copy(appLanguage = code))
+                                        showRestartDialog = true
+                                    }
+                                },
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = CiboAccent,
+                                    unselectedColor = CiboTextSecondary
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = label,
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) CiboAccent else CiboTextPrimary
+                            )
+                        }
+                    }
+                }
             }
 
             // Section 1: User Profile
@@ -374,6 +463,11 @@ fun SettingsScreen(
             // Section 3: Notifiche
             SettingsSectionCard(title = stringResource(R.string.settings_section_notifications), icon = Icons.Default.Notifications) {
                 NotificationToggleRow(
+                    title = stringResource(R.string.settings_notif_persistent),
+                    checked = userProfile.notificationsPersistentEnabled,
+                    onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsPersistentEnabled = it)) }
+                )
+                NotificationToggleRow(
                     title = stringResource(R.string.settings_notif_fasting),
                     checked = userProfile.notificationsFastingEnabled,
                     onCheckedChange = { repository.updateUserProfile(userProfile.copy(notificationsFastingEnabled = it)) }
@@ -414,7 +508,7 @@ fun SettingsScreen(
                 )
             }
 
-            // Section 4: Google Drive & Auto Backup Android
+            // Section 4: Google Drive & Backup Dati
             SettingsSectionCard(title = stringResource(R.string.settings_section_cloud), icon = Icons.Default.CloudSync) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -452,7 +546,7 @@ fun SettingsScreen(
                         icon = Icons.Default.CloudUpload,
                         onClick = {
                             val result = repository.exportAndShareBackup(context)
-                            driveStatusMessage = if (result.isSuccess) {
+                            backupStatusMessage = if (result.isSuccess) {
                                 context.getString(R.string.settings_cloud_share_started)
                             } else {
                                 context.getString(R.string.settings_cloud_share_error, result.exceptionOrNull()?.localizedMessage ?: "")
@@ -464,89 +558,19 @@ fun SettingsScreen(
                     AppSecondaryButton(
                         text = stringResource(R.string.settings_cloud_restore),
                         icon = Icons.Default.CloudDownload,
-                        onClick = { showJsonImportDialog = true },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                if (driveStatusMessage != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = driveStatusMessage ?: "",
-                        fontSize = 12.sp,
-                        color = FastingBlue,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            // Section 5: Backup Locale (Export / Import JSON)
-            SettingsSectionCard(title = stringResource(R.string.settings_section_local_backup), icon = Icons.Default.SaveAlt) {
-                Text(
-                    text = stringResource(R.string.settings_local_backup_desc),
-                    fontSize = 12.sp,
-                    color = TextSecondaryLight,
-                    lineHeight = 17.sp
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    AppPrimaryButton(
-                        text = stringResource(R.string.settings_local_export),
-                        icon = Icons.Default.Share,
                         onClick = {
-                            repository.exportAndShareBackup(context)
+                            jsonFilePickerLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
                         },
                         modifier = Modifier.weight(1f)
                     )
-
-                    AppSecondaryButton(
-                        text = stringResource(R.string.settings_local_import),
-                        icon = Icons.Default.Download,
-                        onClick = { showJsonImportDialog = true },
-                        modifier = Modifier.weight(1f)
-                    )
                 }
 
-                if (importStatusMessage != null) {
+                if (backupStatusMessage != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = importStatusMessage ?: "",
+                        text = backupStatusMessage ?: "",
                         fontSize = 12.sp,
-                        color = FastingBlue,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
-            // Section 6: Area Pericolo & Reset Dati Locali
-            SettingsSectionCard(title = stringResource(R.string.settings_section_danger), icon = Icons.Default.DeleteForever) {
-                Text(
-                    text = stringResource(R.string.settings_danger_desc),
-                    fontSize = 12.sp,
-                    color = TextSecondaryLight,
-                    lineHeight = 17.sp
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                AppDangerButton(
-                    text = stringResource(R.string.settings_danger_button),
-                    icon = Icons.Default.DeleteForever,
-                    onClick = { showResetConfirmDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                if (resetStatusMessage != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = resetStatusMessage ?: "",
-                        fontSize = 12.sp,
-                        color = if (resetStatusMessage?.startsWith("⚠️") == true) CiboStopRed else FastingBlue,
+                        color = if (backupStatusMessage?.contains("Errore", ignoreCase = true) == true || backupStatusMessage?.contains("Error", ignoreCase = true) == true) CiboStopRed else FastingBlue,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -611,11 +635,7 @@ fun SettingsScreen(
                     text = if (isPlayStore) stringResource(R.string.settings_update_check_play) else stringResource(R.string.settings_update_check_now),
                     icon = Icons.Default.Refresh,
                     onClick = {
-                        if (isPlayStore) {
-                            updateManager?.openPlayStore()
-                        } else {
-                            updateManager?.checkForUpdates(manual = true)
-                        }
+                        updateManager?.checkForUpdates(manual = true)
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -663,6 +683,22 @@ fun SettingsScreen(
                             color = FastingBlue
                         )
                     }
+                    is UpdateState.ReadyToInstall -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.update_ready_title),
+                            fontSize = 12.sp,
+                            color = FastingBlue,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        AppPrimaryButton(
+                            text = stringResource(R.string.update_button_install),
+                            icon = Icons.Default.SystemUpdate,
+                            onClick = { updateManager?.triggerInstall(updateState.apkUri) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                     is UpdateState.Error -> {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -670,6 +706,15 @@ fun SettingsScreen(
                             fontSize = 12.sp,
                             color = CiboTimerOrange
                         )
+                        if (isPlayStore) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            AppSecondaryButton(
+                                text = stringResource(R.string.settings_update_check_play),
+                                icon = Icons.Default.OpenInNew,
+                                onClick = { updateManager?.openPlayStore() },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                     else -> {}
                 }
@@ -709,6 +754,35 @@ fun SettingsScreen(
                 )
             }
 
+            // Section: Area Pericolo & Reset Dati Locali (Posizionato in fondo)
+            SettingsSectionCard(title = stringResource(R.string.settings_section_danger), icon = Icons.Default.DeleteForever) {
+                Text(
+                    text = stringResource(R.string.settings_danger_desc),
+                    fontSize = 12.sp,
+                    color = TextSecondaryLight,
+                    lineHeight = 17.sp
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                AppDangerButton(
+                    text = stringResource(R.string.settings_danger_button),
+                    icon = Icons.Default.DeleteForever,
+                    onClick = { showResetConfirmDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (resetStatusMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = resetStatusMessage ?: "",
+                        fontSize = 12.sp,
+                        color = if (resetStatusMessage?.startsWith("⚠️") == true) CiboStopRed else FastingBlue,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
             // App info footer
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
@@ -729,43 +803,66 @@ fun SettingsScreen(
         }
     }
 
-    // Dialog: Import JSON string
-    if (showJsonImportDialog) {
+    // Dialog: Conferma Ripristino Backup da File JSON
+    if (selectedRestoreUri != null) {
+        val uri = selectedRestoreUri!!
+        val fileName = selectedRestoreFileName ?: "backup.json"
         AlertDialog(
-            onDismissRequest = { showJsonImportDialog = false },
-            title = { Text(stringResource(R.string.settings_dialog_import_title)) },
+            onDismissRequest = {
+                selectedRestoreUri = null
+                selectedRestoreFileName = null
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.CloudDownload,
+                    contentDescription = null,
+                    tint = FastingBlue
+                )
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.settings_dialog_confirm_restore_title),
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Column {
-                    Text(stringResource(R.string.settings_dialog_import_text), fontSize = 12.sp, color = TextSecondaryLight)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    AppOutlinedTextField(
-                        value = jsonImportText,
-                        onValueChange = { jsonImportText = it },
-                        modifier = Modifier.fillMaxWidth().height(160.dp),
-                        singleLine = false,
-                        maxLines = 10
+                    Text(
+                        text = stringResource(R.string.settings_dialog_confirm_restore_desc),
+                        fontSize = 13.sp,
+                        color = TextSecondaryLight
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = stringResource(R.string.settings_dialog_confirm_restore_file, fileName),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = FastingBlue
                     )
                 }
             },
             confirmButton = {
                 AppPrimaryButton(
-                    text = stringResource(R.string.settings_dialog_import_button),
+                    text = stringResource(R.string.settings_dialog_confirm_restore_btn),
                     onClick = {
-                        val result = repository.importBackupJson(jsonImportText.trim())
-                        if (result.isSuccess) {
-                            importStatusMessage = context.getString(R.string.settings_local_import_success)
-                            showJsonImportDialog = false
-                            jsonImportText = ""
+                        val result = repository.importBackupFromUri(context, uri)
+                        backupStatusMessage = if (result.isSuccess) {
+                            context.getString(R.string.settings_local_import_success)
                         } else {
-                            importStatusMessage = context.getString(R.string.settings_local_import_error, result.exceptionOrNull()?.localizedMessage ?: "")
+                            context.getString(R.string.settings_local_import_error, result.exceptionOrNull()?.localizedMessage ?: "")
                         }
+                        selectedRestoreUri = null
+                        selectedRestoreFileName = null
                     }
                 )
             },
             dismissButton = {
                 AppSecondaryButton(
                     text = stringResource(R.string.button_cancel),
-                    onClick = { showJsonImportDialog = false }
+                    onClick = {
+                        selectedRestoreUri = null
+                        selectedRestoreFileName = null
+                    }
                 )
             }
         )
@@ -838,6 +935,66 @@ fun SettingsScreen(
                 AppSecondaryButton(
                     text = stringResource(R.string.button_cancel),
                     onClick = { showResetConfirmDialog = false }
+                )
+            },
+            containerColor = SurfaceDark,
+            tonalElevation = 8.dp
+        )
+    }
+
+    // Dialog: Riavvio consigliato dopo cambio lingua
+    if (showRestartDialog) {
+        AlertDialog(
+            onDismissRequest = { showRestartDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Language,
+                    contentDescription = null,
+                    tint = CiboAccent,
+                    modifier = Modifier.size(36.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.dialog_language_changed_title),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.dialog_language_changed_message),
+                    fontSize = 13.5.sp,
+                    color = TextSecondaryLight,
+                    lineHeight = 19.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRestartDialog = false
+                        val intent = Intent(context, com.cibotimer.MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        }
+                        context.startActivity(intent)
+                        if (context is android.app.Activity) {
+                            context.finish()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CiboAccent,
+                        contentColor = CiboButtonDarkText
+                    ),
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Text(stringResource(R.string.dialog_language_restart_now), fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                AppSecondaryButton(
+                    text = stringResource(R.string.dialog_language_restart_later),
+                    onClick = { showRestartDialog = false }
                 )
             },
             containerColor = SurfaceDark,

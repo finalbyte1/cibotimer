@@ -22,9 +22,20 @@ class MainActivity : ComponentActivity() {
             // Notification permission result handled silently
         }
 
+    private val inAppUpdateLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            (application as CiboTimerApp).updateManager.onInAppUpdateActivityResult(result.resultCode)
+        }
+
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.cibotimer.util.AppLanguageManager.getLocalizedContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.cibotimer.util.AppLanguageManager.applyStoredLanguage(this)
 
+        (application as CiboTimerApp).updateManager.attachActivity(this, inAppUpdateLauncher)
         com.cibotimer.widget.FastingWidgetUpdater.updateAll(this)
         askNotificationPermission()
 
@@ -49,9 +60,15 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         com.cibotimer.widget.FastingWidgetUpdater.updateAll(this)
         val updateMgr = (application as CiboTimerApp).updateManager
+        updateMgr.onResume(this)
         if (updateMgr.autoCheckEnabled) {
             updateMgr.checkForUpdates(manual = false)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (application as CiboTimerApp).updateManager.detachActivity()
     }
 
     private fun askNotificationPermission() {

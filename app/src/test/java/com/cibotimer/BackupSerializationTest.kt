@@ -31,6 +31,7 @@ class BackupSerializationTest {
                 notificationsFastingEnabled = true,
                 notificationsStagesEnabled = true,
                 notificationsWaterEnabled = false,
+                notificationsPersistentEnabled = false,
                 googleDriveAutoBackupEnabled = true,
                 googleDriveAccountEmail = "mario.rossi@gmail.com"
             ),
@@ -87,6 +88,7 @@ class BackupSerializationTest {
         assertEquals(1, restored.trophies.size)
         assertEquals(true, restored.aiConfig.isEnabled)
         assertEquals("gpt-4o-mini", restored.aiConfig.modelName)
+        assertEquals(false, restored.profile.notificationsPersistentEnabled)
         assertEquals(2, restored.chatHistory.size)
     }
 
@@ -97,6 +99,7 @@ class BackupSerializationTest {
         assertEquals(75.0, defaultProfile.startingWeightKg, 0.001)
         assertEquals(70.0, defaultProfile.targetWeightKg, 0.001)
         assertEquals(false, defaultProfile.googleDriveAutoBackupEnabled)
+        assertEquals(true, defaultProfile.notificationsPersistentEnabled)
 
         val cleanBackup = BackupData(
             profile = defaultProfile,
@@ -153,5 +156,17 @@ class BackupSerializationTest {
         val jsonString = json.encodeToString(backup)
         val decoded = json.decodeFromString<BackupData>(jsonString)
         assertEquals(WeightUnit.LB, decoded.profile.weightUnit)
+    }
+
+    @Test
+    fun testInvalidJsonThrowsSerializationException() {
+        val invalidJson = "{\"invalid\": 123}"
+        var caught = false
+        try {
+            json.decodeFromString<BackupData>(invalidJson)
+        } catch (e: kotlinx.serialization.SerializationException) {
+            caught = true
+        }
+        org.junit.Assert.assertTrue(caught)
     }
 }

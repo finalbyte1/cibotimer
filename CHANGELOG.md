@@ -6,6 +6,295 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.84] - 2026-11-18
+
+### 🌐 Internazionalizzazione Completa, Riorganizzazione Impostazioni e Skill Google Play (v1.0.84 - Build 85)
+- **Traduzione Integrale & Selettore Lingua**:
+  - Risolto il mancato aggiornamento di `Locale.getDefault()` sincronizzandolo in `AppLanguageManager`, `MainActivity` e `CiboTimerApp`.
+  - Piani di digiuno: tradotti nomi, descrizioni e badge dinamici (`PlanPickerModal`, `TimerScreen`, `FastingPlanTemplates`).
+  - Schermata Coach: tradotti titoli articoli, sottotitoli, contenuti markdown, categorie e filtri (`CoachingScreen`).
+  - Fasi metaboliche: localizzati titoli, benefici e badge di stato nella popup "Fasi del Digiuno Intermittente" (`FastingStagesSheet`, `FastingStagesCard`).
+  - Dialogo con conferma di riavvio immediato ("Riavvia ora" / "Più tardi") al cambio lingua.
+- **Riorganizzazione Schermata Impostazioni**:
+  - Spostata la sezione "Lingua dell'applicazione" in cima, prima del gruppo "Profilo Personale".
+  - Spostata la sezione "Area Pericolo & Reset Dati Locali" al fondo della schermata, dotata di dialogo di conferma protetto.
+- **Integrazione Skill `play-store-publish`**:
+  - Installate le dipendenze `google-api-python-client` e `google-auth`.
+  - Configurato `~/.play/service-account.json` e posizionata la skill in `~/.gemini/config/skills/play-store-publish/`.
+  - Script `upload_aab.py` ottimizzato per rilevamento automatico di file AAB e `release_notes.xml`.
+- **Compilazione & Verifica Binari**:
+  - Generati `CiboTimer-v1.0.84.apk` e `CiboTimer-v1.0.84.aab`.
+  - Eseguiti e superati tutti i test unitari (`BUILD SUCCESSFUL`).
+  - Verificata firma permanente con `CN=CiboTimer`.
+
+---
+
+## [1.0.83] - 2026-11-18
+
+### 🚀 Target SDK 36 (Android 16) per Conformità Google Play Store (v1.0.83 - Build 84)
+- **Allineamento Requisiti Google Play Console**:
+  - Aggiornato `targetSdk = 36` e `compileSdk = 36` in `app/build.gradle.kts` per rispettare il livello API target minimo richiesto da Google Play per le nuove release.
+  - Mantenuto `minSdk = 26` (Android 8.0+) per la massima copertura di dispositivi retrocompatibili.
+  - Abilitato `android.suppressUnsupportedCompileSdk=36` in `gradle.properties`.
+  - Incrementato `versionCode = 84` e `versionName = "1.0.83"`.
+- **Verifica Compatibilità & Build**:
+  - Test unitari eseguiti e superati al 100%.
+  - Generati e verificati con firma permanente sia l'APK (`CiboTimer-v1.0.83.apk`) sia il bundle AAB (`CiboTimer-v1.0.83.aab`).
+
+---
+
+## [1.0.82] - 2026-11-18
+
+### 📱 Ripristino Compatibilità 18.186 Dispositivi, Selettore Lingua e Fix Notifiche Fasi (v1.0.82 - Build 83)
+- **Risoluzione Avviso Google Play Console (Ripristino 18.186 Dispositivi)**:
+  - Reimpostati `compileSdk = 34` e `targetSdk = 34` in `app/build.gradle.kts` (standard stabile Android 14 richiesto da Google Play).
+  - Rimosso il flag di soppressione `android.suppressUnsupportedCompileSdk=36` in `gradle.properties`.
+  - Risolto integralmente il problema dei 18.186 dispositivi non supportati, garantendo la compatibilità con tutti gli smartphone supportati dalla release precedente.
+- **Risoluzione Bug Notifiche "Fase Metabolica"**:
+  - `notificationsStagesEnabled` impostato di default a `false` (disattivato).
+  - Implementato `NotificationHelper.cancelStageAlarms(context)` che annulla ricorsivamente tutti i `PendingIntent` e gli allarmi programmati (`REQUEST_CODE_STAGE_BASE + 1..10`).
+  - `NotificationHelper.cancelFastingAlarms` cancella ora automaticamente anche tutti gli allarmi di fase registrati.
+  - Verifica preventiva di `notificationsStagesEnabled` prima di qualsiasi pianificazione allarmi in `AppRepository.kt` (`startTimer`, `transitionToFasting`, `advanceToNextSession`, `syncActiveSessionWithPlan`) e all'interno di `scheduleStageAlarm`.
+  - Verifica e scarto delle notifiche di fase in `FastingAlarmReceiver` e in `NotificationHelper.showNotification` qualora l'opzione sia disabilitata.
+  - Annullamento immediato degli allarmi già registrati su cambio impostazione in `AppRepository.updateUserProfile`.
+- **Selettore della Lingua dell'Applicazione (Per-App Language Preferences)**:
+  - Aggiunta la sezione *"Lingua dell'applicazione"* nelle Impostazioni con scelta tra *"Predefinita di sistema"*, *"Italiano"* e *"English"*.
+  - Configurato `res/xml/locales_config.xml` e registrato `android:localeConfig` nei manifesti.
+  - Integrazione con `AppCompatDelegate.setApplicationLocales` e fallback automatico a inglese (`en`) in caso di lingua di sistema non supportata.
+  - Rimozione testi hardcoded: eliminato "Stop digiuno" hardcoded in `FastingForegroundService`, diciture di continuazione barra settimanale (`week_chart_continues`), etichette dello stepper scope e periodo.
+- **Suite di Test Completa per "Modifica Piano" e Nuove Funzionalità**:
+  - Creato `PlanEditorComprehensiveTest` che copre:
+    - Calcolo esatto delle durate con minuti senza alcun troncamento (`17h 45m`, `18h 45m`, `10h 45m`, ecc.) sul piano di riferimento `PLAN_LUIGI_1`.
+    - Gestione del periodo Domenica 16:00 $\to$ Lunedì 13:00 come unico span continuo di 21h a cavallo della settimana circolare.
+    - Limiti di Inizio e Fine per ogni periodo ($\ge$ Dom 07:45 e $\le$ Lun 14:00).
+    - Spostamento temporale a passi di 1 ora e 15 minuti sia in avanti sia indietro e modifica della durata.
+    - Gestione dei casi limite (gap zero, prevenzione sovrapposizioni e disattivazione steppers).
+    - Roundtrip di serializzazione/deserializzazione JSON identico.
+  - Creato `MetabolicStageNotificationsTest` per la verifica dell'isolamento delle notifiche delle fasi metaboliche.
+  - Creato `LanguageSelectionTest` per la verifica della risoluzione del Locale, fallback a inglese e precedenza della lingua selezionata.
+  - Tutti i test unitari superati con successo (100% green).
+- **Binari Rilasciati**:
+  - `versionCode = 83`, `versionName = "1.0.82"`.
+  - Generati e firmati con keystore permanente `CiboTimer-v1.0.82.apk` e `CiboTimer-v1.0.82.aab`.
+
+---
+
+## [1.0.81] - 2026-11-16
+
+### 🔔 Opzione Toggle per Notifica Permanente del Timer (v1.0.81 - Build 82)
+- **Nuovo Interruttore nelle Impostazioni ("Notifiche & Promemoria")**:
+  - Aggiunta la voce *"Notifica permanente del timer"* (`settings_notif_persistent`) nella schermata Impostazioni (`SettingsScreen.kt`).
+  - Permette all'utente di abilitare o disabilitare liberamente la notifica in tempo reale nella tendina notifiche e nella schermata di blocco.
+- **Gestione Reattiva del Foreground Service e Notifiche (`FastingForegroundService` & `FastingPersistence`)**:
+  - Aggiunto il campo `notificationsPersistentEnabled: Boolean = true` in `UserProfile` e `BackupData`.
+  - Quando disattivata, il Foreground Service viene terminato immediatamente e la notifica persistente rimossa dalla tendina, lasciando comunque operativi gli allarmi puntuali di inizio/fine digiuno, stadi metabolici e idratazione.
+  - Quando riattivata con una sessione in corso, il Foreground Service e la notifica in tendina vengono ripristinati all'istante con il countdown aggiornato.
+  - Supporto completo e trasparente nei backup JSON e nel ripristino stato da disco.
+- **Localizzazione Multilingua**:
+  - Stringa in italiano: *"Notifica permanente del timer"*.
+  - Stringa in inglese: *"Ongoing timer notification"*.
+- **Suite di Test Unitari**:
+  - Aggiornato `BackupSerializationTest` con verifiche di serializzazione/deserializzazione per `notificationsPersistentEnabled`.
+- **Binari Rilasciati**:
+  - `versionCode = 82`, `versionName = "1.0.81"`.
+  - Generati e firmati con keystore permanente `CiboTimer-v1.0.81.apk` e `CiboTimer-v1.0.81.aab`.
+
+---
+
+## [1.0.80] - 2026-11-15
+
+### 🔄 Unificazione Circolare Multiperiodo e Risoluzione Split a Mezzanotte (v1.0.80 - Build 81)
+- **Normalizzazione Automatica e Unificazione Circolare a 7 Periodi**:
+  - Implementata la fusione circolare automatica in `WeekSpanModel.normalize()` e `FastingPlan.getEffectivePeriods()`: qualsiasi piano con periodi spezzati a mezzanotte (es. Domenica 16:00 → 24:00 di 8h e Lunedì 00:00 → 13:00 di 13h) viene automaticamente unificato in un unico digiuno continuo di 21 ore (Domenica 16:00 $\to$ Lunedì 13:00).
+  - Migrazione automatica all'avvio in `AppRepository.kt` sia per il piano attivo sia per tutti i piani personalizzati salvati sullo smartphone (`_customPlans`), riparando istantaneamente qualsiasi configurazione legacy memorizzata in locale.
+  - Eliminata la visualizzazione anomala `"13h+17h 45m"` su Lunedì e `"8h"` su Domenica.
+- **Visualizzazione Oraria Esatta con Minuti (`WeekBarChart`)**:
+  - Mostra sempre i minuti effettivi di ogni digiuno (`17h 45m`, `18h 45m`, `10h 45m`), omettendo i minuti solo per ore tonde (`21h`, `18h`, `19h`).
+  - Sottotitolo Domenica: `"Dom 16:00 → Lun 13:00 ↪ continua"` con durata `21h`.
+  - Sottotitolo Lunedì: `"↩ da Dom 16:00 · 13h | 14:00 → Mar 07:45"` con durata `17h 45m`.
+  - Finestre di alimentazione/pasto colorate in verde smeraldo (`#10B981`) su tutte le barre settimanali.
+- **Pannello di Modifica Orari (`TimeEditorModal`)**:
+  - Limiti temporali corretti calcolati sul modello circolare: per Domenica 16:00 $\to$ Lunedì 13:00, inizio limitato a $\ge$ Dom 07:45 (fine pasto precedente) e fine limitata a $\le$ Lun 14:00 (inizio pasto successivo).
+  - Durata visualizzata pari alla durata totale effettiva (21h) senza troncamenti o spezzoni parziali.
+- **Suite di Test Unitari**:
+  - Aggiunto `testLegacy8PeriodsAutomaticallyMergedTo7PeriodsCircular` in `PlanManagementTest` per garantire la retrocompatibilità e la migrazione automatica di piani salvati con 8 periodi.
+  - 113 test unitari superati con successo (100% green).
+- **Binari Rilasciati**:
+  - `versionCode = 81`, `versionName = "1.0.80"`.
+  - Generati e firmati con keystore permanente `CiboTimer-v1.0.80.apk` e `CiboTimer-v1.0.80.aab`.
+
+---
+
+## [1.0.78] - 2026-11-14
+
+### 🧠 Onniscienza e Piena Consapevolezza del Coach AI (v1.0.78 - Build 79)
+- **Integrazione Totale dei Dati Utente nel Prompt del Coach AI (`AiCoachPromptBuilder`)**:
+  - Creato `AiCoachPromptBuilder` per iniettare l'intera storia e tutti i parametri dell'utente nel system prompt in tempo reale.
+  - **Peso Iniziale e Progressi**: Il Coach AI ora conosce con precisione il **peso iniziale di partenza**, il peso attuale effettivo e il peso obiettivo (target). Calcola e cita la variazione dal peso iniziale (kg persi/guadagnati e percentuale rispetto alla partenza), i kg rimanenti e la percentuale di avanzamento verso il traguardo.
+  - **BMI Clinico Completo**: Calcolo dinamico del BMI iniziale alla partenza, del BMI attuale e del BMI target con le rispettive classificazioni OMS (Normopeso, Sovrappeso, Obesità).
+  - **Misure Corporee e Circonferenze**: Iniezione delle circonferenze corporee (Vita, Fianchi, Torace, Cosce, Braccia) con delta rispetto alla prima misurazione e rapporto vita/fianchi (WHR).
+  - **Storico Ultime Pesate**: Fornito l'elenco cronologico delle ultime pesate con data, peso e note per consentire al coach di analizzare il trend nel tempo.
+  - **Idratazione Odierna**: Monitoraggio in tempo reale dei ml d'acqua assunti oggi rispetto al target giornaliero e percentuale completata.
+  - **Fasi Metaboliche e Sessione Live**: Integrazione dello stato del timer (digiuno/pasto), tempo trascorso/rimanente e della fase metabolica corrente (1-7) con spiegazione scientifica fisiologica e previsione oraria della fase successiva.
+  - **Statistiche & Traguardi**: Storico dei digiuni completati, ore totali accumulate, record personale e lista trofei sbloccati.
+- **Istruzioni Operative Vincolanti per il Coach AI**:
+  - Regola di conoscenza totale: il Coach AI ha l'obbligo di dimostrare la piena consapevolezza del percorso dell'utente, citando il peso di partenza, i progressi ottenuti e incoraggiandolo in modo iper-personalizzato.
+  - Preservata la regola mandatoria di chiedere l'orario di inizio digiuno prima di generare nuovi piani JSON.
+- **Miglioramenti UI Chat Coach AI (`AiChatScreen`)**:
+  - Aggiunti chip rapidi di suggerimento per chiedere l'analisi dei progressi dal peso iniziale e lo stato della fase metabolica attuale.
+- **Test Unitari Dedicati**:
+  - Aggiunto `AiCoachPromptBuilderTest` con verifica automatizzata di tutte le sezioni del prompt, calcoli peso/BMI, idratazione, sessioni e regole operative.
+
+---
+
+## [1.0.77] - 2026-11-13
+
+### 🚀 Consolidamento Google Play In-App Updates & Rilascio di Produzione (v1.0.77 - Build 78)
+- **Avanzamento di Versione Ufficiale**:
+  - Incrementato `versionCode` a **78** e `versionName` a **1.0.77** in `app/build.gradle.kts`.
+  - Consolidata la suite di test unitari con validazione del ciclo In-App Updates e transizioni di stato.
+- **Conformità e Sincronizzazione Binari**:
+  - Compilati e verificati in parallelo il pacchetto APK (`assembleDebug`) e il pacchetto Android App Bundle per Google Play Store (`bundleRelease`).
+  - Verifica della firma permanente del keystore (`CN=CiboTimer`).
+
+---
+
+## [1.0.76] - 2026-11-13
+
+### 🚀 Integrazione Ufficiale Google Play In-App Updates API (v1.0.76 - Build 77)
+- **Supporto In-App Updates con Google Play Core API**:
+  - Aggiunte le dipendenze ufficiali `com.google.android.play:app-update:2.1.0` e `com.google.android.play:app-update-ktx:2.1.0`.
+  - Quando `enableLiveUpdate=false` (`isPlayStoreBuild=true`), la ricerca degli aggiornamenti interroga direttamente il Google Play Store tramite `AppUpdateManager` anziché il server esterno DuckDNS.
+  - Avvio del flusso di aggiornamento in-app (Flexible Update / Immediate Update) direttamente dall'interno dell'applicazione, permettendo all'utente di scaricare e installare la nuova versione senza dover aprire manualmente l'app del Google Play Store.
+- **Ciclo di Download & Installazione Flessibile (Flexible Flow)**:
+  - Download in background mentre l'utente continua ad utilizzare l'applicazione.
+  - Ricezione degli stati di avanzamento del download (`InstallStateUpdatedListener`) con visualizzazione percentuale in tempo reale sia nella Dashboard (`TimerScreen`) sia nelle Impostazioni (`SettingsScreen`).
+  - Al termine del download (`InstallStatus.DOWNLOADED`), l'utente viene notificato e con un tocco su *"Installa"* l'app invoca `completeUpdate()` per applicare l'aggiornamento e riavviare l'app istantaneamente.
+- **Gestione Lifecycle e Ripresa Flusso (`MainActivity`)**:
+  - Registrato `ActivityResultContracts.StartIntentSenderForResult()` in `MainActivity` per gestire nativamente la richiesta d'intento dell'In-App Update.
+  - Verifica automatica in `onResume` per ripristinare lo stato se un aggiornamento è già stato scaricato o riprendere un eventuale flusso immediato interrotto.
+  - Fallback automatico su apertura sicura dello store (`openPlayStore`) nel caso in cui i Google Play Services non siano disponibili o l'applicazione sia in ambiente sideloaded/debug locale.
+- **Incremento Versione & Binari**:
+  - Incrementato `versionCode` a **77** e `versionName` a **1.0.76**.
+  - Generati sia l'APK debug sia il pacchetto AAB release per Google Play Store.
+
+---
+
+## [1.0.75] - 2026-11-13
+
+### ⚡ Ottimizzazione Impostazioni Backup & Importazione File Nativa SAF (v1.0.75 - Build 76)
+- **Eliminazione Sezione Duplicata**:
+  - Rimossa la sezione ridondante *"Esportazione & Ripristino Locale"* che duplicava i comandi della sezione di backup principale.
+  - Consolidata l'intera gestione in un'unica sezione chiara *"Backup Cloud & Google Drive"*.
+- **Importazione Backup tramite Selettore File di Sistema (Storage Access Framework)**:
+  - Sostituito il vecchio modale di inserimento manuale del testo JSON con il selettore file nativo Android (`ActivityResultContracts.OpenDocument`).
+  - L'utente seleziona direttamente il file `.json` salvato nella memoria del dispositivo, su Google Drive o nei download senza dover copiare e incollare stringhe di testo.
+  - Aggiunto dialog di conferma con visualizzazione del nome file selezionato prima dell'effettivo ripristino dei dati per prevenire sovrascritture accidentali.
+- **Piena Conformità alle Policy di Google Play Store**:
+  - L'utilizzo dello Storage Access Framework (SAF) con picker di sistema è al 100% conforme alle linee guida di Google Play (Scoped Storage, Android 11+ / API 30+), non richiede permessi pericolosi come `MANAGE_EXTERNAL_STORAGE` o `READ_EXTERNAL_STORAGE` e non è soggetto ad alcuna restrizione o rifiuto da parte della Google Play Console.
+- **Miglioramento Gestione Errori**:
+  - `importBackupFromUri` e `importBackupJson` catturano `SerializationException` restituendo messaggi di errore chiari e intuitivi se il file selezionato non è un backup valido.
+- **Incremento Versione & Binari**:
+  - Incrementato `versionCode` a **76** e `versionName` a **1.0.75**.
+  - Generati pacchetti binari sincronizzati APK debug e AAB release.
+
+---
+
+## [1.0.74] - 2026-11-13
+
+### 🐛 Risoluzione Sincronizzazione Timer & Stato Finestra Pasto / Digiuno Futuro (v1.0.74 - Build 75)
+- **Risoluzione Anomalie Stato Timer nella Finestra di Alimentazione (`AppRepository.kt`)**:
+  - Risolto il bug critico per cui, durante una finestra di alimentazione (ad es. venerdì mattina tra le 07:45 e le 13:00 con inizio del digiuno previsto per le 13:00), l'app mostrava erroneamente il timer circolare e l'header in stato `"IN DIGIUNO"` con countdown di 23 ore e 0m passate.
+  - **Sincronizzazione Piani (`syncActiveSessionWithPlan`)**: aggiornata la logica affinché, al cambio o aggiornamento del piano attivo, lo stato della sessione rispetti rigorosamente la condizione reale dell'orario corrente (`scheduled.isNowInsideFasting`). Se l'orario ricade nella finestra pasto, la sessione viene impostata in `FastingState.EATING` (`MANGIARE`), calcolando l'inizio dalle 07:45 e la fine alle 13:00 (senza creare sessioni di digiuno con inizio nel futuro).
+  - **Transizioni Protette (`transitionToFasting` & `transitionToEating`)**: protette le funzioni di transizione automatica da invocazioni premature o disallineate. Se viene invocata `transitionToFasting` prima che sia effettivamente scattata l'ora del digiuno, la richiesta viene reindirizzata a `transitionToEating`, evitando la creazione di sessioni future anomale.
+  - **Auto-Guarigione nel Ciclo Continuo (`syncOrAdvanceSession`)**: aggiunta la rilevazione automatica e la risoluzione istantanea di sessioni con inizio nel futuro (`startTimeEpochMillis > now`) o con disallineamento dello stato rispetto alla schedulazione reale, garantendo che al riavvio dell'app il timer si auto-corregga immediatamente senza richiedere l'intervento dell'utente.
+- **Suite di Test Unitari**:
+  - Aggiunti test di regressione in `FastingCalculatorTest.kt` (`testResolveCurrentScheduledPeriod_Luigi1_FridayMorning_EatingWindow_ScreenshotScenario`) per verificare l'esatta conformità della finestra pasto di Venerdì mattina (08:57:13).
+  - Aggiunti test in `TimerStopRestartTest.kt` (`testPrematureFutureFastingSessionHealedToEatingWindow` e `testTransitionFromEatingToFastingAt1300`) per validare l'auto-guarigione delle sessioni errate e la transizione automatica alle 13:00.
+
+---
+
+## [1.0.73] - 2026-11-13
+
+### 🌟 Modello Matematico Unificato Asse Lineare `Span` & Risoluzione Periodo Fantasma (v1.0.73 - Build 74)
+- **Introduzione del Modello Lineare Settimanale (`WeekSpanModel.kt`)**:
+  - Introdotto il modello unificato `Span(start, end)` in minuti da Lunedì 00:00 (0..10080 con gestione wrap ciclico).
+  - Implementate funzioni uniche per l'intera app: `FastingPeriod.toSpan()`, `normalize(spans)`, `fastsInDay(spans, d)` e `bounds(spans, i)`.
+- **Risoluzione Radicale del Periodo Fantasma & Allineamento Totale**:
+  - Eliminato il periodo fantasma (Periodo 9, 11:00→23:00) originato dal template di Luigi 1 e garantita la normalizzazione in lettura per i piani salvati.
+  - **Barre grafiche (`FastingCalculator.kt`)**: `computePeriods24hSegments` e `compute24hSegments` ricavano i `TimelineSegment` da `fastsInDay` (i pasti sono i buchi tra i digiuni). Domenica mostra correttamente il pasto 07:00→16:00 e il digiuno 16:00→24:00.
+  - **Grafico settimanale (`WeekBarChart.kt`)**: sottotitoli e durate ("13+17 h") calcolati esclusivamente dagli `Span` che iniziano in quella giornata. Lunedì mostra con precisione solo "00:00→13:00 · 14:00→Mar 07:30".
+  - **Editor Modifica Piano (`TimeEditorModal.kt` & `PlanShiftEngine.kt`)**: limiti, Fine e Durata calcolati dal modello lineare `Span` e `bounds()`. Il Periodo 8 mostra ora la Fine corretta "Lun 08:00".
+  - Rimossi tutti i filtri sparsi e workaround su `startDayOfWeek > 7`.
+
+---
+
+## [1.0.72] - 2026-11-13
+
+### 🚀 Release Consolidata Grafico Settimanale & Modifica Piani (v1.0.72 - Build 73)
+- **Allineamento & Consolidamento Funzionalità**:
+  - Confermata e verificata la gestione multi-periodo del grafico settimanale con transizione corretta Domenica ➔ Lunedì (`Dom 16:00 → Lun 08:00`) e supporto orari completi nei giorni con doppi digiuni.
+  - Convalidate le correzioni della mappatura giorni nel modale di modifica orari (tap su Martedì evidenzia con precisione Martedì `Mar`).
+  - Convalidata la logica di salvataggio dei piani attivi con applicazione e attivazione immediata sul timer.
+- **Incremento Versione & Compilazione**:
+  - Incrementato `versionCode` a **73** e `versionName` a **1.0.72**.
+  - Generati e verificati entrambi i pacchetti binari: APK debug e AAB release.
+
+---
+
+## [1.0.70] - 2026-11-13
+
+### 🐛 Risoluzione Anomalie Diciture Domenica e Lunedì in Grafico Settimanale (Opzione A)
+- **Correzione Transizione Settimanale Domenica ➔ Lunedì (`WeekBarChart.kt`)**:
+  - Risolto il bug per cui la dicitura di Domenica riportava erroneamente `Dom 16:00 → Dom 08:00` invece di `Dom 16:00 → Lun 08:00`.
+  - Corretto l'accesso all'indice dei giorni per i periodi con `endDayOfWeek >= 8` (Lunedì della settimana successiva) tramite modulo ciclico a 7 giorni.
+- **Supporto Completo Multi-Periodo per Lunedì (`WeekBarChart.kt`)**:
+  - Quando un giorno contiene più periodi di digiuno (come Lunedì in *Luigi 1* con digiuno notturno e nuovo digiuno pomeridiano), la dicitura sotto la barra mostra ora entrambi i periodi completi: `00:00 → 13:00 · 14:00 → Mar 07:00`.
+  - La colonna durata a destra calcola ed espone i singoli periodi del giorno (es. `13+18 h`), garantendo piena trasparenza informativa all'utente.
+- **Test Unitari**:
+  - Aggiornato `PlanManagementTest.kt` per verificare la corretta ciclicità settimanale di Domenica (p8) che transita verso Lunedì e la gestione dei multi-periodi.
+
+---
+
+## [1.0.69] - 2026-11-12
+
+### 🐛 Risoluzione Disallineamento Evidenziazione Giorni in Modifica Piano (Tap Martedì → Evidenzia Mar)
+- **Correzione Mappatura Periodo-Giorno (`TimeEditorModal.kt` & `WeekBarChart.kt`)**:
+  - Risolto il bug per cui toccando **Martedì** (o selezionando un periodo multi-periodo come il Periodo 3 in piani quali *Luigi 1*) veniva erroneamente evidenziato **Mercoledì** (`Mer`).
+  - La causa era il passaggio del numero sequenziale del periodo (`selectedPeriodNumber = 3`) al parametro `selectedDayOfWeek` di `WeekBarChart`, che interpretava il valore `3` come indice del giorno (1=Lun, 2=Mar, 3=Mer, 4=Gio, 5=Ven, 6=Sab, 7=Dom).
+  - Ora viene sempre calcolato e passato il giorno effettivo del periodo (`previewPeriod.startDayOfWeek`), garantendo che il tap su Martedì evidenzi esattamente Martedì (`Mar`).
+  - Ottimizzata la selezione al tocco (`onDaySelected`) per gestire i giorni con più periodi (es. Lunedì con p1 e p2) permettendo di ciclare tra i periodi del giorno prima di deselezionare.
+  - Aggiunti test unitari specifici in `PlanManagementTest.kt` per verificare la coerenza della mappatura giorno-periodo.
+
+---
+
+## [1.0.68] - 2026-11-12
+
+### 🚀 Nuova Release Version Bump (v1.0.68 - Build 69)
+- **Incremento Versione & Stabilità**:
+  - Incrementato `versionCode` a **69** e `versionName` a **1.0.68**.
+  - Allineamento dei pacchetti APK e AAB con tutte le ottimizzazioni alla modifica del piano e alla sincronizzazione in tempo reale con il timer del digiuno.
+
+---
+
+## [1.0.67] - 2026-11-12
+
+### 🐛 Risoluzione Bug Modifica Piano Attivo & Revisione Dialoghi di Salvataggio
+- **Attivazione Obbligatoria al Salvataggio del Piano Attivo**:
+  - Risolto il bug per cui salvando le modifiche apportate al piano attivo tramite "Solo Salva" il piano attivo non veniva aggiornato né attivato sul timer in corso.
+  - Quando il piano in modifica è quello attivo (`isActive == true`), qualsiasi operazione di salvataggio applica e attiva immediatamente le modifiche sul timer in esecuzione (`AppRepository.updateActivePlan` / `saveCustomPlan(activate = true)`).
+- **Revisione Messaggi e Opzioni di Salvataggio (`TimeEditorModal.kt`)**:
+  - Rimosso il nonsenso di proporre "Solo Salva" vs "Salva e Attiva" quando si modifica un piano già attivo.
+  - Per i piani predefiniti attivi (es. 16-8, 18-6): il dialog presenta il messaggio chiaro *"Stai modificando il piano attivo (%1$s). Le modifiche verranno salvate nei tuoi piani personalizzati e applicate immediatamente al digiuno in corso."* con il pulsante primario chiaro **"Salva e Applica"**.
+  - Per i piani personalizzati già attivi: il dialog chiarisce *"Stai modificando il piano attivo \"%1$s\". Le modifiche verranno applicate direttamente al digiuno in corso."*, offrendo **"Salva modifiche"** per l'aggiornamento diretto in-place e **"Salva come nuovo piano"** nel caso si desideri crearne una copia separata attiva.
+  - Sostituita l'etichetta dell'azione nella barra superiore da "Salva con nome" a **"Salva"** con icona di spunta.
+  - Aggiornato il pulsante di salvataggio nel dialogo di scarto modifiche da "Salva con nome" a **"Salva"**.
+  - Internazionalizzati tutti i nuovi testi e toast multilingua in `strings.xml` (`it-IT` e `en-US`).
+- **Test Unitari**:
+  - Aggiunti test in `PlanManagementTest.kt` per verificare la corretta attivazione e sincronizzazione quando si salva un piano attivo e l'aggiornamento in-place dei piani personalizzati.
+
+---
+
 ## [1.0.66] - 2026-11-12
 
 ### 🚀 Aggiornamento Target SDK 36 (Android 16) per Google Play Store

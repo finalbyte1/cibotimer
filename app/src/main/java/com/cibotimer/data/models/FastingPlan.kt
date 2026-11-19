@@ -1,5 +1,9 @@
 ﻿package com.cibotimer.data.models
 
+import com.cibotimer.domain.FastingPlanTemplates
+import com.cibotimer.domain.WeekSpanModel
+import com.cibotimer.domain.WeekSpanModel.toPeriod
+import com.cibotimer.domain.toSpan
 import kotlinx.serialization.Serializable
 import java.time.DayOfWeek
 import java.time.format.TextStyle
@@ -103,40 +107,57 @@ data class FastingPlan(
     val nameEn: String? = null,
     val descriptionEn: String? = null
 ) {
+    fun getLocalizedName(locale: Locale = Locale.getDefault()): String {
+        if (locale.language == "it") return name
+        val template = FastingPlanTemplates.ALL_PREDEFINED_PLANS.firstOrNull { it.id == id || it.name == name }
+        return nameEn ?: template?.nameEn ?: name
+    }
+
     val localizedName: String
-        get() {
-            if (Locale.getDefault().language == "it") return name
-            return nameEn ?: name
-        }
+        get() = getLocalizedName(Locale.getDefault())
+
+    fun getLocalizedDescription(locale: Locale = Locale.getDefault()): String {
+        if (locale.language == "it") return description
+        val template = FastingPlanTemplates.ALL_PREDEFINED_PLANS.firstOrNull { it.id == id || it.name == name }
+        return descriptionEn ?: template?.descriptionEn ?: description
+    }
 
     val localizedDescription: String
-        get() {
-            if (Locale.getDefault().language == "it") return description
-            return descriptionEn ?: description
-        }
+        get() = getLocalizedDescription(Locale.getDefault())
 
     val descriptionItalian: String
         get() = description
 
     fun getEffectivePeriods(): List<FastingPeriod> {
-        if (!periods.isNullOrEmpty()) {
-            return periods
+        val rawPeriods = if (!periods.isNullOrEmpty()) {
+            periods.filter { it.startDayOfWeek in 1..7 }
+        } else {
+            days.filter { it.isFastingDay }.mapIndexed { index, day ->
+                val nextDayOfWeek = if (day.dayOfWeek == 7) 1 else day.dayOfWeek + 1
+                val isNextDay = (day.startHour * 60 + day.startMinute + day.fastingDurationMinutes) >= 24 * 60
+                FastingPeriod(
+                    id = "p_${day.dayOfWeek}",
+                    periodNumber = index + 1,
+                    startDayOfWeek = day.dayOfWeek,
+                    startHour = day.startHour,
+                    startMinute = day.startMinute,
+                    endDayOfWeek = if (isNextDay) nextDayOfWeek else day.dayOfWeek,
+                    endHour = day.endHour,
+                    endMinute = day.endMinute,
+                    fastingDurationMinutes = day.fastingDurationMinutes,
+                    isFasting = true
+                )
+            }
         }
-        return days.filter { it.isFastingDay }.mapIndexed { index, day ->
-            val nextDayOfWeek = if (day.dayOfWeek == 7) 1 else day.dayOfWeek + 1
-            val isNextDay = (day.startHour * 60 + day.startMinute + day.fastingDurationMinutes) >= 24 * 60
-            FastingPeriod(
-                id = "p_${day.dayOfWeek}",
-                periodNumber = index + 1,
-                startDayOfWeek = day.dayOfWeek,
-                startHour = day.startHour,
-                startMinute = day.startMinute,
-                endDayOfWeek = if (isNextDay) nextDayOfWeek else day.dayOfWeek,
-                endHour = day.endHour,
-                endMinute = day.endMinute,
-                fastingDurationMinutes = day.fastingDurationMinutes,
-                isFasting = true
-            )
+
+        if (rawPeriods.size <= 1) {
+            return rawPeriods.mapIndexed { idx, p -> p.copy(periodNumber = idx + 1) }
+        }
+
+        val spans = rawPeriods.map { it.toSpan() }
+        val normalizedSpans = WeekSpanModel.normalize(spans)
+        return normalizedSpans.mapIndexed { index, span ->
+            span.toPeriod(index + 1, "p${index + 1}")
         }
     }
 }

@@ -110,13 +110,18 @@ fun StageItemRow(
     isPast: Boolean,
     currentElapsedMinutes: Long
 ) {
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
     val stageColor = Color(stage.colorHex)
 
     val statusBadgeText = when {
         isPast -> {
             val passedMinutes = currentElapsedMinutes - stage.endMinutes
             val passedHours = passedMinutes / 60
-            if (passedHours > 0) "Completata • Superata da ${passedHours}h" else "Completata"
+            if (passedHours > 0) {
+                stringResource(R.string.stage_status_completed_overdue, passedHours)
+            } else {
+                stringResource(R.string.stage_status_completed)
+            }
         }
         isActive -> {
             val elapH = currentElapsedMinutes / 60
@@ -124,14 +129,18 @@ fun StageItemRow(
             val remM = stage.endMinutes - currentElapsedMinutes
             val remH = remM / 60
             if (stage.endMinutes == Int.MAX_VALUE) {
-                "In corso • ${elapH}h passate"
+                stringResource(R.string.stage_status_ongoing_hours, elapH)
             } else {
-                "In corso • ${elapH}h ${elapM}m passate (mancano ${remH}h)"
+                stringResource(R.string.stage_status_ongoing_full, elapH, elapM, remH)
             }
         }
         else -> {
             val startDiffH = (stage.startMinutes - currentElapsedMinutes) / 60
-            if (startDiffH > 0) "Tra ${startDiffH}h" else "Prossima"
+            if (startDiffH > 0) {
+                stringResource(R.string.stage_status_upcoming_hours, startDiffH)
+            } else {
+                stringResource(R.string.stage_status_upcoming_next)
+            }
         }
     }
 
@@ -168,7 +177,7 @@ fun StageItemRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stage.localizedTitle,
+                    text = stage.getLocalizedTitle(locale),
                     fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = if (isActive) stageColor else TextPrimary
@@ -191,7 +200,7 @@ fun StageItemRow(
             )
 
             Text(
-                text = stage.localizedSubtitle,
+                text = stage.getLocalizedSubtitle(locale),
                 fontWeight = FontWeight.Medium,
                 fontSize = 13.sp,
                 color = stageColor,
@@ -199,7 +208,7 @@ fun StageItemRow(
             )
 
             Text(
-                text = stage.localizedDescription,
+                text = stage.getLocalizedDescription(locale),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary,
                 modifier = Modifier.padding(top = 6.dp)

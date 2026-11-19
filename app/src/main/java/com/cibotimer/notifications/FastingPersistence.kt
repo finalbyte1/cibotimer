@@ -19,6 +19,7 @@ object FastingPersistence {
     private const val KEY_IS_EATING = "key_is_eating"
     private const val KEY_EXPECTED_RUNNING = "key_expected_running"
     private const val KEY_BATTERY_HINT_SHOWN = "key_battery_hint_shown"
+    private const val KEY_PERSISTENT_NOTIF_ENABLED = "key_persistent_notif_enabled"
 
     fun saveState(
         context: Context,
@@ -66,6 +67,17 @@ object FastingPersistence {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(KEY_BATTERY_HINT_SHOWN, shown)
+            .apply()
+    }
+
+    fun isPersistentNotificationEnabled(context: Context): Boolean =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_PERSISTENT_NOTIF_ENABLED, true)
+
+    fun setPersistentNotificationEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_PERSISTENT_NOTIF_ENABLED, enabled)
             .apply()
     }
 

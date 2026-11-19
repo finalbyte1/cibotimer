@@ -39,18 +39,20 @@ fun CoachingScreen(
     modifier: Modifier = Modifier
 ) {
     val coachingTips by repository.coachingTips.collectAsState()
-    var selectedCategory by remember { mutableStateOf<String?>(null) } // null = Tutti
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    val allLabel = stringResource(R.string.category_all)
+    var selectedCategory by remember { mutableStateOf<String?>(null) } // null = Tutti/All
     var activeTipForReading by remember { mutableStateOf<CoachingTip?>(null) }
 
-    val categories = remember(coachingTips) {
-        listOf("Tutti") + coachingTips.map { it.category }.distinct()
+    val categories = remember(coachingTips, locale, allLabel) {
+        listOf(allLabel) + coachingTips.map { it.getLocalizedCategory(locale) }.distinct()
     }
 
-    val filteredTips = remember(selectedCategory, coachingTips) {
-        if (selectedCategory == null || selectedCategory == "Tutti") {
+    val filteredTips = remember(selectedCategory, coachingTips, locale, allLabel) {
+        if (selectedCategory == null || selectedCategory == allLabel) {
             coachingTips
         } else {
-            coachingTips.filter { it.category == selectedCategory }
+            coachingTips.filter { it.getLocalizedCategory(locale) == selectedCategory }
         }
     }
 
@@ -92,13 +94,13 @@ fun CoachingScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(categories) { cat ->
-                    val isSelected = (cat == "Tutti" && selectedCategory == null) || (cat == selectedCategory)
+                    val isSelected = (cat == allLabel && selectedCategory == null) || (cat == selectedCategory)
                     FilterChip(
                         selected = isSelected,
                         onClick = {
-                            selectedCategory = if (cat == "Tutti") null else cat
+                            selectedCategory = if (cat == allLabel) null else cat
                         },
-                        label = { Text(if (cat == "Tutti") stringResource(R.string.category_all) else cat) },
+                        label = { Text(cat) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = CiboTimerAzure,
                             selectedLabelColor = Color.White
@@ -171,7 +173,7 @@ fun CoachingScreen(
                                     color = CiboTimerAzureContainer
                                 ) {
                                     Text(
-                                        text = tip.localizedCategory,
+                                        text = tip.getLocalizedCategory(locale),
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = CiboTimerAzure,
@@ -198,7 +200,7 @@ fun CoachingScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = tip.localizedTitle,
+                                text = tip.getLocalizedTitle(locale),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 17.sp,
                                 color = TextPrimary
@@ -207,7 +209,7 @@ fun CoachingScreen(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = tip.localizedSubtitle,
+                                text = tip.getLocalizedSubtitle(locale),
                                 fontSize = 13.sp,
                                 color = TextSecondary,
                                 lineHeight = 18.sp
@@ -268,7 +270,7 @@ fun CoachingScreen(
                         color = CiboTimerAzureContainer
                     ) {
                         Text(
-                            text = tip.localizedCategory,
+                            text = tip.getLocalizedCategory(locale),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = CiboTimerAzure,
@@ -284,7 +286,7 @@ fun CoachingScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = tip.localizedTitle,
+                    text = tip.getLocalizedTitle(locale),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 22.sp,
                     color = TextPrimary
@@ -293,7 +295,7 @@ fun CoachingScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = tip.localizedSubtitle,
+                    text = tip.getLocalizedSubtitle(locale),
                     fontWeight = FontWeight.Medium,
                     fontSize = 15.sp,
                     color = TextSecondary
@@ -304,7 +306,7 @@ fun CoachingScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = tip.localizedContentMarkdown,
+                    text = tip.getLocalizedContentMarkdown(locale),
                     fontSize = 15.sp,
                     color = TextPrimary,
                     lineHeight = 22.sp

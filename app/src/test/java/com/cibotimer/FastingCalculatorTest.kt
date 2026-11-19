@@ -4,6 +4,7 @@ import com.cibotimer.data.models.FastingSession
 import com.cibotimer.data.models.FastingState
 import com.cibotimer.domain.FastingCalculator
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -134,16 +135,16 @@ class FastingCalculatorTest {
         )
 
         assertTrue("Alle 14:04 di Lunedì deve essere all'interno del digiuno", scheduled.isNowInsideFasting)
-        assertEquals(2, scheduled.period.periodNumber) // Periodo 2: lun 14:00 – mar 10:00 (20h)
-        assertEquals(20 * 3600L, scheduled.durationSeconds)
+        assertEquals(1, scheduled.period.periodNumber) // Periodo 1: lun 14:00 – mar 07:45 (17h 45m)
+        assertEquals(1065 * 60L, scheduled.durationSeconds)
         assertEquals(4 * 60 + 17L, scheduled.elapsedSeconds)
-        assertEquals(20 * 3600L - (4 * 60 + 17L), scheduled.remainingSeconds) // 19:55:43
+        assertEquals(1065 * 60L - (4 * 60 + 17L), scheduled.remainingSeconds)
         assertTrue(scheduled.progressFraction > 0f && scheduled.progressFraction < 0.01f)
     }
 
     @Test
     fun testResolveCurrentScheduledPeriod_Luigi1_Fasting_MondayMorningPeriod1() {
-        // Lunedì alle 08:00 (dentro il Periodo 1: lun 00:00 – lun 13:00, 13h)
+        // Lunedì alle 08:00 (Periodo 7: dom 16:00 – lun 13:00, 21h)
         val cal = java.util.Calendar.getInstance().apply {
             set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY)
             set(java.util.Calendar.HOUR_OF_DAY, 8)
@@ -158,16 +159,16 @@ class FastingCalculatorTest {
             nowMillis = now
         )
 
-        assertTrue("Alle 08:00 di Lunedì siamo in digiuno (Periodo 1)", scheduled.isNowInsideFasting)
-        assertEquals(1, scheduled.period.periodNumber)
-        assertEquals(13 * 3600L, scheduled.durationSeconds)
-        assertEquals(8 * 3600L, scheduled.elapsedSeconds)
-        assertEquals(5 * 3600L, scheduled.remainingSeconds)
+        assertTrue("Alle 08:00 di Lunedì siamo in digiuno (Periodo 7)", scheduled.isNowInsideFasting)
+        assertEquals(7, scheduled.period.periodNumber)
+        assertEquals(21 * 3600L, scheduled.durationSeconds)
+        assertEquals(16 * 3600L, scheduled.elapsedSeconds) // 8h dom + 8h lun = 16h
+        assertEquals(5 * 3600L, scheduled.remainingSeconds)  // fino alle 13:00 = 5h
     }
 
     @Test
     fun testResolveCurrentScheduledPeriod_Luigi1_EatingWindow_Monday1330() {
-        // Lunedì alle 13:30 (finestra di pasto tra Periodo 1 terminato alle 13:00 e Periodo 2 alle 14:00)
+        // Lunedì alle 13:30 (finestra di pasto tra Periodo 7 terminato alle 13:00 e Periodo 1 alle 14:00)
         val cal = java.util.Calendar.getInstance().apply {
             set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY)
             set(java.util.Calendar.HOUR_OF_DAY, 13)
@@ -183,14 +184,14 @@ class FastingCalculatorTest {
         )
 
         assertTrue("Alle 13:30 di Lunedì non siamo in digiuno (finestra pasto)", !scheduled.isNowInsideFasting)
-        assertEquals("Il prossimo digiuno deve essere il Periodo 2", 2, scheduled.period.periodNumber)
-        assertEquals(20 * 3600L, scheduled.durationSeconds)
+        assertEquals("Il prossimo digiuno deve essere il Periodo 1", 1, scheduled.period.periodNumber)
+        assertEquals(1065 * 60L, scheduled.durationSeconds)
         assertEquals(0f, scheduled.progressFraction, 0.001f)
     }
 
     @Test
     fun testResolveCurrentScheduledPeriod_Luigi1_SundayOvernight() {
-        // Domenica alle 23:00 (dentro il Periodo 8: dom 16:00 – lun 11:00)
+        // Domenica alle 23:00 (dentro il Periodo 7: dom 16:00 – lun 13:00, 21h)
         val cal = java.util.Calendar.getInstance().apply {
             set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.SUNDAY)
             set(java.util.Calendar.HOUR_OF_DAY, 23)
@@ -206,9 +207,48 @@ class FastingCalculatorTest {
         )
 
         assertTrue("Domenica alle 23:00 siamo in digiuno notturno", scheduled.isNowInsideFasting)
-        assertEquals(8, scheduled.period.periodNumber)
-        assertEquals(19 * 3600L, scheduled.durationSeconds)
+        assertEquals(7, scheduled.period.periodNumber)
+        assertEquals(21 * 3600L, scheduled.durationSeconds)
         assertEquals(7 * 3600L, scheduled.elapsedSeconds) // dalle 16:00 alle 23:00 = 7h
-        assertEquals(12 * 3600L, scheduled.remainingSeconds) // fino alle 11:00 di lunedì = 12h
+        assertEquals(14 * 3600L, scheduled.remainingSeconds) // fino alle 13:00 di lunedì = 14h
+    }
+
+    @Test
+    fun testResolveCurrentScheduledPeriod_Luigi1_FridayMorning_EatingWindow_ScreenshotScenario() {
+        // Venerdì alle ore 08:57:13 (esattamente lo scenario dello screenshot dell'utente)
+        // Il digiuno precedente (Periodo 4) si è concluso alle 07:45 di venerdì mattina.
+        // Il prossimo digiuno (Periodo 5) inizia alle ore 13:00 di venerdì.
+        // Dalle 07:45 alle 13:00 siamo rigorosamente nella FINESTRA DI ALIMENTAZIONE (PASTO).
+        val cal = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.FRIDAY)
+            set(java.util.Calendar.HOUR_OF_DAY, 8)
+            set(java.util.Calendar.MINUTE, 57)
+            set(java.util.Calendar.SECOND, 13)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val now = cal.timeInMillis
+
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(
+            plan = com.cibotimer.domain.FastingPlanTemplates.PLAN_LUIGI_1,
+            nowMillis = now
+        )
+
+        assertFalse("Alle 08:57:13 di Venerdì NON siamo in digiuno (è finestra pasto)", scheduled.isNowInsideFasting)
+        assertEquals("Il prossimo digiuno deve essere il Periodo 5 (Ven 13:00 -> Sab 08:00)", 5, scheduled.period.periodNumber)
+
+        // Verifica finestra alimentare corrente: 07:45 -> 13:00 (5h 15m = 315 min = 18900s)
+        val calStart = java.util.Calendar.getInstance().apply { timeInMillis = scheduled.eatingWindowStartMillis }
+        assertEquals(java.util.Calendar.FRIDAY, calStart.get(java.util.Calendar.DAY_OF_WEEK))
+        assertEquals(7, calStart.get(java.util.Calendar.HOUR_OF_DAY))
+        assertEquals(45, calStart.get(java.util.Calendar.MINUTE))
+
+        val calEnd = java.util.Calendar.getInstance().apply { timeInMillis = scheduled.eatingWindowEndMillis }
+        assertEquals(java.util.Calendar.FRIDAY, calEnd.get(java.util.Calendar.DAY_OF_WEEK))
+        assertEquals(13, calEnd.get(java.util.Calendar.HOUR_OF_DAY))
+        assertEquals(0, calEnd.get(java.util.Calendar.MINUTE))
+
+        assertEquals(18900L, scheduled.eatingDurationSeconds)
+        assertEquals(72 * 60 + 13L, scheduled.eatingElapsedSeconds) // 1h 12m 13s passate
+        assertEquals(18900L - (72 * 60 + 13L), scheduled.eatingRemainingSeconds) // 4h 02m 47s mancanti al digiuno
     }
 }

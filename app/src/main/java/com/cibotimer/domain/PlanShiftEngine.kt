@@ -1,14 +1,16 @@
 ﻿package com.cibotimer.domain
 
 import com.cibotimer.data.models.DayPlan
+import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPeriod
 import com.cibotimer.data.models.FastingPlan
+import com.cibotimer.domain.WeekSpanModel.toPeriod
 
 object PlanShiftEngine {
 
     /**
      * Rappresenta i limiti temporali e i vincoli rispetto ai periodi adiacenti (anteriore e successivo).
-     * Ispirato direttamente alla funzione BodyFast #17838 getPeriodBounds.
+     * Derivato dai minuti assoluti settimanali ciclici [0..10080].
      */
     data class PeriodBounds(
         val hasAnterior: Boolean = false,
@@ -25,7 +27,10 @@ object PlanShiftEngine {
         val nextStartMinute: Int? = null,
         val nextStartDayOfWeek: Int? = null,
         val nextStartDayShort: String? = null,
-        val gapAfterMinutes: Int = Int.MAX_VALUE
+        val gapAfterMinutes: Int = Int.MAX_VALUE,
+
+        val minStartAbsolute: Int = 0,
+        val maxEndAbsolute: Int = WeekSpanModel.WEEK_MINUTES
     ) {
         val canShiftMinus1h: Boolean
             get() = !hasAnterior || gapBeforeMinutes >= 60
@@ -44,8 +49,33 @@ object PlanShiftEngine {
     }
 
     /**
-     * Calcola i limiti temporali e le distanze minime (gap) rispetto ai periodi adiacenti.
-     * Garantisce che non sia possibile superare l'orario di fine del periodo anteriore o l'inizio del successivo.
+     * Ripara eventuali sovrapposizioni o conflitti temporali nel piano:
+     * - Ordina i periodi cronologicamente per orario di inizio
+     * - Sposta l'inizio del periodo in conflitto alla fine del periodo precedente
+     * - Garantisce una durata minima di 60 minuti
+     * - Gestisce ciclicamente il wrap tra ultimo e primo periodo
+     * Se non ci sono conflitti, restituisce il piano invariato.
+     */
+    fun repairPlan(plan: FastingPlan): FastingPlan {
+        val periodsList = plan.getEffectivePeriods()
+        if (periodsList.size <= 1) return plan
+
+        val spans = periodsList.map { it.toSpan() }
+        val (repairedSpans, wasRepaired) = WeekSpanModel.repairOverlaps(spans)
+
+        val needsUpdate = wasRepaired || plan.periods == null || plan.periods.size != repairedSpans.size
+        if (!needsUpdate) return plan
+
+        val repairedPeriods = repairedSpans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, "p${idx + 1}")
+        }
+        val updatedDays = syncDaysFromPeriods(repairedPeriods, plan.days)
+        return plan.copy(periods = repairedPeriods, days = updatedDays)
+    }
+
+    /**
+     * Calcola i limiti temporali e le distanze minime (gap) rispetto ai periodi adiacenti,
+     * in modo rigorosamente ciclico sull'asse lineare settimanale (0..10080).
      */
     fun getPeriodBounds(plan: FastingPlan, periodNumber: Int): PeriodBounds {
         val periodsList = plan.getEffectivePeriods()
@@ -57,95 +87,62 @@ object PlanShiftEngine {
             return PeriodBounds()
         }
 
-        val curP = periodsList[targetIdx]
-        val curStartWeekly = ((curP.startDayOfWeek - 1).coerceIn(0, 6)) * 1440 + curP.startHour * 60 + curP.startMinute
-        val curEndWeekly = curStartWeekly + curP.fastingDurationMinutes
+        val spans = periodsList.map { it.toSpan() }
+        val b = WeekSpanModel.bounds(spans, targetIdx)
 
-        // Periodo anteriore
-        val (prevP, isCyclicAnterior) = if (targetIdx > 0) {
-            Pair(periodsList[targetIdx - 1], false)
-        } else {
-            Pair(periodsList.last(), true)
-        }
-
-        val prevStartWeekly = ((prevP.startDayOfWeek - 1).coerceIn(0, 6)) * 1440 + prevP.startHour * 60 + prevP.startMinute
-        val prevEndWeekly = prevStartWeekly + prevP.fastingDurationMinutes
-
-        val gapBefore = if (!isCyclicAnterior) {
-            maxOf(0, curStartWeekly - prevEndWeekly)
-        } else {
-            val prevEndMod = prevEndWeekly % 10080
-            val curStartMod = curStartWeekly % 10080
-            if (curStartWeekly == 0 && prevEndWeekly <= 10080) {
-                0
-            } else {
-                ((curStartMod - prevEndMod + 10080) % 10080)
-            }
-        }
-
-        // Periodo successivo
-        val (nextP, isCyclicNext) = if (targetIdx < periodsList.size - 1) {
-            Pair(periodsList[targetIdx + 1], false)
-        } else {
-            Pair(periodsList.first(), true)
-        }
-
-        val nextStartWeekly = ((nextP.startDayOfWeek - 1).coerceIn(0, 6)) * 1440 + nextP.startHour * 60 + nextP.startMinute
-
-        val gapAfter = if (!isCyclicNext) {
-            maxOf(0, nextStartWeekly - curEndWeekly)
-        } else {
-            val curEndMod = curEndWeekly % 10080
-            val nextStartMod = nextStartWeekly % 10080
-            ((nextStartMod - curEndMod + 10080) % 10080)
-        }
+        val prevP = periodsList[b.prevIndex]
+        val nextP = periodsList[b.nextIndex]
 
         return PeriodBounds(
             hasAnterior = true,
             anteriorPeriodNumber = prevP.periodNumber,
-            anteriorEndHour = prevP.endHour,
-            anteriorEndMinute = prevP.endMinute,
-            anteriorEndDayOfWeek = prevP.endDayOfWeek,
-            anteriorEndDayShort = prevP.endDayShort,
-            gapBeforeMinutes = gapBefore,
+            anteriorEndHour = b.prevEndHour,
+            anteriorEndMinute = b.prevEndMinute,
+            anteriorEndDayOfWeek = b.prevEndDayOfWeek,
+            anteriorEndDayShort = FastingDayFormatter.formatShort(b.prevEndDayOfWeek),
+            gapBeforeMinutes = b.gapBeforeMinutes,
 
             hasNext = true,
             nextPeriodNumber = nextP.periodNumber,
-            nextStartHour = nextP.startHour,
-            nextStartMinute = nextP.startMinute,
-            nextStartDayOfWeek = nextP.startDayOfWeek,
-            nextStartDayShort = nextP.startDayShort,
-            gapAfterMinutes = gapAfter
+            nextStartHour = b.nextStartHour,
+            nextStartMinute = b.nextStartMinute,
+            nextStartDayOfWeek = b.nextStartDayOfWeek,
+            nextStartDayShort = FastingDayFormatter.formatShort(b.nextStartDayOfWeek),
+            gapAfterMinutes = b.gapAfterMinutes,
+
+            minStartAbsolute = b.minStart,
+            maxEndAbsolute = b.maxEnd
         )
     }
 
     /**
-     * Sposta tutti i periodi (o giorni) del piano di deltaHours (±1 ora) e deltaMinutes (±15 min),
-     * preservando RIGOROSAMENTE e MATEMATICAMENTE la durata del digiuno.
+     * Sposta tutti i periodi (o giorni) del piano di deltaHours e deltaMinutes
+     * operando sugli Span interi (modulo 10080), preservando matematicamente durata e distanze.
      */
     fun shiftAllDays(plan: FastingPlan, deltaHours: Int, deltaMinutes: Int = 0): FastingPlan {
         val totalDelta = deltaHours * 60 + deltaMinutes
+        if (totalDelta == 0) return plan
+
         val currentPeriods = plan.getEffectivePeriods()
-        val updatedPeriods = currentPeriods.map { p ->
-            val startTotal = (p.startHour * 60 + p.startMinute + totalDelta + 24 * 60 * 10) % (24 * 60)
-            val endTotal = (p.endHour * 60 + p.endMinute + totalDelta + 24 * 60 * 10) % (24 * 60)
-            p.copy(
-                startHour = startTotal / 60,
-                startMinute = startTotal % 60,
-                endHour = endTotal / 60,
-                endMinute = endTotal % 60
-            )
+        val spans = currentPeriods.map { it.toSpan() }
+
+        val shiftedSpans = spans.map { s ->
+            val dur = s.durationMinutes
+            val rawStart = (s.start + totalDelta) % WeekSpanModel.WEEK_MINUTES
+            val normStart = ((rawStart % WeekSpanModel.WEEK_MINUTES) + WeekSpanModel.WEEK_MINUTES) % WeekSpanModel.WEEK_MINUTES
+            Span(normStart, normStart + dur)
         }
-        val updatedDays = plan.days.map { day ->
-            shiftSingleDay(day, deltaHours, deltaMinutes)
+
+        val updatedPeriods = shiftedSpans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, currentPeriods[idx].id)
         }
+        val updatedDays = syncDaysFromPeriods(updatedPeriods, plan.days)
         return plan.copy(days = updatedDays, periods = updatedPeriods)
     }
 
     /**
-     * Sposta un singolo periodo di deltaHours e deltaMinutes.
-     * Con cascadeNext = false (predefinito), il periodo successivo rimane rigorosamente INVARIATO.
-     * Non permette di superare l'orario di fine del periodo anteriore o l'inizio del periodo successivo.
+     * Sposta un singolo periodo di deltaHours e deltaMinutes in minuti assoluti.
+     * Rispetta i bound ciclici [minStart, maxEnd].
      */
     fun shiftPeriod(
         plan: FastingPlan,
@@ -161,61 +158,46 @@ object PlanShiftEngine {
         val targetIdx = periodsList.indexOfFirst { it.periodNumber == periodNumber }
         if (targetIdx == -1) return plan
 
-        val bounds = getPeriodBounds(plan, periodNumber)
+        val spans = periodsList.map { it.toSpan() }.toMutableList()
+        val b = WeekSpanModel.bounds(spans, targetIdx)
+        val curSpan = spans[targetIdx]
 
         val effectiveDelta = if (totalDelta < 0) {
-            if (bounds.hasAnterior) {
-                val maxEarlier = bounds.gapBeforeMinutes
-                if (maxEarlier <= 0) return plan
-                totalDelta.coerceAtLeast(-maxEarlier)
-            } else {
-                totalDelta
-            }
+            val maxEarlier = curSpan.start - b.minStart
+            if (maxEarlier <= 0) return plan
+            totalDelta.coerceAtLeast(-maxEarlier)
         } else {
-            if (bounds.hasNext && !cascadeNext) {
-                val maxLater = bounds.gapAfterMinutes
+            if (!cascadeNext) {
+                val maxLater = b.maxEnd - curSpan.end
                 if (maxLater <= 0) return plan
                 totalDelta.coerceAtMost(maxLater)
             } else {
                 totalDelta
             }
         }
-
         if (effectiveDelta == 0) return plan
 
-        val p = periodsList[targetIdx]
-        val newStartTotal = (p.startHour * 60 + p.startMinute + effectiveDelta + 24 * 60 * 10) % (24 * 60)
-        val newEndTotal = (p.endHour * 60 + p.endMinute + effectiveDelta + 24 * 60 * 10) % (24 * 60)
-        val updatedTarget = p.copy(
-            startHour = newStartTotal / 60,
-            startMinute = newStartTotal % 60,
-            endHour = newEndTotal / 60,
-            endMinute = newEndTotal % 60
-        )
-        periodsList[targetIdx] = updatedTarget
+        val newStart = curSpan.start + effectiveDelta
+        val newEnd = curSpan.end + effectiveDelta
+        spans[targetIdx] = Span(newStart, newEnd)
 
-        if (cascadeNext && targetIdx + 1 < periodsList.size) {
-            val nextP = periodsList[targetIdx + 1]
-            val nextStartH = (updatedTarget.endHour + 1) % 24
-            val nextStartM = updatedTarget.endMinute
-            val nextEndTotal = (nextStartH * 60 + nextStartM + nextP.fastingDurationMinutes + 24 * 60 * 10) % (24 * 60)
-            val updatedNext = nextP.copy(
-                startHour = nextStartH,
-                startMinute = nextStartM,
-                endHour = nextEndTotal / 60,
-                endMinute = nextEndTotal % 60
-            )
-            periodsList[targetIdx + 1] = updatedNext
+        if (cascadeNext && targetIdx + 1 < spans.size) {
+            val nextSpan = spans[targetIdx + 1]
+            val nextDur = nextSpan.durationMinutes
+            val cascadedStart = newEnd + 60
+            spans[targetIdx + 1] = Span(cascadedStart, cascadedStart + nextDur)
         }
 
-        val updatedDays = syncDaysFromPeriods(periodsList, plan.days)
-        return plan.copy(periods = periodsList, days = updatedDays)
+        val updatedPeriods = spans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, periodsList[idx].id)
+        }
+        val updatedDays = syncDaysFromPeriods(updatedPeriods, plan.days)
+        return plan.copy(periods = updatedPeriods, days = updatedDays)
     }
 
     /**
-     * Modifica la durata di un singolo periodo, regolando l'orario di fine.
-     * Con cascadeNext = false (predefinito), il periodo successivo non viene modificato
-     * e non può essere superato l'inizio del periodo successivo.
+     * Modifica la durata di un singolo periodo, regolando solo l'orario di fine.
+     * Garantisce newEnd <= maxEnd e durata compresa tra 60 e 1440 minuti.
      */
     fun adjustPeriodDuration(
         plan: FastingPlan,
@@ -229,50 +211,38 @@ object PlanShiftEngine {
         val targetIdx = periodsList.indexOfFirst { it.periodNumber == periodNumber }
         if (targetIdx == -1) return plan
 
-        val p = periodsList[targetIdx]
-        val bounds = getPeriodBounds(plan, periodNumber)
+        val spans = periodsList.map { it.toSpan() }.toMutableList()
+        val b = WeekSpanModel.bounds(spans, targetIdx)
+        val curSpan = spans[targetIdx]
 
-        val effectiveDelta = if (deltaMinutes > 0 && !cascadeNext && bounds.hasNext) {
-            val maxExtension = bounds.gapAfterMinutes
-            if (maxExtension <= 0) return plan
-            deltaMinutes.coerceAtMost(maxExtension)
-        } else {
-            deltaMinutes
+        val maxAllowedEnd = if (!cascadeNext) minOf(curSpan.start + 1440, b.maxEnd) else curSpan.start + 1440
+        val minAllowedEnd = curSpan.start + 60
+        if (minAllowedEnd > maxAllowedEnd) return plan
+
+        val targetEnd = curSpan.end + deltaMinutes
+        val newEnd = targetEnd.coerceIn(minAllowedEnd, maxAllowedEnd)
+        if (newEnd == curSpan.end) return plan
+
+        spans[targetIdx] = Span(curSpan.start, newEnd)
+
+        if (cascadeNext && targetIdx + 1 < spans.size) {
+            val nextSpan = spans[targetIdx + 1]
+            val nextDur = nextSpan.durationMinutes
+            val cascadedStart = newEnd + 60
+            spans[targetIdx + 1] = Span(cascadedStart, cascadedStart + nextDur)
         }
 
-        val newDuration = (p.fastingDurationMinutes + effectiveDelta).coerceIn(60, 24 * 60)
-        val actualDelta = newDuration - p.fastingDurationMinutes
-        if (actualDelta == 0) return plan
-
-        val newEndTotal = (p.endHour * 60 + p.endMinute + actualDelta + 24 * 60 * 10) % (24 * 60)
-        val updatedTarget = p.copy(
-            endHour = newEndTotal / 60,
-            endMinute = newEndTotal % 60,
-            fastingDurationMinutes = newDuration
-        )
-        periodsList[targetIdx] = updatedTarget
-
-        if (cascadeNext && targetIdx + 1 < periodsList.size) {
-            val nextP = periodsList[targetIdx + 1]
-            val nextStartH = (updatedTarget.endHour + 1) % 24
-            val nextStartM = updatedTarget.endMinute
-            val nextEndTotal = (nextStartH * 60 + nextStartM + nextP.fastingDurationMinutes + 24 * 60 * 10) % (24 * 60)
-            val updatedNext = nextP.copy(
-                startHour = nextStartH,
-                startMinute = nextStartM,
-                endHour = nextEndTotal / 60,
-                endMinute = nextEndTotal % 60
-            )
-            periodsList[targetIdx + 1] = updatedNext
+        val updatedPeriods = spans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, periodsList[idx].id)
         }
-
-        val updatedDays = syncDaysFromPeriods(periodsList, plan.days)
-        return plan.copy(periods = periodsList, days = updatedDays)
+        val updatedDays = syncDaysFromPeriods(updatedPeriods, plan.days)
+        return plan.copy(periods = updatedPeriods, days = updatedDays)
     }
 
     /**
-     * Modifica orario di inizio o fine di un periodo (da TimePicker).
-     * Non permette all'orario di inizio di superare o penetrare l'orario di fine del periodo anteriore.
+     * Modifica orario di inizio o fine di un periodo (da TimePickerDialog).
+     * Gestisce i minuti assoluti settimanali limitando a [minStart, maxEnd - 60] per l'inizio
+     * e a [start + 60, maxEnd] per la fine.
      */
     fun updatePeriodTime(
         plan: FastingPlan,
@@ -286,68 +256,82 @@ object PlanShiftEngine {
         val targetIdx = periodsList.indexOfFirst { it.periodNumber == periodNumber }
         if (targetIdx == -1) return plan
 
-        val p = periodsList[targetIdx]
-        val bounds = getPeriodBounds(plan, periodNumber)
+        val spans = periodsList.map { it.toSpan() }.toMutableList()
+        val b = WeekSpanModel.bounds(spans, targetIdx)
+        val curSpan = spans[targetIdx]
+        val pickedMinuteOfDay = newHour * 60 + newMinute
 
-        var validHour = newHour
-        var validMinute = newMinute
-
-        val updatedTarget = if (isStart) {
-            if (bounds.hasAnterior && bounds.anteriorEndHour != null && bounds.anteriorEndMinute != null) {
-                if (p.startDayOfWeek == bounds.anteriorEndDayOfWeek) {
-                    val minTotal = bounds.anteriorEndHour * 60 + bounds.anteriorEndMinute
-                    val newTotal = validHour * 60 + validMinute
-                    if (newTotal < minTotal) {
-                        validHour = bounds.anteriorEndHour
-                        validMinute = bounds.anteriorEndMinute
-                    }
-                }
-            }
-            val endTotal = (validHour * 60 + validMinute + p.fastingDurationMinutes + 24 * 60 * 10) % (24 * 60)
-            p.copy(
-                startHour = validHour,
-                startMinute = validMinute,
-                endHour = endTotal / 60,
-                endMinute = endTotal % 60
-            )
+        if (isStart) {
+            val oldStart = curSpan.start
+            val candidates = (-2..9).map { k -> k * 1440 + pickedMinuteOfDay }
+            val closestCandidate = candidates.minByOrNull { kotlin.math.abs(it - oldStart) } ?: oldStart
+            val curDur = curSpan.durationMinutes.coerceIn(60, 1440)
+            val maxStart = maxOf(b.minStart, b.maxEnd - curDur)
+            val finalStart = closestCandidate.coerceIn(b.minStart, maxStart)
+            val finalEnd = finalStart + curDur
+            spans[targetIdx] = Span(finalStart, finalEnd)
         } else {
-            if (bounds.hasNext && !cascadeNext && bounds.nextStartHour != null && bounds.nextStartMinute != null) {
-                if (p.endDayOfWeek == bounds.nextStartDayOfWeek) {
-                    val maxTotal = bounds.nextStartHour * 60 + bounds.nextStartMinute
-                    val newTotal = validHour * 60 + validMinute
-                    if (newTotal > maxTotal) {
-                        validHour = bounds.nextStartHour
-                        validMinute = bounds.nextStartMinute
-                    }
-                }
-            }
-            var diff = (validHour * 60 + validMinute) - (p.startHour * 60 + p.startMinute)
-            if (diff <= 0) diff += 24 * 60
-            val newDuration = diff.coerceIn(60, 24 * 60)
-            p.copy(
-                endHour = validHour,
-                endMinute = validMinute,
-                fastingDurationMinutes = newDuration
-            )
-        }
-        periodsList[targetIdx] = updatedTarget
+            val start = curSpan.start
+            val minTargetEnd = start + 60
+            val maxTargetEnd = start + 1440
 
-        if (cascadeNext && targetIdx + 1 < periodsList.size) {
-            val nextP = periodsList[targetIdx + 1]
-            val nextStartH = (updatedTarget.endHour + 1) % 24
-            val nextStartM = updatedTarget.endMinute
-            val nextEndTotal = (nextStartH * 60 + nextStartM + nextP.fastingDurationMinutes + 24 * 60 * 10) % (24 * 60)
-            val updatedNext = nextP.copy(
-                startHour = nextStartH,
-                startMinute = nextStartM,
-                endHour = nextEndTotal / 60,
-                endMinute = nextEndTotal % 60
-            )
-            periodsList[targetIdx + 1] = updatedNext
+            val candidateEnd = ((-2..9).map { k -> k * 1440 + pickedMinuteOfDay })
+                .firstOrNull { it >= minTargetEnd && it <= maxTargetEnd }
+                ?: (start + 60)
+
+            val maxAllowedEnd = if (!cascadeNext) b.maxEnd else maxTargetEnd
+            val finalEnd = candidateEnd.coerceIn(start + 60, maxOf(start + 60, maxAllowedEnd))
+            spans[targetIdx] = Span(start, finalEnd)
         }
 
-        val updatedDays = syncDaysFromPeriods(periodsList, plan.days)
-        return plan.copy(periods = periodsList, days = updatedDays)
+        if (cascadeNext && targetIdx + 1 < spans.size) {
+            val nextSpan = spans[targetIdx + 1]
+            val nextDur = nextSpan.durationMinutes
+            val cascadedStart = spans[targetIdx].end + 60
+            spans[targetIdx + 1] = Span(cascadedStart, cascadedStart + nextDur)
+        }
+
+        val updatedPeriods = spans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, periodsList[idx].id)
+        }
+        val updatedDays = syncDaysFromPeriods(updatedPeriods, plan.days)
+        return plan.copy(periods = updatedPeriods, days = updatedDays)
+    }
+
+    /**
+     * Verifica se l'orario di inizio scelto è uscito dai limiti ed è stato limitato al bound.
+     */
+    fun checkStartTimeClamped(plan: FastingPlan, periodNumber: Int, hour: Int, minute: Int): Boolean {
+        val periods = plan.getEffectivePeriods()
+        val idx = periods.indexOfFirst { it.periodNumber == periodNumber }
+        if (idx == -1) return false
+        val spans = periods.map { it.toSpan() }
+        val b = WeekSpanModel.bounds(spans, idx)
+        val curSpan = spans[idx]
+        val picked = hour * 60 + minute
+        val candidates = (-2..9).map { k -> k * 1440 + picked }
+        val closest = candidates.minByOrNull { kotlin.math.abs(it - curSpan.start) } ?: curSpan.start
+        val curDur = curSpan.durationMinutes.coerceIn(60, 1440)
+        val maxStart = maxOf(b.minStart, b.maxEnd - curDur)
+        return closest < b.minStart || closest > maxStart
+    }
+
+    /**
+     * Verifica se l'orario di fine scelto è uscito dai limiti ed è stato limitato al bound.
+     */
+    fun checkEndTimeClamped(plan: FastingPlan, periodNumber: Int, hour: Int, minute: Int): Boolean {
+        val periods = plan.getEffectivePeriods()
+        val idx = periods.indexOfFirst { it.periodNumber == periodNumber }
+        if (idx == -1) return false
+        val spans = periods.map { it.toSpan() }
+        val b = WeekSpanModel.bounds(spans, idx)
+        val curSpan = spans[idx]
+        val picked = hour * 60 + minute
+        val minEnd = curSpan.start + 60
+        val maxEnd = curSpan.start + 1440
+        val candidate = ((-2..9).map { k -> k * 1440 + picked })
+            .firstOrNull { it >= minEnd && it <= maxEnd } ?: (curSpan.start + 60)
+        return candidate > b.maxEnd
     }
 
     /**
@@ -373,29 +357,11 @@ object PlanShiftEngine {
         val lastP = currentPeriods.lastOrNull()
         val newNumber = currentPeriods.size + 1
 
-        val (startDay, startH, startM) = if (lastP != null) {
-            val sDay = if (lastP.endHour + 1 >= 24) (if (lastP.endDayOfWeek >= 7) 1 else lastP.endDayOfWeek + 1) else lastP.endDayOfWeek
-            Triple(sDay, (lastP.endHour + 1) % 24, lastP.endMinute)
-        } else {
-            Triple(1, 20, 0)
-        }
-
-        val duration = 16 * 60
-        val endTotal = (startH * 60 + startM + duration) % (24 * 60)
-        val endDay = if ((startH * 60 + startM + duration) >= 24 * 60) (if (startDay >= 7) 1 else startDay + 1) else startDay
-
-        val newP = FastingPeriod(
-            id = "p_$newNumber",
-            periodNumber = newNumber,
-            startDayOfWeek = startDay,
-            startHour = startH,
-            startMinute = startM,
-            endDayOfWeek = endDay,
-            endHour = endTotal / 60,
-            endMinute = endTotal % 60,
-            fastingDurationMinutes = duration,
-            isFasting = true
-        )
+        val lastSpan = lastP?.toSpan()
+        val newStart = if (lastSpan != null) lastSpan.end + 60 else 20 * 60
+        val newEnd = newStart + 16 * 60
+        val newSpan = Span(newStart, newEnd)
+        val newP = newSpan.toPeriod(newNumber, "p_$newNumber")
         currentPeriods.add(newP)
 
         val updatedDays = syncDaysFromPeriods(currentPeriods, plan.days)
@@ -404,14 +370,13 @@ object PlanShiftEngine {
 
     /**
      * Sincronizza la lista dei 7 giorni (DayPlan) a partire dalla lista dei periodi,
-     * garantendo piena retrocompatibilità con i componenti che leggono ancora plan.days.
-     */
-    /**
-     * Sincronizza la lista dei 7 giorni (DayPlan) a partire dalla lista dei periodi,
-     * garantendo piena retrocompatibilità con i componenti che leggono ancora plan.days.
+     * garantendo piena retrocompatibilità con i componenti che leggono plan.days.
      */
     private fun syncDaysFromPeriods(periods: List<FastingPeriod>, existingDays: List<DayPlan>): List<DayPlan> {
+        val spans = periods.map { it.toSpan() }
         return (1..7).map { dayOfWeek ->
+            val d = dayOfWeek - 1
+            val fasts = WeekSpanModel.fastsInDay(spans, d)
             val periodStartingToday = periods.find { it.startDayOfWeek == dayOfWeek }
             val existing = existingDays.find { it.dayOfWeek == dayOfWeek }
 
@@ -421,9 +386,21 @@ object PlanShiftEngine {
                     isFastingDay = periodStartingToday.isFasting,
                     startHour = periodStartingToday.startHour,
                     startMinute = periodStartingToday.startMinute,
-                    endHour = periodStartingToday.endHour,
+                    endHour = periodStartingToday.endHour % 24,
                     endMinute = periodStartingToday.endMinute,
                     fastingDurationMinutes = periodStartingToday.fastingDurationMinutes
+                )
+            } else if (fasts.isNotEmpty()) {
+                val firstFast = fasts.first()
+                val totalMins = fasts.sumOf { it.second - it.first }
+                DayPlan(
+                    dayOfWeek = dayOfWeek,
+                    isFastingDay = true,
+                    startHour = firstFast.first / 60,
+                    startMinute = firstFast.first % 60,
+                    endHour = (firstFast.second / 60) % 24,
+                    endMinute = firstFast.second % 60,
+                    fastingDurationMinutes = totalMins
                 )
             } else if (existing != null) {
                 existing.copy(isFastingDay = false)
@@ -434,9 +411,7 @@ object PlanShiftEngine {
     }
 
     /**
-     * Sposta un singolo giorno di deltaHours e deltaMinutes,
-     * mantenendo inalterata la durata del digiuno.
-     * Con cascadeNextDay = false (predefinito), il giorno successivo NON subisce modifiche.
+     * Sposta un singolo giorno delegando a shiftPeriod se ci sono periodi attivi.
      */
     fun shiftDay(
         plan: FastingPlan,
@@ -445,11 +420,10 @@ object PlanShiftEngine {
         deltaMinutes: Int = 0,
         cascadeNextDay: Boolean = false
     ): FastingPlan {
-        if (!plan.periods.isNullOrEmpty()) {
-            val matchingPeriod = plan.periods.find { it.startDayOfWeek == dayOfWeek }
-            if (matchingPeriod != null) {
-                return shiftPeriod(plan, matchingPeriod.periodNumber, deltaHours, deltaMinutes, cascadeNextDay)
-            }
+        val effectivePeriods = plan.getEffectivePeriods()
+        val matchingPeriod = effectivePeriods.find { it.startDayOfWeek == dayOfWeek }
+        if (matchingPeriod != null) {
+            return shiftPeriod(plan, matchingPeriod.periodNumber, deltaHours, deltaMinutes, cascadeNextDay)
         }
 
         val nextDayOfWeek = if (dayOfWeek == 7) 1 else dayOfWeek + 1
@@ -490,9 +464,7 @@ object PlanShiftEngine {
     }
 
     /**
-     * Modifica la durata del digiuno per un singolo giorno,
-     * incrementando o decrementando i minuti di digiuno (e spostando l'orario di fine).
-     * Con cascadeNextDay = false (predefinito), il giorno successivo NON subisce modifiche.
+     * Modifica la durata per un singolo giorno delegando a adjustPeriodDuration se ci sono periodi attivi.
      */
     fun adjustDuration(
         plan: FastingPlan,
@@ -500,11 +472,10 @@ object PlanShiftEngine {
         deltaMinutes: Int,
         cascadeNextDay: Boolean = false
     ): FastingPlan {
-        if (!plan.periods.isNullOrEmpty()) {
-            val matchingPeriod = plan.periods.find { it.startDayOfWeek == dayOfWeek }
-            if (matchingPeriod != null) {
-                return adjustPeriodDuration(plan, matchingPeriod.periodNumber, deltaMinutes, cascadeNextDay)
-            }
+        val effectivePeriods = plan.getEffectivePeriods()
+        val matchingPeriod = effectivePeriods.find { it.startDayOfWeek == dayOfWeek }
+        if (matchingPeriod != null) {
+            return adjustPeriodDuration(plan, matchingPeriod.periodNumber, deltaMinutes, cascadeNextDay)
         }
 
         val nextDayOfWeek = if (dayOfWeek == 7) 1 else dayOfWeek + 1
@@ -552,31 +523,38 @@ object PlanShiftEngine {
     }
 
     /**
-     * Modifica la durata del digiuno per tutti i giorni,
-     * incrementando o decrementando i minuti di digiuno.
+     * Modifica la durata del digiuno per tutti i periodi/giorni.
+     * Rifiuta la modifica se genera sovrapposizioni tra periodi consecutivi.
      */
     fun adjustDurationAllDays(plan: FastingPlan, deltaMinutes: Int): FastingPlan {
+        if (deltaMinutes == 0) return plan
+
         val currentPeriods = plan.getEffectivePeriods()
-        val updatedPeriods = currentPeriods.map { p ->
-            val newDuration = (p.fastingDurationMinutes + deltaMinutes).coerceIn(60, 24 * 60)
-            val actualDelta = newDuration - p.fastingDurationMinutes
-            val totalEndMinutes = (p.endHour * 60 + p.endMinute + actualDelta + 24 * 60 * 10) % (24 * 60)
-            p.copy(
-                endHour = totalEndMinutes / 60,
-                endMinute = totalEndMinutes % 60,
-                fastingDurationMinutes = newDuration
-            )
+        val spans = currentPeriods.map { it.toSpan() }
+        val n = spans.size
+
+        val candidateSpans = spans.map { s ->
+            val newDur = (s.durationMinutes + deltaMinutes).coerceIn(60, 1440)
+            Span(s.start, s.start + newDur)
         }
-        val updatedDays = plan.days.map { day ->
-            val newDuration = (day.fastingDurationMinutes + deltaMinutes).coerceIn(60, 24 * 60)
-            val actualDelta = newDuration - day.fastingDurationMinutes
-            val totalEndMinutes = (day.endHour * 60 + day.endMinute + actualDelta + 24 * 60 * 10) % (24 * 60)
-            day.copy(
-                endHour = totalEndMinutes / 60,
-                endMinute = totalEndMinutes % 60,
-                fastingDurationMinutes = newDuration
-            )
+
+        if (deltaMinutes > 0 && n > 1) {
+            val order = candidateSpans.indices.sortedBy { candidateSpans[it].start }
+            for (pos in 0 until n) {
+                val idx = order[pos]
+                val nextIdx = order[(pos + 1) % n]
+                val nextOffset = if (pos == n - 1) WeekSpanModel.WEEK_MINUTES else 0
+                val nextEffectiveStart = candidateSpans[nextIdx].start + nextOffset
+                if (candidateSpans[idx].end > nextEffectiveStart) {
+                    return plan // Rifiuta la modifica se genera sovrapposizioni
+                }
+            }
         }
+
+        val updatedPeriods = candidateSpans.mapIndexed { idx, span ->
+            span.toPeriod(idx + 1, currentPeriods[idx].id)
+        }
+        val updatedDays = syncDaysFromPeriods(updatedPeriods, plan.days)
         return plan.copy(days = updatedDays, periods = updatedPeriods)
     }
 

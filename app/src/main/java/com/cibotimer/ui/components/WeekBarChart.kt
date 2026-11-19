@@ -38,7 +38,10 @@ import com.cibotimer.data.models.FastingDayFormatter
 import com.cibotimer.data.models.FastingPeriod
 import com.cibotimer.domain.DateTimeFormatters
 import com.cibotimer.domain.FastingCalculator
+import com.cibotimer.domain.Span
 import com.cibotimer.domain.TimelineSegment
+import com.cibotimer.domain.WeekSpanModel
+import com.cibotimer.domain.toSpan
 import com.cibotimer.ui.theme.*
 import java.util.Calendar
 import java.util.Locale
@@ -135,13 +138,13 @@ fun WeekBarChart(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Pasto (#FBBF24)
+                    // Pasto (#10B981 / CiboMealGreen)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .size(7.dp)
                                 .clip(RoundedCornerShape(2.dp))
-                                .background(CiboAmber)
+                                .background(CiboMealGreen)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
@@ -234,12 +237,36 @@ fun WeekBarChart(
 
                             Spacer(modifier = Modifier.width(6.dp))
 
+                            val d = item.dayIndex - 1 // 0=Lun..6=Dom
+                            val spans = remember(periods) {
+                                periods?.filter { it.isFasting }?.map { it.toSpan() } ?: emptyList()
+                            }
+                            val startingSpans = remember(spans, d) {
+                                spans.filter { ((it.start / 1440) % 7 + 7) % 7 == d }
+                            }
+
+                            val durationText = when {
+                                startingSpans.size > 1 -> {
+                                    startingSpans.joinToString("+") { formatDuration(it.durationMinutes) }
+                                }
+                                startingSpans.size == 1 -> {
+                                    formatDuration(startingSpans[0].durationMinutes)
+                                }
+                                dayPlan.isFastingDay -> {
+                                    formatDuration(dayPlan.fastingDurationMinutes)
+                                }
+                                else -> {
+                                    stringResource(R.string.week_chart_free)
+                                }
+                            }
+                            val isFastingActive = startingSpans.isNotEmpty() || dayPlan.isFastingDay
+
                             Text(
-                                text = if (dayPlan.isFastingDay) "${dayPlan.fastingDurationMinutes / 60} h" else stringResource(R.string.week_chart_free),
+                                text = durationText,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (dayPlan.isFastingDay) CiboAccent else CiboAmber,
-                                modifier = Modifier.width(32.dp),
+                                color = if (isFastingActive) CiboAccent else CiboMealGreen,
+                                modifier = Modifier.widthIn(min = 32.dp),
                                 textAlign = TextAlign.End
                             )
                         }
@@ -274,6 +301,12 @@ fun WeekBarChart(
     }
 }
 
+private fun formatDuration(durationMinutes: Int): String {
+    val h = durationMinutes / 60
+    val m = durationMinutes % 60
+    return if (m == 0) "${h}h" else "${h}h ${m}m"
+}
+
 /**
  * Calcola la dicitura sotto ogni giorno (es: "Lun 20:00 → Mar 12:00").
  */
@@ -286,19 +319,97 @@ private fun getSubtitleForDay(
     locale: Locale = Locale.getDefault()
 ): String {
     val dayNames = (1..7).map { DateTimeFormatters.formatShortDay(it, locale, capitalize = true) }
+    val d = ((dayIndex - 1) % 7 + 7) % 7
 
     if (!periods.isNullOrEmpty()) {
-        val p = periods.find { it.startDayOfWeek == dayIndex && it.isFasting }
-        if (p != null) {
-            val endDayName = dayNames.getOrElse(p.endDayOfWeek - 1) { dayLabel }
-            val startT = DateTimeFormatters.formatTime(p.startHour, p.startMinute, context, locale)
-            val endT = DateTimeFormatters.formatTime(p.endHour, p.endMinute, context, locale)
-            return "$dayLabel $startT → $endDayName $endT"
+        val spans = periods.filter { it.isFasting }.map { it.toSpan() }
+        val startingSpans = spans.filter { ((it.start / 1440) % 7 + 7) % 7 == d }
+
+        // Digiuno iniziato in precedenza che entra in questo giorno al mattino (es: Dom 16:00 -> Lun 13:00 entra in Lunedì)
+        val incomingSpan = if (d == 0) {
+            spans.find { span ->
+                val sDay = ((span.start / 1440) % 7 + 7) % 7
+                if (sDay == d) false
+                else {
+                    val fasts = WeekSpanModel.fastsInDay(listOf(span), d)
+                    fasts.any { it.first == 0 && it.second > 0 }
+                }
+            }
+        } else null
+
+        val incomingStr = incomingSpan?.let { span ->
+            val sDay = ((span.start / 1440) % 7 + 7) % 7
+            val startDayName = dayNames[sDay]
+            val startH = (span.start % 1440) / 60
+            val startM = (span.start % 1440) % 60
+            val startT = DateTimeFormatters.formatTime(startH, startM, context, locale)
+            val fasts = WeekSpanModel.fastsInDay(listOf(span), d)
+            val portionMinutes = fasts.firstOrNull { it.first == 0 }?.let { it.second - it.first } ?: 0
+            val portionStr = formatDuration(portionMinutes)
+            "↩ da $startDayName $startT · $portionStr"
         }
-        val through = periods.find { it.endDayOfWeek == dayIndex && it.isFasting }
-        if (through != null) {
-            val startDayName = dayNames.getOrElse(through.startDayOfWeek - 1) { dayLabel }
-            val endT = DateTimeFormatters.formatTime(through.endHour, through.endMinute, context, locale)
+
+        if (startingSpans.isNotEmpty()) {
+            val startingStr = if (startingSpans.size > 1) {
+                startingSpans.joinToString(" · ") { span ->
+                    val startH = (span.start % 1440) / 60
+                    val startM = (span.start % 1440) % 60
+                    val endH = (span.end % 1440) / 60
+                    val endM = (span.end % 1440) % 60
+                    val startT = DateTimeFormatters.formatTime(startH, startM, context, locale)
+                    val endT = DateTimeFormatters.formatTime(endH, endM, context, locale)
+
+                    val endDay0 = (((span.end / 1440) % 7 + 7) % 7)
+                    val endPart = if (endDay0 == d) {
+                        endT
+                    } else {
+                        val endDayName = dayNames[endDay0]
+                        "$endDayName $endT"
+                    }
+                    val continues = if (d == 6 && endDay0 == 0) context.getString(R.string.week_chart_continues) else ""
+                    "$startT → $endPart$continues"
+                }
+            } else {
+                val span = startingSpans.first()
+                val startH = (span.start % 1440) / 60
+                val startM = (span.start % 1440) % 60
+                val endH = (span.end % 1440) / 60
+                val endM = (span.end % 1440) % 60
+                val startT = DateTimeFormatters.formatTime(startH, startM, context, locale)
+                val endT = DateTimeFormatters.formatTime(endH, endM, context, locale)
+
+                val endDay0 = (((span.end / 1440) % 7 + 7) % 7)
+                val endPart = if (endDay0 == d) {
+                    endT
+                } else {
+                    val endDayName = dayNames[endDay0]
+                    "$endDayName $endT"
+                }
+                val continues = if (d == 6 && endDay0 == 0) context.getString(R.string.week_chart_continues) else ""
+                val labelPrefix = if (incomingStr != null) startT else "$dayLabel $startT"
+                "$labelPrefix → $endPart$continues"
+            }
+
+            return if (incomingStr != null) {
+                "$incomingStr | $startingStr"
+            } else {
+                startingStr
+            }
+        } else if (incomingStr != null) {
+            return incomingStr
+        }
+
+        // Se nessun periodo inizia quel giorno ma uno lo attraversa
+        val traversingSpan = spans.find { span ->
+            val sDay = ((span.start / 1440) % 7 + 7) % 7
+            sDay != d && WeekSpanModel.fastsInDay(listOf(span), d).isNotEmpty()
+        }
+        if (traversingSpan != null) {
+            val sDay = ((traversingSpan.start / 1440) % 7 + 7) % 7
+            val startDayName = dayNames[sDay]
+            val endH = (traversingSpan.end % 1440) / 60
+            val endM = (traversingSpan.end % 1440) % 60
+            val endT = DateTimeFormatters.formatTime(endH, endM, context, locale)
             return context.getString(R.string.week_chart_fasting_from, startDayName, endT)
         }
     }
@@ -343,7 +454,7 @@ fun MainHorizontalBar24h(
             cornerRadius = cornerRadius
         )
 
-        // 2. Segmenti Digiuno (azzurro CiboAccent) e Pasto (ambra CiboAmber)
+        // 2. Segmenti Digiuno (azzurro CiboAccent) e Pasto (verde CiboMealGreen)
         val gapPx = 1.5.dp.toPx()
         val n = segments.size
 
@@ -359,7 +470,7 @@ fun MainHorizontalBar24h(
                 val color = if (seg.isFasting) {
                     if (isToday) CiboAccent else CiboAccent.copy(alpha = 0.75f)
                 } else {
-                    if (isToday) CiboAmber else CiboAmber.copy(alpha = 0.65f)
+                    if (isToday) CiboMealGreen else CiboMealGreen.copy(alpha = 0.75f)
                 }
 
                 drawRoundRect(

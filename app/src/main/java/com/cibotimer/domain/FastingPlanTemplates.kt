@@ -138,28 +138,26 @@ object FastingPlanTemplates {
         id = "luigi-1",
         name = "Luigi 1",
         category = PlanCategory.SPECIAL,
-        description = "Piano Coach CiboTimer con 9 periodi ad alta intensità, finestre pasto calibrate e recupero fisiologico nel weekend.",
+        description = "Piano Coach CiboTimer con 7 periodi ad alta intensità, finestre pasto calibrate e recupero fisiologico nel weekend.",
         nameEn = "Luigi 1",
-        descriptionEn = "CiboTimer Coach Plan featuring 9 high-intensity periods, calibrated eating windows, and physiological recovery over the weekend.",
+        descriptionEn = "CiboTimer Coach Plan featuring 7 high-intensity periods, calibrated eating windows, and physiological recovery over the weekend.",
         days = listOf(
-            DayPlan(dayOfWeek = 1, isFastingDay = true, startHour = 14, startMinute = 0, endHour = 10, endMinute = 0, fastingDurationMinutes = 1200), // Lun: 14:00 -> Mar 10:00 (20h)
-            DayPlan(dayOfWeek = 2, isFastingDay = true, startHour = 11, startMinute = 0, endHour = 7, endMinute = 0, fastingDurationMinutes = 1200),  // Mar: 11:00 -> Mer 07:00 (20h)
-            DayPlan(dayOfWeek = 3, isFastingDay = true, startHour = 12, startMinute = 0, endHour = 10, endMinute = 0, fastingDurationMinutes = 1320), // Mer: 12:00 -> Gio 10:00 (22h)
-            DayPlan(dayOfWeek = 4, isFastingDay = true, startHour = 12, startMinute = 0, endHour = 11, endMinute = 0, fastingDurationMinutes = 1380), // Gio: 12:00 -> Ven 11:00 (23h)
-            DayPlan(dayOfWeek = 5, isFastingDay = true, startHour = 12, startMinute = 0, endHour = 8, endMinute = 0, fastingDurationMinutes = 1200),  // Ven: 12:00 -> Sab 08:00 (20h)
-            DayPlan(dayOfWeek = 6, isFastingDay = true, startHour = 21, startMinute = 0, endHour = 10, endMinute = 0, fastingDurationMinutes = 780),   // Sab: 21:00 -> Dom 10:00 (13h)
-            DayPlan(dayOfWeek = 7, isFastingDay = true, startHour = 16, startMinute = 0, endHour = 11, endMinute = 0, fastingDurationMinutes = 1140)  // Dom: 16:00 -> Lun 11:00 (19h)
+            DayPlan(dayOfWeek = 1, isFastingDay = true, startHour = 14, startMinute = 0, endHour = 7, endMinute = 45, fastingDurationMinutes = 1065), // Lun: 14:00 -> Mar 07:45 (17h 45m)
+            DayPlan(dayOfWeek = 2, isFastingDay = true, startHour = 13, startMinute = 0, endHour = 7, endMinute = 0, fastingDurationMinutes = 1080),  // Mar: 13:00 -> Mer 07:00 (18h)
+            DayPlan(dayOfWeek = 3, isFastingDay = true, startHour = 12, startMinute = 0, endHour = 7, endMinute = 0, fastingDurationMinutes = 1140),  // Mer: 12:00 -> Gio 07:00 (19h)
+            DayPlan(dayOfWeek = 4, isFastingDay = true, startHour = 13, startMinute = 0, endHour = 7, endMinute = 45, fastingDurationMinutes = 1125), // Gio: 13:00 -> Ven 07:45 (18h 45m)
+            DayPlan(dayOfWeek = 5, isFastingDay = true, startHour = 13, startMinute = 0, endHour = 8, endMinute = 0, fastingDurationMinutes = 1140),  // Ven: 13:00 -> Sab 08:00 (19h)
+            DayPlan(dayOfWeek = 6, isFastingDay = true, startHour = 21, startMinute = 0, endHour = 7, endMinute = 45, fastingDurationMinutes = 645),   // Sab: 21:00 -> Dom 07:45 (10h 45m)
+            DayPlan(dayOfWeek = 7, isFastingDay = true, startHour = 16, startMinute = 0, endHour = 13, endMinute = 0, fastingDurationMinutes = 1260)   // Dom: 16:00 -> Lun 13:00 (21h)
         ),
         periods = listOf(
-            FastingPeriod(id = "p1", periodNumber = 1, startDayOfWeek = 1, startHour = 0, startMinute = 0, endDayOfWeek = 1, endHour = 13, endMinute = 0, fastingDurationMinutes = 780),   // Periodo 1: lun 00:00 – lun 13:00 (13h)
-            FastingPeriod(id = "p2", periodNumber = 2, startDayOfWeek = 1, startHour = 14, startMinute = 0, endDayOfWeek = 2, endHour = 10, endMinute = 0, fastingDurationMinutes = 1200), // Periodo 2: lun 14:00 – mar 10:00 (20h)
-            FastingPeriod(id = "p3", periodNumber = 3, startDayOfWeek = 2, startHour = 11, startMinute = 0, endDayOfWeek = 3, endHour = 7, endMinute = 0, fastingDurationMinutes = 1200),  // Periodo 3: mar 11:00 – mer 07:00 (20h)
-            FastingPeriod(id = "p4", periodNumber = 4, startDayOfWeek = 3, startHour = 12, startMinute = 0, endDayOfWeek = 4, endHour = 10, endMinute = 0, fastingDurationMinutes = 1320), // Periodo 4: mer 12:00 – gio 10:00 (22h)
-            FastingPeriod(id = "p5", periodNumber = 5, startDayOfWeek = 4, startHour = 12, startMinute = 0, endDayOfWeek = 5, endHour = 11, endMinute = 0, fastingDurationMinutes = 1380), // Periodo 5: gio 12:00 – ven 11:00 (23h)
-            FastingPeriod(id = "p6", periodNumber = 6, startDayOfWeek = 5, startHour = 12, startMinute = 0, endDayOfWeek = 6, endHour = 8, endMinute = 0, fastingDurationMinutes = 1200),  // Periodo 6: ven 12:00 – sab 08:00 (20h)
-            FastingPeriod(id = "p7", periodNumber = 7, startDayOfWeek = 6, startHour = 21, startMinute = 0, endDayOfWeek = 7, endHour = 10, endMinute = 0, fastingDurationMinutes = 780),   // Periodo 7: sab 21:00 – dom 10:00 (13h)
-            FastingPeriod(id = "p8", periodNumber = 8, startDayOfWeek = 7, startHour = 16, startMinute = 0, endDayOfWeek = 8, endHour = 11, endMinute = 0, fastingDurationMinutes = 1140),  // Periodo 8: dom 16:00 – lun 11:00 (19h)
-            FastingPeriod(id = "p9", periodNumber = 9, startDayOfWeek = 8, startHour = 11, startMinute = 0, endDayOfWeek = 8, endHour = 23, endMinute = 0, fastingDurationMinutes = 720)   // Periodo 9: lun 11:00 – lun 23:00 (12h)
+            FastingPeriod(id = "p1", periodNumber = 1, startDayOfWeek = 1, startHour = 14, startMinute = 0, endDayOfWeek = 2, endHour = 7, endMinute = 45, fastingDurationMinutes = 1065), // Periodo 1: lun 14:00 – mar 07:45 (17h 45m)
+            FastingPeriod(id = "p2", periodNumber = 2, startDayOfWeek = 2, startHour = 13, startMinute = 0, endDayOfWeek = 3, endHour = 7, endMinute = 0, fastingDurationMinutes = 1080),  // Periodo 2: mar 13:00 – mer 07:00 (18h)
+            FastingPeriod(id = "p3", periodNumber = 3, startDayOfWeek = 3, startHour = 12, startMinute = 0, endDayOfWeek = 4, endHour = 7, endMinute = 0, fastingDurationMinutes = 1140),  // Periodo 3: mer 12:00 – gio 07:00 (19h)
+            FastingPeriod(id = "p4", periodNumber = 4, startDayOfWeek = 4, startHour = 13, startMinute = 0, endDayOfWeek = 5, endHour = 7, endMinute = 45, fastingDurationMinutes = 1125), // Periodo 4: gio 13:00 – ven 07:45 (18h 45m)
+            FastingPeriod(id = "p5", periodNumber = 5, startDayOfWeek = 5, startHour = 13, startMinute = 0, endDayOfWeek = 6, endHour = 8, endMinute = 0, fastingDurationMinutes = 1140),  // Periodo 5: ven 13:00 – sab 08:00 (19h)
+            FastingPeriod(id = "p6", periodNumber = 6, startDayOfWeek = 6, startHour = 21, startMinute = 0, endDayOfWeek = 7, endHour = 7, endMinute = 45, fastingDurationMinutes = 645),   // Periodo 6: sab 21:00 – dom 07:45 (10h 45m)
+            FastingPeriod(id = "p7", periodNumber = 7, startDayOfWeek = 7, startHour = 16, startMinute = 0, endDayOfWeek = 1, endHour = 13, endMinute = 0, fastingDurationMinutes = 1260)   // Periodo 7: dom 16:00 – lun 13:00 (21h)
         )
     )
 

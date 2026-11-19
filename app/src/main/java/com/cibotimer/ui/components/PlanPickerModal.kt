@@ -400,6 +400,9 @@ fun PlanPickerPreviewStep(
     }
     var showRenameDialog by remember { mutableStateOf(false) }
     var renameText by remember(workingPlan.name) { mutableStateOf(workingPlan.name) }
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    val displayName = if (isCustomPlan) workingPlan.name else workingPlan.getLocalizedName(locale)
+    val displayDesc = if (isCustomPlan) workingPlan.description else workingPlan.getLocalizedDescription(locale)
 
     Column(
         modifier = modifier
@@ -485,7 +488,7 @@ fun PlanPickerPreviewStep(
                                 )
                         ) {
                             Text(
-                                text = workingPlan.name,
+                                text = displayName,
                                 fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = CiboAccent
@@ -524,10 +527,10 @@ fun PlanPickerPreviewStep(
                         }
                     }
 
-                    if (workingPlan.description.isNotBlank()) {
+                    if (displayDesc.isNotBlank()) {
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = workingPlan.description,
+                            text = displayDesc,
                             fontSize = 13.sp,
                             color = CiboTextSecondary,
                             lineHeight = 18.sp
@@ -1377,6 +1380,9 @@ fun PlanItemCard(
 
     val isCustom = plan.isCustom || plan.category == PlanCategory.CUSTOM
     val ratings = if (!isCustom) FastingPlanTemplates.getRatingsForPlan(plan.id) else null
+    val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    val displayName = if (isCustom) plan.name else plan.getLocalizedName(locale)
+    val displayDesc = if (isCustom) plan.description else plan.getLocalizedDescription(locale)
 
     val durationLabel = if (fastingMinutes == 0) {
         stringResource(R.string.plan_card_duration_hours, fastingHours, eatingHours)
@@ -1416,7 +1422,7 @@ fun PlanItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = plan.localizedName,
+                        text = displayName,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isActive) CiboAccent else CiboTextPrimary,
@@ -1480,10 +1486,10 @@ fun PlanItemCard(
                     color = if (isActive) Color(0xFF7DD3FC) else CiboTextSecondary
                 )
 
-                if (plan.description.isNotBlank()) {
+                if (displayDesc.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = plan.description,
+                        text = displayDesc,
                         fontSize = 12.sp,
                         color = CiboTextSecondary,
                         maxLines = 2,

@@ -249,7 +249,7 @@ fun PlannerScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = stringResource(R.string.planner_day_fasting_detail, day.startTimeFormatted, day.endTimeFormatted, day.fastingDurationMinutes / 60),
+                                    text = stringResource(R.string.planner_day_fasting_detail, day.startTimeFormatted, day.endTimeFormatted, day.durationHoursString),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -263,8 +263,13 @@ fun PlannerScreen(
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
+                                val eatingMinutes = (24 * 60 - day.fastingDurationMinutes).coerceAtLeast(0)
+                                val eatingH = eatingMinutes / 60
+                                val eatingM = eatingMinutes % 60
+                                val eatingDurationStr = if (eatingM == 0) "${eatingH}h" else "${eatingH}h ${eatingM}m"
+
                                 Text(
-                                    text = stringResource(R.string.planner_day_eating_detail, day.endTimeFormatted, day.startTimeFormatted, (24 * 60 - day.fastingDurationMinutes) / 60),
+                                    text = stringResource(R.string.planner_day_eating_detail, day.endTimeFormatted, day.startTimeFormatted, eatingDurationStr),
                                     fontSize = 12.sp,
                                     color = TextSecondary
                                 )
@@ -292,14 +297,20 @@ fun PlannerScreen(
         TimeEditorModal(
             dayPlan = selectedDayPlan,
             plan = activePlan,
+            isActive = true,
             initialDayOfWeek = selectedDayOfWeek,
             onSavePlan = { updatedPlan ->
                 repository.updateActivePlan(updatedPlan)
                 android.widget.Toast.makeText(context, context.getString(R.string.planner_plan_saved_toast), android.widget.Toast.LENGTH_SHORT).show()
             },
             onSaveCustomPlan = { newPlan, activate ->
-                repository.saveCustomPlan(newPlan, activate = activate)
-                val msg = if (activate) "Piano \"${newPlan.name}\" salvato e attivato!" else "Piano \"${newPlan.name}\" salvato!"
+                val shouldActivate = if (activePlan.id == newPlan.id || activate) true else activate
+                repository.saveCustomPlan(newPlan, activate = shouldActivate)
+                val msg = if (shouldActivate) {
+                    context.getString(R.string.plan_toast_saved_and_activated, newPlan.name)
+                } else {
+                    context.getString(R.string.plan_toast_saved, newPlan.name)
+                }
                 android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
             },
             onShiftAllDays = { deltaHours ->

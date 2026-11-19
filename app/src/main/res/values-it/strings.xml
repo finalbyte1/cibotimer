@@ -262,6 +262,7 @@
     <string name="settings_ai_baseurl_label">Base URL API</string>
     <string name="settings_ai_model_label">Nome Modello (es. gpt-4o-mini, gpt-3.5-turbo)</string>
     <string name="settings_section_notifications">Notifiche &amp; Promemoria</string>
+    <string name="settings_notif_persistent">Notifica permanente del timer</string>
     <string name="settings_notif_fasting">Inizio e fine digiuno</string>
     <string name="settings_notif_stages">Raggiungimento stadi metabolici</string>
     <string name="settings_notif_water">Promemoria idratazione</string>
@@ -272,9 +273,15 @@
     <string name="settings_cloud_auto_backup">Backup Automatico su Drive</string>
     <string name="settings_cloud_auto_backup_desc">Sfrutta l\'Auto Backup nativo di Android per salvare e sincronizzare automaticamente il database e le impostazioni su Google Drive.</string>
     <string name="settings_cloud_backup_now">Backup ora</string>
-    <string name="settings_cloud_restore">Ripristina</string>
+    <string name="settings_cloud_restore">Ripristina da File</string>
     <string name="settings_cloud_share_started">Condivisione backup avviata verso Google Drive / app esterne</string>
     <string name="settings_cloud_share_error">Errore apertura condivisione: %1$s</string>
+    <string name="settings_dialog_confirm_restore_title">Conferma Ripristino Backup</string>
+    <string name="settings_dialog_confirm_restore_desc">Vuoi ripristinare i dati dell\'applicazione dal file JSON selezionato? Le sessioni, il profilo e lo storico attuali verranno sostituiti con i dati del backup.</string>
+    <string name="settings_dialog_confirm_restore_file">File selezionato: %1$s</string>
+    <string name="settings_dialog_confirm_restore_btn">Ripristina Dati</string>
+    <string name="settings_local_import_read_error">Impossibile aprire il file di backup selezionato</string>
+    <string name="settings_local_import_empty_error">Il file di backup selezionato è vuoto</string>
     <string name="settings_section_local_backup">Esportazione &amp; Ripristino Locale</string>
     <string name="settings_local_backup_desc">Puoi esportare l\'intero database della tua app (storico pesate, digiuni, bicchieri d\'acqua, piani) in un file JSON o importarlo.</string>
     <string name="settings_local_export">Esporta e Condividi</string>
@@ -294,8 +301,11 @@
     <string name="settings_update_check_now">Controlla Aggiornamenti Ora</string>
     <string name="update_state_checking">Verifica aggiornamenti in corso...</string>
     <string name="update_state_uptodate">✅ Stai utilizzando la versione più recente!</string>
-    <string name="update_state_available_format">🚀 Versione %1$s disponibile (%2$s)s!</string>
+    <string name="update_state_available_format">🚀 Versione %1$s disponibile (%2$s)!</string>
     <string name="update_state_downloading_format">Download in corso: %1$d%%</string>
+    <string name="update_play_store_available_desc">Un aggiornamento ufficiale è disponibile su Google Play Store con miglioramenti e correzioni.</string>
+    <string name="update_play_store_check_error">Verifica aggiornamenti su Google Play non riuscita (%1$s)</string>
+    <string name="update_play_store_flow_failed">Impossibile completare l\'aggiornamento in-app tramite Google Play. Riprova o visita direttamente il Play Store.</string>
     <string name="health_disclaimer_text_full">CiboTimer è uno strumento dedicato al benessere personale e al tracciamento delle abitudini alimentari. I contenuti, le stime delle fasi metaboliche e le risposte dell\'assistente AI sono fornite unicamente a scopo informativo ed educativo e non sostituiscono in alcun modo il parere, la diagnosi o la terapia di un medico o professionista sanitario qualificato. Consulta sempre il tuo medico prima di intraprendere regimi di digiuno o variazioni dietetiche rilevanti.</string>
     <string name="settings_footer_version_format">CiboTimer Native App v%1$s (Build %2$d)</string>
     <string name="settings_footer_subtitle">Tema Dark • Blu &amp; Azzurro • Notifiche in tempo reale</string>
@@ -332,18 +342,28 @@
 
     <!-- Time Editor Modal Additional -->
     <string name="plan_save_as_title">Salva con nome</string>
+    <string name="plan_save_active_title">Salva modifiche al piano</string>
     <string name="plan_save_as_message">Assegna un nuovo nome a questo piano per salvarlo nei tuoi piani personalizzati:</string>
+    <string name="plan_save_active_message">Stai modificando il piano attivo (%1$s). Le modifiche verranno salvate nei tuoi piani personalizzati e applicate immediatamente al digiuno in corso.</string>
+    <string name="plan_save_active_custom_message">Stai modificando il piano attivo \"%1$s\". Le modifiche verranno applicate direttamente al digiuno in corso.</string>
     <string name="plan_save_as_name_label">Nome del piano</string>
     <string name="plan_save_as_name_placeholder">es. 16-8 Personalizzato</string>
     <string name="plan_save_as_desc_label">Descrizione (opzionale)</string>
     <string name="plan_save_as_desc_placeholder">Note o orari personalizzati</string>
     <string name="plan_save_and_activate">Salva e Attiva</string>
+    <string name="plan_save_and_apply">Salva e Applica</string>
+    <string name="plan_save_changes">Salva modifiche</string>
+    <string name="plan_save_as_new">Salva come nuovo piano</string>
     <string name="plan_save_only">Solo Salva</string>
     <string name="plan_overwrite">Sovrascrivi</string>
+    <string name="plan_custom_name_format">%1$s Personalizzato</string>
+    <string name="plan_toast_saved_and_activated">Piano \"%1$s\" salvato e applicato!</string>
+    <string name="plan_toast_saved">Piano \"%1$s\" salvato!</string>
     <string name="plan_time_start_label">Inizio: </string>
     <string name="plan_time_end_label">Fine: </string>
     <string name="plan_time_bound_anterior">Non puoi superare il periodo anteriore (termina alle %1$02d:%2$02d)</string>
     <string name="plan_time_bound_posterior">Non puoi superare il periodo successivo (inizia alle %1$02d:%2$02d)</string>
+    <string name="plan_conflict_auto_repaired">Conflitto tra orari corretto automaticamente</string>
     <string name="content_desc_edit_start_time">Modifica orario inizio</string>
     <string name="content_desc_edit_end_time">Modifica orario fine</string>
 
@@ -444,8 +464,8 @@
     <string name="planner_hours_per_week">%1$d ore/sett.</string>
     <string name="planner_edit_day_button">MODIFICA PIANO (%1$s)</string>
     <string name="planner_days_detail_title">Dettaglio giorni della settimana</string>
-    <string name="planner_day_fasting_detail">Digiuno: %1$s - %2$s (%3$dh)</string>
-    <string name="planner_day_eating_detail">Pasti: %1$s - %2$s (%3$dh)</string>
+    <string name="planner_day_fasting_detail">Digiuno: %1$s - %2$s (%3$s)</string>
+    <string name="planner_day_eating_detail">Pasti: %1$s - %2$s (%3$s)</string>
     <string name="content_desc_edit_day">Modifica giorno</string>
     <string name="dialog_delete_plan_active_message">Sei sicuro di voler eliminare definitivamente il piano \"%1$s\"? Verrà automaticamente ripristinato il piano 16-8 Classico.</string>
 
@@ -625,4 +645,32 @@
     <string name="privacy_policy_desc">CiboTimer rispetta la tua privacy: 100% offline-first, nessun annuncio, nessun tracciamento e dati salvati solo sul tuo dispositivo.</string>
     <string name="privacy_policy_view_button">Visualizza Norme sulla Privacy</string>
     <string name="privacy_policy_url">https://finalbyte1.github.io/cibotimer/privacy.html</string>
+
+    <!-- Additional Localized Action Strings -->
+    <string name="notif_action_stop_fasting">Stop digiuno</string>
+    <string name="notif_stage_item_title">Fase %1$d: %2$s (%3$dh passate)</string>
+    <string name="plan_editor_scope_period">Periodo %1$d</string>
+    <string name="plan_editor_prev_period">Periodo precedente</string>
+    <string name="plan_editor_next_period">Periodo successivo</string>
+    <string name="week_chart_continues"> ↪ continua</string>
+
+    <!-- Settings Language -->
+    <string name="settings_section_language">Lingua dell\'applicazione</string>
+    <string name="settings_language_desc">Scegli la lingua di visualizzazione dell\'app</string>
+    <string name="settings_language_system">Predefinita di sistema</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_en">English (Inglese)</string>
+    <string name="dialog_language_changed_title">Lingua modificata</string>
+    <string name="dialog_language_changed_message">Per applicare completamente la nuova lingua a tutte le schermate, al timer e alle descrizioni, è consigliato riavviare l\'applicazione adesso.</string>
+    <string name="dialog_language_restart_now">Riavvia ora</string>
+    <string name="dialog_language_restart_later">Più tardi</string>
+
+    <!-- Timer and Stages Localization -->
+    <string name="timer_label_plan_prefix">Piano: </string>
+    <string name="stage_status_completed">Completata</string>
+    <string name="stage_status_completed_overdue">Completata • Superata da %1$dh</string>
+    <string name="stage_status_ongoing_hours">In corso • %1$dh passate</string>
+    <string name="stage_status_ongoing_full">In corso • %1$dh %2$dm passate (mancano %3$dh)</string>
+    <string name="stage_status_upcoming_hours">Tra %1$dh</string>
+    <string name="stage_status_upcoming_next">Prossima</string>
 </resources>

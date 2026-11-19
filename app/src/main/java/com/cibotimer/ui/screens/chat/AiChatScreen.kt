@@ -913,10 +913,11 @@ private fun EmptyChatState(
     modifier: Modifier = Modifier
 ) {
     val prompts = listOf(
+        "📊 I miei progressi e peso iniziale" to "Analizza il mio peso iniziale, quanto ho perso finora rispetto al mio obiettivo e come sta andando il mio percorso.",
         "⏱️ Crea un piano 18:6 su misura per me" to "Crea un piano di digiuno intermittente 18:6 personalizzato per me, considerando che lavoro dalle 9 alle 18.",
         "🥑 Come gestire la fame serale?" to "Quali sono le strategie scientifiche più efficaci per gestire gli attacchi di fame la sera durante il digiuno?",
-        "💧 Cosa posso bere a digiuno?" to "Cosa posso bere durante le ore di digiuno senza interrompere l'autofagia o la chetosi?",
-        "⚡ Spiegami i benefici dell'autofagia" to "Spiegami in modo chiaro e scientifico cosa accade nel corpo durante l'autofagia e a partire da quante ore si attiva."
+        "⚡ In che fase metabolica mi trovo?" to "In quale fase metabolica mi trovo in questo momento del mio digiuno e cosa sta avvenendo nel mio organismo?",
+        "💧 Cosa posso bere a digiuno?" to "Cosa posso bere durante le ore di digiuno senza interrompere l'autofagia o la chetosi?"
     )
 
     Column(
@@ -1007,9 +1008,10 @@ private fun EmptyChatState(
 @Composable
 private fun QuickPromptsRow(onSelectPrompt: (String) -> Unit) {
     val quicks = listOf(
+        "Miei progressi" to "Analizza i miei progressi dal mio peso iniziale al target.",
+        "Fase metabolica" to "In quale fase metabolica mi trovo adesso?",
         "Cosa bere?" to "Cosa posso bere a digiuno?",
         "Fame serale" to "Come posso calmare la fame stasera?",
-        "Autofagia" to "Come si attiva l'autofagia?",
         "Piano 16:8" to "Consigliami il miglior piano 16:8."
     )
 

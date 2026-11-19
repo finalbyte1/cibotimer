@@ -16,15 +16,27 @@ data class CoachingTip(
     val categoryEn: String? = null,
     val contentMarkdownEn: String? = null
 ) {
+    fun getLocalizedTitle(locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "it") title else (titleEn ?: title)
+
+    fun getLocalizedSubtitle(locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "it") subtitle else (subtitleEn ?: subtitle)
+
+    fun getLocalizedCategory(locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "it") category else (categoryEn ?: category)
+
+    fun getLocalizedContentMarkdown(locale: Locale = Locale.getDefault()): String =
+        if (locale.language == "it") contentMarkdown else (contentMarkdownEn ?: contentMarkdown)
+
     val localizedTitle: String
-        get() = if (Locale.getDefault().language == "it") title else (titleEn ?: title)
+        get() = getLocalizedTitle()
 
     val localizedSubtitle: String
-        get() = if (Locale.getDefault().language == "it") subtitle else (subtitleEn ?: subtitle)
+        get() = getLocalizedSubtitle()
 
     val localizedCategory: String
-        get() = if (Locale.getDefault().language == "it") category else (categoryEn ?: category)
+        get() = getLocalizedCategory()
 
     val localizedContentMarkdown: String
-        get() = if (Locale.getDefault().language == "it") contentMarkdown else (contentMarkdownEn ?: contentMarkdown)
+        get() = getLocalizedContentMarkdown()
 }

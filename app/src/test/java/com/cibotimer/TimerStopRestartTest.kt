@@ -137,4 +137,119 @@ class TimerStopRestartTest {
         assertEquals(5400L, elapsedSec) // 1h 30m = 90 min * 60 = 5400s
         assertEquals(20 * 3600L - 5400L, remainingSec)
     }
+
+    @Test
+    fun testPrematureFutureFastingSessionHealedToEatingWindow() {
+        val plan = FastingPlanTemplates.PLAN_LUIGI_1
+
+        // Simula le ore 08:57:13 di Venerdì (screenshot utente)
+        val cal = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+            set(Calendar.HOUR_OF_DAY, 8)
+            set(Calendar.MINUTE, 57)
+            set(Calendar.SECOND, 13)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val now = cal.timeInMillis
+
+        val scheduled = FastingCalculator.resolveCurrentScheduledPeriod(plan, now)
+        assertFalse(scheduled.isNowInsideFasting)
+
+        // Sessione errata creata prima della correzione: FASTING impostato nel futuro (13:00 -> Sab 08:00)
+        val calFutureStart = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+            set(Calendar.HOUR_OF_DAY, 13)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val calFutureEnd = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
+            set(Calendar.HOUR_OF_DAY, 8)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val erroneousFutureSession = FastingSession(
+            id = "erroneous-future-fasting",
+            planId = plan.id,
+            planName = plan.name,
+            startTimeEpochMillis = calFutureStart.timeInMillis,
+            plannedEndTimeEpochMillis = calFutureEnd.timeInMillis,
+            targetDurationMinutes = 1140,
+            state = FastingState.FASTING
+        )
+
+        // Criteri di sincronizzazione e guarigione
+        val isExpired = now >= erroneousFutureSession.plannedEndTimeEpochMillis
+        val isFutureStart = erroneousFutureSession.startTimeEpochMillis > now
+        val isMismatchedFuture = !scheduled.isNowInsideFasting &&
+                erroneousFutureSession.state == FastingState.FASTING &&
+                erroneousFutureSession.startTimeEpochMillis >= scheduled.periodStartEpochMillis
+
+        assertFalse("Non è scaduta", isExpired)
+        assertTrue("L'inizio è nel futuro rispetto a adesso (13:00 > 08:57)", isFutureStart)
+        assertTrue("È disallineata con la schedulazione attuale", isMismatchedFuture)
+
+        // Guarigione verso lo stato reale (EATING)
+        val shouldHeal = isExpired || isFutureStart || isMismatchedFuture
+        assertTrue(shouldHeal)
+
+        val healedSession = FastingSession(
+            id = "healed-session",
+            planId = plan.id,
+            planName = plan.name,
+            startTimeEpochMillis = scheduled.eatingWindowStartMillis,
+            plannedEndTimeEpochMillis = scheduled.eatingWindowEndMillis,
+            targetDurationMinutes = (scheduled.eatingDurationSeconds / 60L).toInt(),
+            state = FastingState.EATING
+        )
+
+        assertEquals(FastingState.EATING, healedSession.state)
+        assertEquals(scheduled.eatingWindowStartMillis, healedSession.startTimeEpochMillis)
+        assertEquals(scheduled.eatingWindowEndMillis, healedSession.plannedEndTimeEpochMillis)
+
+        // Alle 08:57:13, il tempo trascorso nella finestra pasto è coerente
+        val elapsedEatingSec = (now - healedSession.startTimeEpochMillis) / 1000L
+        assertEquals(72 * 60 + 13L, elapsedEatingSec)
+
+        // E il tempo rimanente fino all'inizio del digiuno delle 13:00
+        val remainingEatingSec = (healedSession.plannedEndTimeEpochMillis - now) / 1000L
+        assertEquals(242 * 60 + 47L, remainingEatingSec) // 4h 02m 47s
+    }
+
+    @Test
+    fun testTransitionFromEatingToFastingAt1300() {
+        val plan = FastingPlanTemplates.PLAN_LUIGI_1
+
+        // Alle 13:00:00 di Venerdì termina la finestra pasto e inizia il digiuno
+        val cal1300 = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+            set(Calendar.HOUR_OF_DAY, 13)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val time1300 = cal1300.timeInMillis
+
+        val scheduledAt1300 = FastingCalculator.resolveCurrentScheduledPeriod(plan, time1300)
+        assertTrue("Alle 13:00 di Venerdì siamo esattamente all'inizio del digiuno", scheduledAt1300.isNowInsideFasting)
+        assertEquals(5, scheduledAt1300.period.periodNumber)
+        assertEquals(time1300, scheduledAt1300.periodStartEpochMillis)
+
+        val newFastingSession = FastingSession(
+            id = "fasting-session-1300",
+            planId = plan.id,
+            planName = plan.name,
+            startTimeEpochMillis = scheduledAt1300.periodStartEpochMillis,
+            plannedEndTimeEpochMillis = scheduledAt1300.periodEndEpochMillis,
+            targetDurationMinutes = (scheduledAt1300.durationSeconds / 60L).toInt(),
+            state = FastingState.FASTING
+        )
+
+        assertEquals(FastingState.FASTING, newFastingSession.state)
+        assertEquals(0L, FastingCalculator.calculateElapsedSeconds(newFastingSession, time1300))
+        assertEquals(19 * 3600L, FastingCalculator.calculateRemainingSeconds(newFastingSession, time1300))
+    }
 }

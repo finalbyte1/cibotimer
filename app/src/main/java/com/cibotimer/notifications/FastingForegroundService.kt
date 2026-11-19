@@ -64,6 +64,28 @@ class FastingForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!FastingPersistence.isPersistentNotificationEnabled(this)) {
+            isRunning = false
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                } else {
+                    @Suppress("DEPRECATION")
+                    stopForeground(true)
+                }
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+            try {
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(NOTIFICATION_ID)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         val action = intent?.action
 
         if (action == ACTION_STOP_FASTING) {
@@ -322,7 +344,7 @@ class FastingForegroundService : Service() {
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
                 .addAction(
                     smallIcon,
-                    "Stop digiuno",
+                    context.getString(R.string.notif_action_stop_fasting),
                     pendingStopFasting
                 )
                 .setDeleteIntent(pendingDelete)
@@ -344,6 +366,12 @@ class FastingForegroundService : Service() {
             planName: String,
             isEating: Boolean = false
         ) {
+            if (!FastingPersistence.isPersistentNotificationEnabled(context)) {
+                stop(context)
+                FastingWidgetUpdater.updateAll(context)
+                return
+            }
+
             NotificationHelper.createNotificationChannels(context)
 
             // Salva lo stato prima di avviare il servizio

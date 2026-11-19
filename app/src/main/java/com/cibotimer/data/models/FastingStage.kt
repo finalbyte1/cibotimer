@@ -40,6 +40,9 @@ data class FastingStage(
         return if (locale.language == "it" || descriptionEn.isBlank()) description else descriptionEn
     }
 
+    fun getLocalizedBenefits(locale: Locale = Locale.getDefault()): List<String> =
+        listOf(getLocalizedSubtitle(locale), getLocalizedDescription(locale))
+
     val localizedTitle: String
         get() = getLocalizedTitle()
 

@@ -19,10 +19,15 @@ class CiboTimerApp : Application() {
     lateinit var updateManager: UpdateManager
         private set
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(com.cibotimer.util.AppLanguageManager.getLocalizedContext(base))
+    }
+
     override fun onCreate() {
         super.onCreate()
         instance = this
 
+        com.cibotimer.util.AppLanguageManager.applyStoredLanguage(this)
         NotificationHelper.createNotificationChannels(this)
         repository = AppRepository(this)
         updateManager = UpdateManager(this)

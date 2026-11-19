@@ -195,6 +195,27 @@ object NotificationHelper {
             alarmManager.cancel(pi)
             pi.cancel()
         }
+        cancelStageAlarms(context)
+    }
+
+    fun cancelStageAlarms(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, FastingAlarmReceiver::class.java).apply {
+            action = "com.cibotimer.ACTION_FASTING_ALARM"
+        }
+        for (i in 1..10) {
+            val requestCode = REQUEST_CODE_STAGE_BASE + i
+            val pi = PendingIntent.getBroadcast(
+                context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+            if (pi != null) {
+                alarmManager.cancel(pi)
+                pi.cancel()
+            }
+        }
     }
 
     fun cancelEatingAlarms(context: Context) {
@@ -225,6 +246,8 @@ object NotificationHelper {
     }
 
     fun scheduleStageAlarm(context: Context, triggerTimeEpochMillis: Long, stageTitle: String, stageDesc: String, requestCode: Int) {
+        val profile = try { (context.applicationContext as? CiboTimerApp)?.repository?.userProfile?.value ?: CiboTimerApp.instance.repository.userProfile.value } catch (e: Throwable) { null }
+        if (profile != null && !profile.notificationsStagesEnabled) return
         if (triggerTimeEpochMillis <= System.currentTimeMillis()) return
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, FastingAlarmReceiver::class.java).apply {
@@ -279,6 +302,14 @@ object NotificationHelper {
         type: String = "GENERAL",
         isEating: Boolean? = null
     ) {
+        val profile = try { (context.applicationContext as? CiboTimerApp)?.repository?.userProfile?.value ?: CiboTimerApp.instance.repository.userProfile.value } catch (e: Throwable) { null }
+        if (type == "STAGE_REACHED" && profile != null && !profile.notificationsStagesEnabled) {
+            return
+        }
+        if ((type == "FASTING_END" || type == "EATING_END" || type == "EATING_PRE_REMINDER") && profile?.notificationsFastingEnabled == false) {
+            return
+        }
+
         // Salva automaticamente nello storico (Tab Notifiche)
         try {
             CiboTimerApp.instance.repository.addNotification(title, message, type)
