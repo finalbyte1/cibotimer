@@ -29,7 +29,7 @@ class NavigationLabelsTest {
         assertEquals("Notifications", strings["notifications_title"])
         assertEquals("Fasting", strings["nav_timer"])
         assertEquals("Me", strings["nav_progress"])
-        assertEquals("Coach", strings["nav_coach"])
+        assertEquals("Coach AI", strings["nav_coach"])
         assertEquals("More", strings["nav_settings"])
 
         // Ensure max character count across English tabs is small (<= 7)
@@ -49,7 +49,7 @@ class NavigationLabelsTest {
         assertEquals("Notifiche", strings["notifications_title"])
         assertEquals("Digiuno", strings["nav_timer"])
         assertEquals("Io", strings["nav_progress"])
-        assertEquals("Coach", strings["nav_coach"])
+        assertEquals("Coach AI", strings["nav_coach"])
         assertEquals("Altro", strings["nav_settings"])
     }
 

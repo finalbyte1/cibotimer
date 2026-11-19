@@ -6,6 +6,25 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/)
 
 ---
 
+## [1.0.85] - 2026-11-19
+
+### 📱 Risoluzione Padding Superiore TopAppBar, Ridenominazione "Coach AI" ed Edge-to-Edge (v1.0.85 - Build 86)
+- **Eliminazione Spazio Vuoto Ridondante su Schermate con TopAppBar**:
+  - Risolto il doppio inset superiore in `Navigation.kt`: lo `Scaffold` principale con la bottom bar passa ora solo il padding inferiore (`bottom = innerPadding.calculateBottomPadding()`) alle schermate dotate di propria `TopAppBar` (`SettingsScreen`, `ProgressScreen`, `CoachingScreen`, `PlannerScreen`, `AiChatScreen`, `WaterTrackerScreen`).
+  - Le schermate senza `TopAppBar` (`TimerScreen`, `NotificationsScreen`) mantengono l'intero `innerPadding` per proteggere l'header dalla status bar.
+  - Nel layout tablet, rimosso il top padding globale dalla `Row` orizzontale, garantendo rendering pulito e allineato con la `NavigationRail`.
+- **Ridenominazione Sezione "Coach AI"**:
+  - Aggiornata la risorsa `nav_coach` e `coaching_title` in "Coach AI" in italiano ed inglese (`res/values/strings.xml` e `res/values-it/strings.xml`).
+  - Ottimizzata l'etichetta nella bottom navigation a 5 elementi: `fontSize = 10.sp` con `maxLines = 1`, `softWrap = false` e `overflow = TextOverflow.Ellipsis`.
+- **Abilitazione Edge-to-Edge Universale**:
+  - Aggiunta la chiamata `enableEdgeToEdge()` in `MainActivity.kt` per garantire un comportamento uniforme su tutti i display (incluso Samsung Galaxy S25 Ultra, notch e punch-hole).
+- **Compilazione & Verifica Binari**:
+  - Generati `CiboTimer-v1.0.85.apk` e `CiboTimer-v1.0.85.aab`.
+  - Firma verificata con certificato permanente `CN=CiboTimer`.
+  - Test unitari eseguiti e superati al 100%.
+
+---
+
 ## [1.0.84] - 2026-11-18
 
 ### 🌐 Internazionalizzazione Completa, Riorganizzazione Impostazioni e Skill Google Play (v1.0.84 - Build 85)

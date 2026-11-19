@@ -10,7 +10,7 @@
     <!-- Bottom Navigation -->
     <string name="nav_timer">Fasting</string>
     <string name="nav_progress">Me</string>
-    <string name="nav_coach">Coach</string>
+    <string name="nav_coach">Coach AI</string>
     <string name="nav_notifications">Alerts</string>
     <string name="notifications_title">Notifications</string>
     <string name="nav_planner">Plans</string>
@@ -506,7 +506,7 @@
     <string name="notif_time_yesterday">Yesterday at %1$s</string>
 
     <!-- CoachingScreen -->
-    <string name="coaching_title">Coach &amp; Knowledge</string>
+    <string name="coaching_title">Coach AI</string>
     <string name="category_all">All</string>
     <string name="coaching_ai_card_title">Custom AI Coach</string>
     <string name="coaching_ai_card_desc">Create a customized fasting plan or ask the Coach for advice.</string>

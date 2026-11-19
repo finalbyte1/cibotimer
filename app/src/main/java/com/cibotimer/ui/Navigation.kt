@@ -40,7 +40,7 @@ import com.cibotimer.R
 sealed class Screen(val route: String, val title: String, val icon: ImageVector, val titleRes: Int) {
     data object Timer : Screen("timer", "Digiuno", Icons.Default.Timer, R.string.nav_timer)
     data object Progress : Screen("progress", "Io", Icons.Default.Person, R.string.nav_progress)
-    data object Coach : Screen("coach", "Coach", Icons.Default.Favorite, R.string.nav_coach)
+    data object Coach : Screen("coach", "Coach AI", Icons.Default.Favorite, R.string.nav_coach)
     data object Notifications : Screen("notifications", "Notifiche", Icons.Default.Notifications, R.string.nav_notifications)
     data object Planner : Screen("planner", "Piani", Icons.Default.CalendarMonth, R.string.nav_planner)
     data object Settings : Screen("settings", "Altro", Icons.Default.MoreHoriz, R.string.nav_settings)
@@ -87,7 +87,7 @@ fun CiboTimerNavigation(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(bottom = paddingValues.calculateBottomPadding())
                     .background(CiboBg)
             ) {
                 if (showNav) {
@@ -123,7 +123,7 @@ fun CiboTimerNavigation(
                                 label = {
                                     Text(
                                         text = labelText,
-                                        fontSize = 11.sp,
+                                        fontSize = if (screen == Screen.Coach) 10.sp else 11.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         maxLines = 1,
                                         softWrap = false,
@@ -166,13 +166,14 @@ fun CiboTimerNavigation(
                         repository = repository,
                         updateManager = updateManager,
                         userProfile = userProfile,
+                        innerPadding = paddingValues,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
         }
     } else {
-        // Layout Telefono (< 600dp): identico a oggi, nessuna modifica
+        // Layout Telefono (< 600dp): BottomBar per la navigazione
         Scaffold(
             bottomBar = {
                 if (showNav) {
@@ -195,7 +196,7 @@ fun CiboTimerNavigation(
                                 label = {
                                     Text(
                                         text = labelText,
-                                        fontSize = 11.sp,
+                                        fontSize = if (screen == Screen.Coach) 10.sp else 11.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         maxLines = 1,
                                         softWrap = false,
@@ -235,7 +236,8 @@ fun CiboTimerNavigation(
                 repository = repository,
                 updateManager = updateManager,
                 userProfile = userProfile,
-                modifier = Modifier.padding(paddingValues)
+                innerPadding = paddingValues,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -248,8 +250,17 @@ private fun CiboTimerNavHost(
     repository: AppRepository,
     updateManager: UpdateManager?,
     userProfile: UserProfile,
+    innerPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
+    val bottomOnlyModifier = Modifier
+        .fillMaxSize()
+        .padding(bottom = innerPadding.calculateBottomPadding())
+
+    val fullPaddingModifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -265,7 +276,8 @@ private fun CiboTimerNavHost(
                 },
                 onBack = if (userProfile.hasSelectedInitialPlan) {
                     { navController.popBackStack() }
-                } else null
+                } else null,
+                modifier = bottomOnlyModifier
             )
         }
 
@@ -277,25 +289,29 @@ private fun CiboTimerNavHost(
                 onNavigateToWater = { navController.navigate(Screen.Water.route) },
                 onNavigateToCoaching = { navController.navigate(Screen.Coach.route) },
                 onNavigateToProgress = { navController.navigate(Screen.Progress.route) },
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                modifier = fullPaddingModifier
             )
         }
 
         composable(Screen.Planner.route) {
             PlannerScreen(
-                repository = repository
+                repository = repository,
+                modifier = bottomOnlyModifier
             )
         }
 
         composable(Screen.Notifications.route) {
             NotificationsScreen(
-                repository = repository
+                repository = repository,
+                modifier = fullPaddingModifier
             )
         }
 
         composable(Screen.Progress.route) {
             ProgressScreen(
-                repository = repository
+                repository = repository,
+                modifier = bottomOnlyModifier
             )
         }
 
@@ -303,27 +319,31 @@ private fun CiboTimerNavHost(
             CoachingScreen(
                 repository = repository,
                 onNavigateToChat = { navController.navigate(Screen.Chat.route) },
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                modifier = bottomOnlyModifier
             )
         }
 
         composable(Screen.Chat.route) {
             AiChatScreen(
                 repository = repository,
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                modifier = bottomOnlyModifier
             )
         }
 
         composable(Screen.Water.route) {
             WaterTrackerScreen(
-                repository = repository
+                repository = repository,
+                modifier = bottomOnlyModifier
             )
         }
 
         composable(Screen.Settings.route) {
             SettingsScreen(
                 repository = repository,
-                updateManager = updateManager
+                updateManager = updateManager,
+                modifier = bottomOnlyModifier
             )
         }
     }
